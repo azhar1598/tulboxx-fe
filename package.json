@@ -1,0 +1,38 @@
+{
+  "name": "simple-menu-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mantine/core": "^7.13.4",
+    "@mantine/dates": "^7.13.4",
+    "@mantine/form": "^7.13.4",
+    "@mantine/hooks": "^7.13.4",
+    "@mantine/notifications": "^7.13.4",
+    "@reduxjs/toolkit": "^2.3.0",
+    "@tabler/icons-react": "^3.21.0",
+    "@tanstack/react-query": "^5.59.18",
+    "axios": "^1.7.7",
+    "clsx": "^2.1.1",
+    "mantine-datatable": "^7.12.4",
+    "next": "15.0.2",
+    "next-auth": "^4.24.10",
+    "react": "19.0.0-rc-02c0e824-20241028",
+    "react-dom": "19.0.0-rc-02c0e824-20241028",
+    "react-redux": "^9.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
