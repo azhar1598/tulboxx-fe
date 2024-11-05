@@ -29,6 +29,18 @@ function CustomTable({ records, columns }) {
           footer: classes.footer,
           pagination: classes.pagination,
         }}
+        defaultColumnProps={{
+          textAlign: "left",
+          noWrap: false,
+          titleStyle: (theme) => ({
+            color: "#8898A9",
+            fontSize: "13px",
+            padding: "20px",
+          }),
+        }}
+        rowStyle={({ state }) =>
+          state != "NH" ? { padding: "20px" } : undefined
+        }
         styles={{
           header: {
             backgroundColor: "#14141fd9",

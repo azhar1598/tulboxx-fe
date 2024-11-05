@@ -22,7 +22,7 @@ body {
 }
 
 .main-content {
-  margin-left: calc(220px + 0rem);
+  margin-left: calc(150px + 0rem);
   margin-top: 100px;
   padding-left: 30px;
   padding-right: 30px;
@@ -30,7 +30,7 @@ body {
 }
 
 .header {
-  margin-left: calc(220px + 0rem);
+  margin-left: calc(150px + 0rem);
   position: fixed;
   width: 100%;
   z-index: 10;
@@ -39,7 +39,7 @@ body {
 }
 .data-table,
 .page-main-wrapper {
-  width: calc(100vw - 280px) !important;
+  width: calc(100vw - 210px) !important;
 }
 
 @media only screen and (max-width: 992px) {

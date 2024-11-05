@@ -1,8 +1,9 @@
 .navbar {
-  width: 220px;
+  width: 150px;
   min-height: 100vh;
   height: auto;
-  padding: var(--mantine-spacing-md);
+  padding-top: 25px;
+  /* padding: var(--mantine-spacing-md); */
   display: flex;
   background-color: #14141fd9 !important;
   flex-direction: column;
@@ -17,17 +18,19 @@
 }
 
 .link {
-  width: 200px;
-  height: 60px;
-  border-radius: var(--mantine-radius-md);
+  /* width: 200px; */
+  height: 50px;
+  padding-left: 30px;
+  /* border-radius: var(--mantine-radius-md); */
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 10px;
+
   color: #ffffff;
 
   &:hover {
     background-color: #228be6;
+    border-right: 5px solid white;
   }
 
   &[data-active] {
@@ -39,6 +42,7 @@
       /* background-size: 200% auto; */
       color: white;
       box-shadow: 0 0 2px #eee;
+      border-right: 5px solid white;
 
       /* display: block; */
     }
