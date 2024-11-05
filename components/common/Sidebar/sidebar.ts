@@ -8,12 +8,17 @@ import {
   IconTools,
   IconWandOff,
   IconLogout2,
+  IconUsersGroup,
+  IconShoppingBag,
+  IconBuildingStore,
+  IconCategory2,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
   // { label: "Generate", icon: IconWandOff, link: "/" },
-  { label: "Stores", icon: IconBook, link: "/" },
-  { label: "Products", icon: IconTemplate, link: "/templates" },
+  { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
+  { label: "Stores", icon: IconBuildingStore, link: "/" },
+  { label: "Products", icon: IconCategory2, link: "/templates" },
   { label: "Settings", icon: IconSettings, link: "/settings" },
   { label: "Logout", icon: IconLogout2, link: "/login" },
 ];

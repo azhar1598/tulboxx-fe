@@ -7,7 +7,7 @@ import React from "react";
 
 export const StoreCard = ({ storeName, location, imageUrl }) => {
   return (
-    <Card className="w-full md:w-72 overflow-hidden">
+    <Card className="w-full md:w-72 overflow-hidden" bg={"white"}>
       {/* Image Section */}
       <div className="h-48 w-full overflow-hidden">
         <img

@@ -14,6 +14,9 @@ import store from "@/redux/store";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/common/Sidebar";
 import Header from "@/components/common/Header";
+import "mantine-datatable/styles.layer.css";
+import "@mantine/notifications/styles.css";
+import { Notifications } from "@mantine/notifications";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -45,6 +48,7 @@ export default function RootLayout({
         <SessionProvider>
           <QueryClientProvider client={queryClient}>
             <MantineProvider theme={theme}>
+              <Notifications position="top-center" />
               <Provider store={store}>
                 <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
                   {pathname !== "/login" &&

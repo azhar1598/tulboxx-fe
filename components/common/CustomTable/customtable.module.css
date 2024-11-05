@@ -1,0 +1,38 @@
+.table {
+}
+
+.th {
+  background-color: red !important;
+  margin-left: 500px;
+  padding: 500px !important;
+}
+
+.header {
+}
+
+.footer {
+  font-style: italic;
+  color: gray;
+
+  /* th {
+    border-top: 1px solid var(--mantine-color-orange-6);
+  } */
+}
+
+.pagination {
+  background: transparent;
+  color: gray;
+  border-top: 1px solid rgba(128, 128, 128, 0.452);
+
+  /* button {
+    background: transparent;
+    color: var(--mantine-color-red-6);
+    border-color: var(--mantine-color-red-6);
+
+    &[data-active="true"] {
+      color: white;
+      border: transparent;
+      background: var(--mantine-color-red-6);
+    }
+  } */
+}

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer mantine, mantine-datatable;
 
 :root {
   --background: ##e5e7eb;
@@ -36,6 +37,10 @@ body {
   /* background-color: #1e476b; */
   background-color: #14141fd9;
 }
+.data-table,
+.page-main-wrapper {
+  width: calc(100vw - 280px) !important;
+}
 
 @media only screen and (max-width: 992px) {
   .main-content {
@@ -47,5 +52,9 @@ body {
   .header {
     margin-left: 0px;
     /* background: #000; */
+  }
+  .data-table,
+  .page-main-wrapper {
+    width: calc(100vw - 20px) !important;
   }
 }

@@ -40,10 +40,11 @@ import {
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates, swatches } from "@/lib/constants";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import AddStoreForm from "./AddStoreForm";
 import PreviewQR from "./PreviewQR";
+import { PageHeader } from "@/components/common/PageHeader";
 
 const storeSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters"),
@@ -78,31 +79,13 @@ const StoreRegistration = () => {
       storeImages: [],
     },
   });
+
+  const { id } = useParams();
+
   return (
     <Stack>
-      <Box bg="gradient">
-        <Title order={2} color="white">
-          Store Registration
-        </Title>
-        <Text color="black" opacity={0.8} mt="xs">
-          Create your digital storefront in minutes
-        </Text>
-
-        {/* <IconPower
-            stroke={2}
-            style={{
-              position: "absolute",
-              top: 5,
-              right: 5,
-              color: "white",
-              backgroundColor: "red",
-              borderRadius: "10px",
-            }}
-            onClick={() => {
-              signOut({ callbackUrl: "/login" });
-            }}
-          /> */}
-      </Box>
+      {" "}
+      <PageHeader title={`Create Store: Merchant name (${id}) `} />
       <div className="hidden md:block">
         <SimpleGrid cols={2}>
           <AddStoreForm form={form} />
