@@ -112,7 +112,22 @@ const StoreRegistration = () => {
       <div className="md:hidden block">
         <SimpleGrid cols={1}>
           <AddStoreForm form={form} />
-          <PreviewQR storeInfo={form.values} />
+          <Flex direction={"column"}>
+            <Tabs defaultValue="qr">
+              <Tabs.List mb={10}>
+                <Tabs.Tab value="qr">Preview QR</Tabs.Tab>
+                <Tabs.Tab value="website">Preview Website</Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="qr" pb="xs">
+                <PreviewQR storeInfo={form.values} />
+              </Tabs.Panel>
+              <Tabs.Panel value="website" pb="xs">
+                <div className="relative">
+                  <WebPreview />
+                </div>
+              </Tabs.Panel>
+            </Tabs>
+          </Flex>
         </SimpleGrid>
       </div>
     </Stack>
