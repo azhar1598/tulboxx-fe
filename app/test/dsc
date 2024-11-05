@@ -1,0 +1,54 @@
+<>
+      {/* <div className="min-h-screen w-full flex items-center justify-center bg-gray-800 p-4 rounded-lg"> */}
+      {/* Phone mockup container */}
+      <div className="md:w-[390px] w-full overflow-hidden  absolute top-0">
+        {/* Your existing code wrapped inside */}
+        <div className="relative bg-red-500 h-full overflow-y-auto">
+          <div className="min-h-screen bg-yellow-400 flex justify-center">
+            <div className="w-full relative min-h-screen">
+              {/* Top Navigation */}
+              <div className="  w-full  z-20  flex justify-center items-center">
+                {/* <IconMenu2 className="w-6 h-6 text-gray-800" />
+                <div className="flex gap-4">
+                  <IconSearch className="w-6 h-6 text-gray-800" />
+                  <IconShoppingCart className="w-6 h-6 text-gray-800" />
+                </div> */}
+                <Image src={StoreLogo} width={130} height={130} alt="" />
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="relative pt-[10px]">
+                {/* Red Section */}
+                <div className="bg-red-600 rounded-t-3xl min-h-screen">
+                  {/* <div className=" py-4">
+                    <h1 className="text-white text-3xl font-bold text-center mb-2">
+                      Biryani Express
+                    </h1>
+                    <p className="text-white/80 text-center mb-2">
+                      Unlimited Food
+                    </p>
+                  </div> */}
+
+                  {/* Menu Content */}
+                  {/* <Group gap={0} className=" rounded-t-3xl px-1">
+                    <Image
+                      src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/resturant-menu-video-design-template-64d136abd3ffe2ca6d32b6a9297e56a7_screen.jpg?ts=1637036712"
+                      width={530}
+                      height={130}
+                      alt=""
+                    />
+                    <img
+                      src="https://content.wepik.com/statics/29838533/preview-page0.jpg"
+                      width={530}
+                      height={130}
+                      alt=""
+                    />
+                  </Group> */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* </div> */}
+    </>

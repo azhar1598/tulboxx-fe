@@ -52,6 +52,7 @@ export default function RootLayout({
               <Provider store={store}>
                 <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
                   {pathname !== "/login" &&
+                    pathname !== "/test" &&
                     pathname !== "/signup" &&
                     pathname != "/story-editor" && <Sidebar />}
 
@@ -59,7 +60,10 @@ export default function RootLayout({
                       pathname !== "/login" &&
                       pathname !== "/signup" && <Header />} */}
                   <Stack>
-                    <Header />
+                    {pathname !== "/login" &&
+                      pathname !== "/test" &&
+                      pathname !== "/signup" &&
+                      pathname != "/story-editor" && <Header />}
                     <div className="main-content">{children}</div>
                   </Stack>
                 </Flex>

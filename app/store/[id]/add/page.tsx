@@ -24,6 +24,7 @@ import {
   Divider,
   ThemeIcon,
   rem,
+  Tabs,
 } from "@mantine/core";
 import {
   IconBuilding,
@@ -45,6 +46,7 @@ import { signOut } from "next-auth/react";
 import AddStoreForm from "./AddStoreForm";
 import PreviewQR from "./PreviewQR";
 import { PageHeader } from "@/components/common/PageHeader";
+import WebPreview from "./WebPreview";
 
 const storeSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters"),
@@ -89,7 +91,22 @@ const StoreRegistration = () => {
       <div className="hidden md:block">
         <SimpleGrid cols={2}>
           <AddStoreForm form={form} />
-          <PreviewQR storeInfo={form.values} />
+          <Flex direction={"column"}>
+            <Tabs defaultValue="qr">
+              <Tabs.List mb={10}>
+                <Tabs.Tab value="qr">Preview QR</Tabs.Tab>
+                <Tabs.Tab value="website">Preview Website</Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="qr" pb="xs">
+                <PreviewQR storeInfo={form.values} />
+              </Tabs.Panel>
+              <Tabs.Panel value="website" pb="xs">
+                <div className="relative">
+                  <WebPreview />
+                </div>
+              </Tabs.Panel>
+            </Tabs>
+          </Flex>
         </SimpleGrid>
       </div>
       <div className="md:hidden block">
