@@ -10,20 +10,26 @@ import {
 import Image from "next/image";
 import StoreLogo from "../../../../../public/assets/default-store-logo.png";
 
-const WebPreview = () => {
+const WebPreview = ({ storeInfo }) => {
   return (
     // Container wrapper
     <>
       {/* <div className="md:w-[390px] w-full overflow-hidden  absolute top-0 left-0 "> */}
 
-      <div className="flex flex-col min-h-screen  overflow-scroll bg-yellow-400 flex justify-center md:w-[390px] w-full  absolute top-0 left-0">
+      <div
+        className="flex flex-col min-h-screen  overflow-scroll flex justify-center md:w-[390px] w-full  absolute top-0 left-0"
+        style={{ backgroundColor: storeInfo?.website.primaryColor }}
+      >
         <div className="w-full relative ">
           <div className="  w-full  z-20  flex justify-center items-center">
             <Image src={StoreLogo} width={130} height={130} alt="" />
           </div>
 
           <div className="relative pt-[10px]">
-            <div className="bg-[#091151] rounded-t-3xl min-h-screen">
+            <div
+              className="rounded-t-3xl min-h-screen"
+              style={{ backgroundColor: storeInfo?.website.secondaryColor }}
+            >
               <div className=" py-4">
                 <h1 className="text-white text-3xl font-bold text-center mb-2">
                   Biryani Express

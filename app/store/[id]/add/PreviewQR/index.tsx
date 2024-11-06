@@ -1,4 +1,5 @@
 "use client";
+import { Text } from "@mantine/core";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -28,7 +29,7 @@ const PreviewQR = ({ storeInfo }) => {
   return (
     <div
       className={`md:h-[720px] p-8 flex items-center justify-center`}
-      style={{ backgroundColor: `${storeInfo.themeColor}` }}
+      style={{ backgroundColor: `${storeInfo.qr.primaryColor}` }}
     >
       <div className="max-w-md w-full text-center space-y-6">
         {/* Logo and Restaurant Name */}
@@ -43,17 +44,20 @@ const PreviewQR = ({ storeInfo }) => {
             </svg>
           </div>
           <span className="text-xl font-semibold">
-            {storeInfo?.storeName || "Your Store"}
+            {storeInfo?.name || "Your Store"}
           </span>
         </div>
 
         {/* Main Text */}
         <div className="space-y-4">
-          <h1 className="text-6xl font-serif text-white font-bold">
-            Scan Here
+          <h1
+            className={`text-6xl font-serif text-white font-bold`}
+            style={{ color: storeInfo.qr.secondaryColor }}
+          >
+            {storeInfo.qr.primaryText}
           </h1>
           <div className="bg-orange-400 text-white text-xl py-2 px-6 rounded-full inline-block">
-            To View Our Menu
+            {storeInfo.qr.secondaryText}
           </div>
         </div>
 
@@ -74,6 +78,7 @@ const PreviewQR = ({ storeInfo }) => {
           For any assistance or special requests, feel free to ask our friendly
           staff. Enjoy your dining experience with us!
         </p>
+        <Text c={"white"}>Powered by DigiMenu</Text>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
-function BusinessForm({ form }) {
+function BusinessForm({ form, activeStep, prevStep, nextStep }) {
   const notification = usePageNotifications();
   const [loading, setLoading] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
@@ -215,6 +215,12 @@ function BusinessForm({ form }) {
             </Group>
           </Stack>
         </Paper>
+        <Group justify="" mt="xl">
+          <Button variant="default" onClick={prevStep}>
+            Back
+          </Button>
+          <Button onClick={nextStep}>Next step</Button>
+        </Group>
       </Grid.Col>
 
       {/* Right Column - Business Hours */}

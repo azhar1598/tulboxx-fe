@@ -80,7 +80,16 @@ const StoreRegistration = () => {
       city: "",
       latitude: "",
       longitude: "",
-      themeColor: "#228be6", // Default theme color
+      qr: {
+        primaryColor: "#228be6",
+        secondaryColor: "#ffffff",
+        primaryText: "Scan Here",
+        secondaryText: "To View Our Menu",
+      },
+      website: {
+        primaryColor: "#fab005",
+        secondaryColor: "#091151",
+      },
       storeLogo: null,
       storeImages: [],
     },

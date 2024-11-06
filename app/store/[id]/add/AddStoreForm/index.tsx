@@ -92,17 +92,37 @@ const AddStoreForm = ({ form }) => {
                   label="Business Details"
                   description="Get full access"
                 >
-                  <BusinessForm form={form} />
+                  <BusinessForm
+                    form={form}
+                    active={active}
+                    nextStep={nextStep}
+                    prevStep={prevStep}
+                  />
                 </Stepper.Step>
                 <Stepper.Step label="QR Preview" description="Verify email">
-                  <QRForm form={form} />
+                  <QRForm
+                    form={form}
+                    active={active}
+                    nextStep={nextStep}
+                    prevStep={prevStep}
+                  />
                 </Stepper.Step>
                 <Stepper.Step label="Web Preview" description="Verify email">
-                  <WebForm form={form} />
+                  <WebForm
+                    form={form}
+                    active={active}
+                    nextStep={nextStep}
+                    prevStep={prevStep}
+                  />
                 </Stepper.Step>
 
                 <Stepper.Step label="Payment" description="Get full access">
-                  <BusinessForm form={form} />
+                  <BusinessForm
+                    form={form}
+                    active={active}
+                    nextStep={nextStep}
+                    prevStep={prevStep}
+                  />
                 </Stepper.Step>
                 <Stepper.Completed>
                   Completed, click back button to get to previous step

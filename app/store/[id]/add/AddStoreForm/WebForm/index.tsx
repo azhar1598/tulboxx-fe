@@ -1,9 +1,17 @@
 import { swatches } from "@/lib/constants";
-import { Box, ColorInput, Divider, SimpleGrid, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  ColorInput,
+  Divider,
+  Group,
+  SimpleGrid,
+  Text,
+} from "@mantine/core";
 import React from "react";
 import WebPreview from "../../WebPreview";
 
-function WebForm({ form }) {
+function WebForm({ form, active, prevStep, nextStep }) {
   return (
     <Box p={10}>
       <Divider mb="md" />
@@ -16,11 +24,12 @@ function WebForm({ form }) {
             <ColorInput
               format="hex"
               swatches={swatches}
-              value={form.values.themeColor}
-              onChange={(color) => form.setFieldValue("themeColor", color)}
+              value={form.values.website.primaryColor}
+              onChange={(color) =>
+                form.setFieldValue("website.primaryColor", color)
+              }
               withEyeDropper
               placeholder="Pick a color"
-              error={form.errors.themeColor}
             />
           </Box>
           <Text size="sm" weight={500}>
@@ -30,16 +39,23 @@ function WebForm({ form }) {
             <ColorInput
               format="hex"
               swatches={swatches}
-              value={form.values.themeColor}
-              onChange={(color) => form.setFieldValue("themeColor", color)}
+              value={form.values.website.secondaryColor}
+              onChange={(color) =>
+                form.setFieldValue("website.secondaryColor", color)
+              }
               withEyeDropper
               placeholder="Pick a color"
-              error={form.errors.themeColor}
             />
           </Box>
+          <Group justify="" mt="xl">
+            <Button variant="default" onClick={prevStep}>
+              Back
+            </Button>
+            <Button onClick={nextStep}>Next step</Button>
+          </Group>
         </SimpleGrid>
         <div className="relative">
-          <WebPreview form={form} />
+          <WebPreview storeInfo={form.values} />
         </div>
       </SimpleGrid>
     </Box>
