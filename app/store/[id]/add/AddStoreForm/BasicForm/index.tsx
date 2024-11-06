@@ -207,9 +207,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
         </Grid.Col> */}
       </Grid>
       <Group justify="" mt="xl">
-        <Button variant="default" onClick={prevStep}>
-          Back
-        </Button>
+        <Button onClick={prevStep}>Back</Button>
         <Button onClick={nextStep}>Next step</Button>
       </Group>
     </Box>

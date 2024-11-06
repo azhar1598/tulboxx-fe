@@ -154,10 +154,10 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                 "Sunday",
               ]}
               value={selectedDays}
-              // onChange={handleDaysChange}
-              onChange={(e) => {
-                form.getInputProps(`businessHours.${e}.day`).onChange();
-              }}
+              onChange={handleDaysChange}
+              // onChange={(e) => {
+              //   form.getInputProps(`businessHours.${e}.day`).onChange();
+              // }}
               searchable
               withAsterisk
             />
@@ -220,9 +220,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
           </Stack>
         </Paper>
         <Group justify="" mt="xl">
-          <Button variant="default" onClick={prevStep}>
-            Back
-          </Button>
+          <Button onClick={prevStep}>Back</Button>
           <Button onClick={nextStep}>Next step</Button>
         </Group>
       </Grid.Col>

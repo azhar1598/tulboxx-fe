@@ -55,7 +55,7 @@ import BasicForm from "./BasicForm";
 const AddStoreForm = ({ form }) => {
   const router = useRouter();
 
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(0);
 
   const nextStep = () =>
     setActive((current) => (current < 3 ? current + 1 : current));

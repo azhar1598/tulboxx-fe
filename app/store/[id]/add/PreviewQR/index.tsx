@@ -1,5 +1,5 @@
 "use client";
-import { Text } from "@mantine/core";
+import { Avatar, Text } from "@mantine/core";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -47,7 +47,10 @@ const PreviewQR = ({ storeInfo }) => {
       <div className="max-w-md w-full text-center space-y-6">
         {/* Logo and Restaurant Name */}
         <div className="flex items-center justify-center gap-2 text-white">
-          <div className="w-12 h- bg-white rounded-full flex items-center justify-center rounded-full">
+          <div
+            className="w-12 h-12 bg-white flex items-center justify-center"
+            style={{ borderRadius: storeInfo.qr.radius }}
+          >
             {/* <svg
               className="w-5 h-5 text-green-700"
               fill="currentColor"
@@ -56,18 +59,28 @@ const PreviewQR = ({ storeInfo }) => {
               <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
             </svg> */}
             {/* <div className="  w-full  z-20  flex justify-center items-center"> */}
+
+            {!logoPreview && (
+              <Text color="cyan" className="rounded-full" fw={550}>
+                {storeInfo?.name.slice(0, 2).toUpperCase()}
+              </Text>
+            )}
+
             {logoPreview && (
               <Image
                 src={logoPreview}
                 width={130}
                 height={130}
                 alt=""
-                className="rounded-full"
+                style={{ borderRadius: storeInfo.qr.radius }}
               />
             )}
             {/* </div> */}
           </div>
-          <span className="text-xl font-semibold">
+          <span
+            className="text-xl font-semibold"
+            style={{ fontSize: storeInfo.qr.titleFontSize || "16px" }}
+          >
             {storeInfo?.name || "Your Store"}
           </span>
         </div>

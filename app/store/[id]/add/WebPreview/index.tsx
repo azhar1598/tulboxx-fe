@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Group } from "@mantine/core";
+import { Card, Group, Text } from "@mantine/core";
 import {
   IconChevronRight,
   IconMenu2,
@@ -32,7 +32,17 @@ const WebPreview = ({ storeInfo }) => {
         style={{ backgroundColor: storeInfo?.website.primaryColor }}
       >
         <div className="w-full relative ">
-          <div className="  w-full  z-20  flex justify-center items-center">
+          <div className=" w-full  z-20  flex justify-center items-center">
+            {!logoPreview && (
+              <div
+                className="w-12 h-12 bg-white flex items-center justify-center mt-[20px]"
+                style={{ borderRadius: storeInfo?.qr.radius }}
+              >
+                <Text color="cyan" className="rounded-full" fw={550}>
+                  {storeInfo?.name.slice(0, 2).toUpperCase()}
+                </Text>
+              </div>
+            )}
             {logoPreview && (
               <Image
                 src={logoPreview}

@@ -80,10 +80,12 @@ const StoreRegistration = () => {
       latitude: "",
       longitude: "",
       qr: {
+        titleFontSize: "24px",
         primaryColor: "#228be6",
         secondaryColor: "#ffffff",
         primaryText: "Scan Here",
         secondaryText: "To View Our Menu",
+        radius: "",
       },
       website: {
         primaryColor: "#fab005",

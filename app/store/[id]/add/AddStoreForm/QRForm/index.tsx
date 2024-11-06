@@ -8,7 +8,9 @@ import {
   Grid,
   Group,
   Image,
+  NumberInput,
   SimpleGrid,
+  Slider,
   Text,
   Textarea,
   TextInput,
@@ -68,6 +70,18 @@ function QRForm({ form, active, nextStep, prevStep }) {
           <Grid.Col span={12}>
             <SimpleGrid cols={2} mb={20}>
               <Text size="sm" weight={500}>
+                Title Font Size <span className="text-red-500">*</span>
+              </Text>
+              <Box style={{ flex: 1 }}>
+                <NumberInput
+                  placeholder="Enter font size"
+                  {...form.getInputProps("qr.titleFontSize")}
+                  maxLength={2}
+                  allowDecimal={false}
+                  allowNegative={false}
+                />
+              </Box>
+              <Text size="sm" weight={500}>
                 QR Primary Color <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -110,6 +124,20 @@ function QRForm({ form, active, nextStep, prevStep }) {
                 />
               </Box>
               <Text size="sm" weight={500}>
+                Logo Radius <span className="text-red-500">*</span>
+              </Text>
+              <Box style={{ flex: 1 }}>
+                <Slider
+                  color="blue"
+                  marks={[
+                    { value: 20, label: "" },
+                    { value: 50, label: "" },
+                    { value: 80, label: "" },
+                  ]}
+                  {...form.getInputProps("qr.radius")}
+                />
+              </Box>
+              <Text size="sm" weight={500} mt={5}>
                 QR Secondary Text <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -117,14 +145,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   placeholder="Enter secondary text"
                   {...form.getInputProps("qr.secondaryText")}
                   maxLength={20}
+                  mt={5}
                 />
               </Box>
             </SimpleGrid>
           </Grid.Col>
           <Group justify="" mt="xl">
-            <Button variant="default" onClick={prevStep}>
-              Back
-            </Button>
+            <Button onClick={prevStep}>Back</Button>
             <Button onClick={nextStep}>Next step</Button>
           </Group>
         </Grid>

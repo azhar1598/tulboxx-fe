@@ -69,7 +69,6 @@ const SignUp = ({ isMobile, signup }: PropTypes) => {
         <Button
           type="button"
           onClick={() => signIn("google")}
-          variant="default"
           className="w-full mt-2 bg-white text-black rounded-md flex items-center justify-center"
           style={{ border: "1px solid #ccc" }}
         >
