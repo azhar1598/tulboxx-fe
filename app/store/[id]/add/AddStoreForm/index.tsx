@@ -64,7 +64,7 @@ const AddStoreForm = ({ form }) => {
 
   return (
     <>
-      <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px]">
+      <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px] mb-20">
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
           <Paper>
             <Stack spacing="xl">

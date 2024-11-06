@@ -12,34 +12,34 @@ import {
   Textarea,
   TextInput,
   ThemeIcon,
+  Paper,
+  Stack,
+  Switch,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import {
   IconClock,
   IconLoader2,
-  IconMail,
   IconMapPin,
   IconMapPin2,
-  IconPhone,
-  IconUser,
+  IconBuilding,
+  IconClock24,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 function BusinessForm({ form }) {
   const notification = usePageNotifications();
-
   const [loading, setLoading] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [useCommonHours, setUseCommonHours] = useState(false);
+  const [commonOpenTime, setCommonOpenTime] = useState("");
+  const [commonCloseTime, setCommonCloseTime] = useState("");
 
   const getCurrentLocation = () => {
     setLoading(true);
-
     if (!navigator.geolocation) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Geolocation is not supported by your browser",
-      });
+      notification.error("Geolocation is not supported by your browser");
       setLoading(false);
       return;
     }
@@ -62,7 +62,6 @@ function BusinessForm({ form }) {
             let city = "";
             let fullAddress = data.results[0].formatted_address;
 
-            // Extract state and city from address components
             addressComponents.forEach((component) => {
               if (component.types.includes("administrative_area_level_1")) {
                 state = component.long_name;
@@ -71,11 +70,6 @@ function BusinessForm({ form }) {
                 city = component.long_name;
               }
             });
-
-            // Update form fields
-            // form.setFieldValue("address", fullAddress);
-            // form.setFieldValue("state", state);
-            // form.setFieldValue("city", city);
 
             notification.success("Location detected successfully");
           }
@@ -87,9 +81,7 @@ function BusinessForm({ form }) {
       },
       (error) => {
         console.error("Error getting location:", error);
-        notification.error(
-          ` ${error.message || "Failed to get your location"}`
-        );
+        notification.error(error.message || "Failed to get your location");
         setLoading(false);
       },
       {
@@ -100,115 +92,225 @@ function BusinessForm({ form }) {
     );
   };
 
-  return (
-    <Box p={10}>
-      {/* <Group gap="xs" mb="md">
-        <ThemeIcon size="lg" variant="light" color="orange">
-          <IconClock size="1.2rem" />
-        </ThemeIcon>
-        <Text size="lg" weight={500}>
-          Business Hours & Location
-        </Text>
-      </Group> */}
-      <Divider mb="md" />
+  const handleCommonOpenTime = (value) => {
+    setCommonOpenTime(value);
+  };
 
-      <Grid>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <TimeInput
-            label="Opening Time"
-            icon={<IconClock size="1rem" />}
-            {...form.getInputProps("openTime")}
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <TimeInput
-            label="Closing Time"
-            icon={<IconClock size="1rem" />}
-            {...form.getInputProps("closeTime")}
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <MultiSelect
-            label="Business Days"
-            data={[
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ]}
-            searchable
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <Select
-            label="State"
-            placeholder="Select state"
-            data={indianStates}
-            icon={<IconMapPin size="1rem" />}
-            {...form.getInputProps("state")}
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <TextInput
-            label="City"
-            placeholder="Enter city name"
-            icon={<IconMapPin2 size="1rem" />}
-            {...form.getInputProps("city")}
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <Textarea
-            label="Complete Address"
-            placeholder="Enter complete address"
-            minRows={2}
-            icon={<IconMapPin size="1rem" />}
-            {...form.getInputProps("address")}
-            withAsterisk
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 6, md: 2 }}>
-          <TextInput
-            label="Latitude"
-            placeholder="Enter latitude"
-            icon={<IconMapPin2 size="1rem" />}
-            {...form.getInputProps("latitude")}
-            leftSection={<IconMapPin />}
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 6, md: 2 }}>
-          <TextInput
-            label="Longitude"
-            placeholder="Enter longitude"
-            icon={<IconMapPin2 size="1rem" />}
-            {...form.getInputProps("longitude")}
-            leftSection={<IconMapPin />}
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 1 }}>
-          <Button
-            onClick={getCurrentLocation}
-            disabled={loading}
-            w={150}
-            className="flex items-center gap-2 md:mt-6"
-          >
-            {loading ? (
-              <IconLoader2 className="w- h-4 animate-spin" />
-            ) : (
-              <IconMapPin2 className="w- h-4" />
+  const handleCommonCloseTime = (value) => {
+    setCommonCloseTime(value);
+  };
+
+  const handleDaysChange = (values) => {
+    setSelectedDays(values);
+    values.forEach((day) => {
+      form.setFieldValue(
+        `openTime_${day}`,
+        form.values[`openTime_${day}`] || ""
+      );
+      form.setFieldValue(
+        `closeTime_${day}`,
+        form.values[`closeTime_${day}`] || ""
+      );
+    });
+  };
+
+  const applyCommonHours = () => {
+    if (commonOpenTime && commonCloseTime) {
+      selectedDays.forEach((day) => {
+        form.setFieldValue(`openTime_${day}`, commonOpenTime);
+        form.setFieldValue(`closeTime_${day}`, commonCloseTime);
+      });
+      notification.success("Common hours applied to all selected days");
+    } else {
+      notification.error("Please set both opening and closing times");
+    }
+  };
+
+  return (
+    <Grid gutter="md" p={10}>
+      {/* Left Column - Location Details */}
+      <Grid.Col span={{ base: 12, md: 6 }}>
+        <Paper shadow="xs" p="md" withBorder>
+          <Group mb="md" align="center">
+            <ThemeIcon size="lg" variant="light">
+              <IconBuilding size="1.2rem" />
+            </ThemeIcon>
+            <Text size="lg" weight={500}>
+              Business Location
+            </Text>
+          </Group>
+
+          <Stack spacing="md">
+            <MultiSelect
+              label="Business Days"
+              placeholder="Working days"
+              data={[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ]}
+              value={selectedDays}
+              onChange={handleDaysChange}
+              searchable
+              withAsterisk
+            />
+            <Select
+              label="State"
+              placeholder="Select state"
+              data={indianStates}
+              icon={<IconMapPin size="1rem" />}
+              {...form.getInputProps("state")}
+              withAsterisk
+            />
+
+            <TextInput
+              label="City"
+              placeholder="Enter city name"
+              icon={<IconMapPin2 size="1rem" />}
+              {...form.getInputProps("city")}
+              withAsterisk
+            />
+
+            <Textarea
+              label="Complete Address"
+              placeholder="Enter complete address"
+              minRows={2}
+              icon={<IconMapPin size="1rem" />}
+              {...form.getInputProps("address")}
+              withAsterisk
+            />
+
+            <Group grow align="flex-end">
+              <TextInput
+                label="Latitude"
+                placeholder="Enter latitude"
+                icon={<IconMapPin2 size="1rem" />}
+                {...form.getInputProps("latitude")}
+                readOnly
+              />
+              <TextInput
+                label="Longitude"
+                placeholder="Enter longitude"
+                icon={<IconMapPin2 size="1rem" />}
+                {...form.getInputProps("longitude")}
+                readOnly
+              />
+              <Button
+                onClick={getCurrentLocation}
+                disabled={loading}
+                leftSection={
+                  loading ? (
+                    <IconLoader2 className="animate-spin" size="1rem" />
+                  ) : (
+                    <IconMapPin2 size="1rem" />
+                  )
+                }
+              >
+                {loading ? "Detecting..." : "Get Location"}
+              </Button>
+            </Group>
+          </Stack>
+        </Paper>
+      </Grid.Col>
+
+      {/* Right Column - Business Hours */}
+      <Grid.Col span={{ base: 12, md: 6 }}>
+        <Paper
+          shadow="xs"
+          p="md"
+          withBorder
+          style={{ overflow: "scroll", maxHeight: "470px" }}
+        >
+          <Group mb="md" align="center">
+            <ThemeIcon size="lg" variant="light">
+              <IconClock24 size="1.2rem" />
+            </ThemeIcon>
+            <Text size="lg" weight={500}>
+              Business Hours
+            </Text>
+          </Group>
+
+          <Stack spacing="md">
+            {selectedDays.length > 0 && (
+              <Paper p="sm" withBorder>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" weight={500} color="dimmed">
+                    Set Common Hours
+                  </Text>
+                  <Switch
+                    checked={useCommonHours}
+                    onChange={(event) =>
+                      setUseCommonHours(event.currentTarget.checked)
+                    }
+                    label="Use common hours"
+                  />
+                </Group>
+                {useCommonHours && (
+                  <>
+                    <Group grow mb="sm">
+                      <TimeInput
+                        label="Common Opening Time"
+                        // value={commonOpenTime}
+                        onChange={handleCommonOpenTime}
+                        format="24" // Add this to ensure 24-hour format
+                      />
+                      <TimeInput
+                        label="Common Closing Time"
+                        // value={commonCloseTime}
+                        onChange={handleCommonCloseTime}
+                        format="24" // Add this to ensure 24-hour format
+                      />
+                    </Group>
+                    <Button
+                      fullWidth
+                      onClick={applyCommonHours}
+                      disabled={!commonOpenTime || !commonCloseTime}
+                    >
+                      Apply to All Days
+                    </Button>
+                    <Divider my="md" />
+                  </>
+                )}
+              </Paper>
             )}
-            {loading ? "Detecting..." : "Get Location"}
-          </Button>
-        </Grid.Col>
-      </Grid>
-    </Box>
+
+            {selectedDays.length > 0 ? (
+              selectedDays.map((day) => (
+                <Paper key={day} p="sm" withBorder>
+                  <Text size="sm" weight={500} mb="xs" color="dimmed">
+                    {day}
+                  </Text>
+                  <Group grow>
+                    <TimeInput
+                      label="Opening Time"
+                      icon={<IconClock size="1rem" />}
+                      {...form.getInputProps(`openTime_${day}`)}
+                      format="24" // Add this to ensure 24-hour format
+                      withAsterisk
+                    />
+                    <TimeInput
+                      label="Closing Time"
+                      icon={<IconClock size="1rem" />}
+                      {...form.getInputProps(`closeTime_${day}`)}
+                      format="24" // Add this to ensure 24-hour format
+                      withAsterisk
+                    />
+                  </Group>
+                </Paper>
+              ))
+            ) : (
+              <Text color="dimmed" size="sm" align="center" py="xl">
+                Select business days to set operating hours
+              </Text>
+            )}
+          </Stack>
+        </Paper>
+      </Grid.Col>
+    </Grid>
   );
 }
 
