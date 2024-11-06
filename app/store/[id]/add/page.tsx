@@ -49,9 +49,10 @@ import { PageHeader } from "@/components/common/PageHeader";
 import WebPreview from "./WebPreview";
 
 const storeSchema = z.object({
-  storeName: z.string().min(2, "Store name must be at least 2 characters"),
+  name: z.string().min(2, "Store name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.string().min(1, "Please select a category"),
+  tagline: z.string().min(5, "Description must be at least 10 characters"),
   ownerName: z.string().min(2, "Owner name must be at least 2 characters"),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
   email: z.string().email("Invalid email address"),

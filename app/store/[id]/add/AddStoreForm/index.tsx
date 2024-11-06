@@ -102,7 +102,7 @@ const AddStoreForm = ({ form }) => {
                     label="Store Name"
                     placeholder="Enter store name"
                     icon={<IconBuilding size="1rem" />}
-                    {...form.getInputProps("storeName")}
+                    {...form.getInputProps("name")}
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -117,6 +117,22 @@ const AddStoreForm = ({ form }) => {
                       { value: "fashion", label: "Fashion" },
                     ]}
                     {...form.getInputProps("category")}
+                  />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, md: 12 }}>
+                  <TextInput
+                    label="Store Tagline"
+                    placeholder="Enter store name"
+                    icon={<IconBuilding size="1rem" />}
+                    {...form.getInputProps("tagline")}
+                  />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, md: 12 }}>
+                  <Textarea
+                    label="Store Description"
+                    placeholder="Enter store description"
+                    icon={<IconBuilding size="1rem" />}
+                    {...form.getInputProps("description")}
                   />
                 </Grid.Col>
               </Grid>
@@ -136,10 +152,10 @@ const AddStoreForm = ({ form }) => {
 
               <Grid>
                 <Grid.Col span={12}>
-                  <Text size="sm" weight={500} mb={4}>
-                    Theme Color
-                  </Text>
-                  <Flex gap="md" align="flex-start">
+                  <SimpleGrid cols={2} mb={20}>
+                    <Text size="sm" weight={500}>
+                      QR Primary Color
+                    </Text>
                     <Box style={{ flex: 1 }}>
                       <ColorInput
                         format="hex"
@@ -153,36 +169,68 @@ const AddStoreForm = ({ form }) => {
                         error={form.errors.themeColor}
                       />
                     </Box>
-                    <Box w={100}>
-                      <Paper
-                        p="xs"
-                        radius="md"
-                        style={{ backgroundColor: form.values.themeColor }}
-                        onClick={() => {
-                          router.push(
-                            `/preview-qr-theme/${form.values.themeColor.slice(
-                              1
-                            )}?storeInfo=${encodeURIComponent(
-                              JSON.stringify(form.values)
-                            )}`
-                          );
-                        }}
-                      >
-                        <Text
-                          align="center"
-                          c={
-                            form.values.themeColor === "#ffffff"
-                              ? "black"
-                              : "white"
-                          }
-                          size="xs"
-                          w={80}
-                        >
-                          Preview
-                        </Text>
-                      </Paper>
+                    <Text size="sm" weight={500}>
+                      QR Secondary Color
+                    </Text>
+                    <Box style={{ flex: 1 }}>
+                      <ColorInput
+                        format="hex"
+                        swatches={swatches}
+                        value={form.values.themeColor}
+                        onChange={(color) =>
+                          form.setFieldValue("themeColor", color)
+                        }
+                        withEyeDropper
+                        placeholder="Pick a color"
+                        error={form.errors.themeColor}
+                      />
                     </Box>
-                  </Flex>
+                    <Text size="sm" weight={500}>
+                      QR Primary Text
+                    </Text>
+                    <Box style={{ flex: 1 }}>
+                      <TextInput />
+                    </Box>
+                    <Text size="sm" weight={500}>
+                      QR Secondary Text
+                    </Text>
+                    <Box style={{ flex: 1 }}>
+                      <Textarea />
+                    </Box>
+                  </SimpleGrid>
+                  <hr />
+                  <SimpleGrid cols={2} mt={20}>
+                    <Text size="sm">Store Primary Color</Text>
+                    <Box style={{ flex: 1 }}>
+                      <ColorInput
+                        format="hex"
+                        swatches={swatches}
+                        value={form.values.themeColor}
+                        onChange={(color) =>
+                          form.setFieldValue("themeColor", color)
+                        }
+                        withEyeDropper
+                        placeholder="Pick a color"
+                        error={form.errors.themeColor}
+                      />
+                    </Box>
+                    <Text size="sm" weight={500}>
+                      Store Secondary Color
+                    </Text>
+                    <Box style={{ flex: 1 }}>
+                      <ColorInput
+                        format="hex"
+                        swatches={swatches}
+                        value={form.values.themeColor}
+                        onChange={(color) =>
+                          form.setFieldValue("themeColor", color)
+                        }
+                        withEyeDropper
+                        placeholder="Pick a color"
+                        error={form.errors.themeColor}
+                      />
+                    </Box>
+                  </SimpleGrid>
                 </Grid.Col>
                 <Grid.Col span={12}>
                   <FileInput
@@ -217,7 +265,6 @@ const AddStoreForm = ({ form }) => {
                     onChange={(e) => handleImagesChange(e.target.files)}
                   />
                   <Button
-                    variant="light"
                     leftSection={<IconPhoto size="1rem" />}
                     onClick={() => imageInputRef.current?.click()}
                   >
