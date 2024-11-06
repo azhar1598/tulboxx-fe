@@ -73,8 +73,7 @@ const StoreRegistration = () => {
       category: "",
       tagline: "",
       description: "",
-      openTime: "",
-      closeTime: "",
+      logo: null,
       address: "",
       state: "",
       city: "",
@@ -90,7 +89,7 @@ const StoreRegistration = () => {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
       },
-      logo: null,
+      businessHours: [{ openTime: "", closeTime: "", day: "" }],
       storeImages: [],
     },
   });

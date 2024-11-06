@@ -11,6 +11,17 @@ import Image from "next/image";
 import StoreLogo from "../../../../../public/assets/default-store-logo.png";
 
 const WebPreview = ({ storeInfo }) => {
+  const [logoPreview, setLogoPreview] = useState(null);
+
+  useEffect(() => {
+    if (!storeInfo?.logo) return;
+    const file = storeInfo.logo;
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result);
+
+    reader.readAsDataURL(file);
+  }, []);
+
   return (
     // Container wrapper
     <>
@@ -22,7 +33,16 @@ const WebPreview = ({ storeInfo }) => {
       >
         <div className="w-full relative ">
           <div className="  w-full  z-20  flex justify-center items-center">
-            <Image src={StoreLogo} width={130} height={130} alt="" />
+            {logoPreview && (
+              <Image
+                src={logoPreview}
+                width={130}
+                height={130}
+                alt=""
+                style={{ marginTop: "20px" }}
+                className="rounded-full"
+              />
+            )}
           </div>
 
           <div className="relative pt-[10px]">
@@ -30,11 +50,13 @@ const WebPreview = ({ storeInfo }) => {
               className="rounded-t-3xl min-h-screen"
               style={{ backgroundColor: storeInfo?.website.secondaryColor }}
             >
-              <div className=" py-4">
+              <div className="px-4 py-4">
                 <h1 className="text-white text-3xl font-bold text-center mb-2">
-                  Biryani Express
+                  {storeInfo?.name}
                 </h1>
-                <p className="text-white/80 text-center mb-2">Unlimited Food</p>
+                <p className="text-white/80 text-center mb-2">
+                  {storeInfo?.tagline}
+                </p>
               </div>
 
               <Group gap={0} className=" rounded-t-3xl px-1">

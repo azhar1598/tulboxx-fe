@@ -154,7 +154,10 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                 "Sunday",
               ]}
               value={selectedDays}
-              onChange={handleDaysChange}
+              // onChange={handleDaysChange}
+              onChange={(e) => {
+                form.getInputProps(`businessHours.${e}.day`).onChange();
+              }}
               searchable
               withAsterisk
             />
@@ -165,6 +168,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
               icon={<IconMapPin size="1rem" />}
               {...form.getInputProps("state")}
               withAsterisk
+              searchable
             />
 
             <TextInput
@@ -261,6 +265,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                       <TimeInput
                         label="Common Opening Time"
                         // value={commonOpenTime}
+
                         onChange={handleCommonOpenTime}
                         format="24" // Add this to ensure 24-hour format
                       />
@@ -285,7 +290,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
             )}
 
             {selectedDays.length > 0 ? (
-              selectedDays.map((day) => (
+              selectedDays.map((day, index) => (
                 <Paper key={day} p="sm" withBorder>
                   <Text size="sm" weight={500} mb="xs" color="dimmed">
                     {day}
@@ -294,14 +299,16 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                     <TimeInput
                       label="Opening Time"
                       icon={<IconClock size="1rem" />}
-                      {...form.getInputProps(`openTime_${day}`)}
+                      {...form.getInputProps(`businessHours.${index}.openTime`)}
                       format="24" // Add this to ensure 24-hour format
                       withAsterisk
                     />
                     <TimeInput
                       label="Closing Time"
                       icon={<IconClock size="1rem" />}
-                      {...form.getInputProps(`closeTime_${day}`)}
+                      {...form.getInputProps(
+                        `businessHours.${index}.closeTime`
+                      )}
                       format="24" // Add this to ensure 24-hour format
                       withAsterisk
                     />

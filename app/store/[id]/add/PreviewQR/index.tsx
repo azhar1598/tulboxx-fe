@@ -1,5 +1,6 @@
 "use client";
 import { Text } from "@mantine/core";
+import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -26,6 +27,18 @@ const PreviewQR = ({ storeInfo }) => {
   //   }, [searchParams]);
   //   console.log("storeInfo,s", storeInfo);
   console.log("storeInfo", storeInfo);
+
+  const [logoPreview, setLogoPreview] = useState("");
+
+  useEffect(() => {
+    if (!storeInfo?.logo) return;
+    const file = storeInfo.logo;
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result);
+
+    reader.readAsDataURL(file);
+  }, []);
+
   return (
     <div
       className={`md:h-[720px] p-8 flex items-center justify-center`}
@@ -34,14 +47,25 @@ const PreviewQR = ({ storeInfo }) => {
       <div className="max-w-md w-full text-center space-y-6">
         {/* Logo and Restaurant Name */}
         <div className="flex items-center justify-center gap-2 text-white">
-          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <svg
+          <div className="w-12 h- bg-white rounded-full flex items-center justify-center rounded-full">
+            {/* <svg
               className="w-5 h-5 text-green-700"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
               <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
-            </svg>
+            </svg> */}
+            {/* <div className="  w-full  z-20  flex justify-center items-center"> */}
+            {logoPreview && (
+              <Image
+                src={logoPreview}
+                width={130}
+                height={130}
+                alt=""
+                className="rounded-full"
+              />
+            )}
+            {/* </div> */}
           </div>
           <span className="text-xl font-semibold">
             {storeInfo?.name || "Your Store"}
