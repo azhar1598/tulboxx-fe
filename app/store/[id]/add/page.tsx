@@ -90,7 +90,7 @@ const StoreRegistration = () => {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
       },
-      storeLogo: null,
+      logo: null,
       storeImages: [],
     },
   });
