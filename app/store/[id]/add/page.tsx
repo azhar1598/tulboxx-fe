@@ -47,6 +47,7 @@ import AddStoreForm from "./AddStoreForm";
 import PreviewQR from "./PreviewQR";
 import { PageHeader } from "@/components/common/PageHeader";
 import WebPreview from "./WebPreview";
+import PageMainWrapper from "@/components/common/PageMainWrapper";
 
 const storeSchema = z.object({
   name: z.string().min(2, "Store name must be at least 2 characters"),
@@ -68,12 +69,10 @@ const StoreRegistration = () => {
   const form = useForm({
     validate: zodResolver(storeSchema),
     initialValues: {
-      storeName: "",
-      description: "",
+      name: "",
       category: "",
-      ownerName: "",
-      phone: "",
-      email: "",
+      tagline: "",
+      description: "",
       openTime: "",
       closeTime: "",
       address: "",
@@ -90,9 +89,11 @@ const StoreRegistration = () => {
       {" "}
       <PageHeader title={`Create Store: Merchant name (${id}) `} />
       <div className="hidden md:block">
-        <SimpleGrid cols={2}>
-          <AddStoreForm form={form} />
-          <Flex direction={"column"}>
+        {/* <SimpleGrid cols={1}> */}
+
+        <AddStoreForm form={form} />
+
+        {/* <Flex direction={"column"}>
             <Tabs defaultValue="qr">
               <Tabs.List mb={10}>
                 <Tabs.Tab value="qr">Preview QR</Tabs.Tab>
@@ -107,8 +108,8 @@ const StoreRegistration = () => {
                 </div>
               </Tabs.Panel>
             </Tabs>
-          </Flex>
-        </SimpleGrid>
+          </Flex> */}
+        {/* </SimpleGrid> */}
       </div>
       <div className="md:hidden block">
         <SimpleGrid cols={1}>

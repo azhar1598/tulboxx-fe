@@ -48,6 +48,7 @@ const MerchantForm = () => {
           placeholder="Enter your full name"
           icon={<IconUser size="1rem" />}
           {...form.getInputProps("name")}
+          withAsterisk
         />
 
         <TextInput
@@ -55,6 +56,7 @@ const MerchantForm = () => {
           placeholder="your@email.com"
           icon={<IconMail size="1rem" />}
           {...form.getInputProps("email")}
+          withAsterisk
         />
 
         <TextInput
@@ -62,6 +64,7 @@ const MerchantForm = () => {
           placeholder="+1234567890"
           icon={<IconPhone size="1rem" />}
           {...form.getInputProps("phone")}
+          withAsterisk
         />
 
         <Group position="right" mt="md">
