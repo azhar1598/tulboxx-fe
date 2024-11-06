@@ -52,7 +52,8 @@ function QRForm({ form }) {
     }
   };
   return (
-    <Box>
+    <Box p={10}>
+      <Divider mb="md" />
       {/* <Group spacing="xs" mb="md">
         <ThemeIcon size="lg" variant="light" color="grape">
           <IconPalette size="1.2rem" />

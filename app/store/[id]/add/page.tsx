@@ -76,6 +76,10 @@ const StoreRegistration = () => {
       openTime: "",
       closeTime: "",
       address: "",
+      state: "",
+      city: "",
+      latitude: "",
+      longitude: "",
       themeColor: "#228be6", // Default theme color
       storeLogo: null,
       storeImages: [],
