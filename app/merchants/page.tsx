@@ -79,11 +79,7 @@ function page() {
           rightSection={
             <Group>
               <Link href={"/merchants/add"}>
-                <Button
-                  variant="filled"
-                  // color="primary"
-                  leftSection={<IconPlus size={16} />}
-                >
+                <Button leftSection={<IconPlus size={16} />}>
                   Create Merchant
                 </Button>
               </Link>

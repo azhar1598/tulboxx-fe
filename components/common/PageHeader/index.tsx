@@ -15,7 +15,8 @@ export const PageHeader = ({ title, rightSection }) => {
           leftSection={<IconChevronLeft size={36} stroke={3} />}
           px={0}
           onClick={() => router.back()}
-          bg={"white"}
+          bg={"#1e476b"}
+          color="white"
         />
 
         <Title order={3}>

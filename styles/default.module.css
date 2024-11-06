@@ -88,14 +88,9 @@
 }
 
 .button {
-  height: rem(30);
-
+  height: rem(80);
+  background-color: #735dff !important;
   &[data-variant="primary"] {
-    background-image: linear-gradient(
-      to right,
-      #ff512f 0%,
-      #dd2476 51%,
-      #ff512f 100%
-    );
+    background-color: #dfff5d;
   }
 }

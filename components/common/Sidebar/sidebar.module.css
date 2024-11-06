@@ -1,11 +1,12 @@
 .navbar {
-  width: 150px;
+  width: 220px;
   min-height: 100vh;
   height: auto;
   padding-top: 25px;
   /* padding: var(--mantine-spacing-md); */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  background-color: #14141fd9 !important;
+  background-color: rgb(255, 255, 255) !important;
   flex-direction: column;
   position: fixed;
   /* border-right: 1px solid
@@ -26,23 +27,20 @@
   align-items: center;
   justify-content: flex-start;
 
-  color: #ffffff;
+  color: #1b2559;
 
   &:hover {
-    background-color: #228be6;
-    border-right: 5px solid white;
+    background-color: #f4f7fe;
   }
 
   &[data-active] {
     &,
     &:hover {
-      background-color: #228be6;
+      background-color: #735dff;
 
       transition: 0.5s;
       /* background-size: 200% auto; */
       color: white;
-      box-shadow: 0 0 2px #eee;
-      border-right: 5px solid white;
 
       /* display: block; */
     }

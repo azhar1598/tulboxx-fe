@@ -33,7 +33,7 @@ function CustomTable({ records, columns }) {
           textAlign: "left",
           noWrap: false,
           titleStyle: (theme) => ({
-            color: "#8898A9",
+            color: "#8898a9",
             fontSize: "13px",
             padding: "20px",
           }),
@@ -43,7 +43,7 @@ function CustomTable({ records, columns }) {
         }
         styles={{
           header: {
-            backgroundColor: "#14141fd9",
+            backgroundColor: "#f0f3f8",
             color: "white",
             padding: "20px",
             height: "30px",

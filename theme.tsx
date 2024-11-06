@@ -10,7 +10,7 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import classes from "./styles/default.modules.css";
+import classes from "@/styles/default.module.css";
 import {
   IconArrowDown,
   IconCaretDown,

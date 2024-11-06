@@ -17,12 +17,12 @@
 
 body {
   color: var(--foreground);
-  background: #e5e7eb !important;
+  background: #f4f7fe !important;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .main-content {
-  margin-left: calc(150px + 0rem);
+  margin-left: calc(220px + 0rem);
   margin-top: 100px;
   padding-left: 30px;
   padding-right: 30px;
@@ -30,16 +30,17 @@ body {
 }
 
 .header {
-  margin-left: calc(150px + 0rem);
+  margin-left: calc(220px + 0rem);
   position: fixed;
   width: 100%;
   z-index: 10;
+  background-color: white;
   /* background-color: #1e476b; */
-  background-color: #14141fd9;
+  /* background-color: #14141fd9; */
 }
-.data-table,
-.page-main-wrapper {
-  width: calc(100vw - 210px) !important;
+.page-main-wrapper,
+.data-table {
+  width: calc(100vw - 280px) !important;
 }
 
 @media only screen and (max-width: 992px) {
