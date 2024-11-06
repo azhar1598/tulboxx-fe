@@ -103,6 +103,7 @@ const AddStoreForm = ({ form }) => {
                     placeholder="Enter store name"
                     icon={<IconBuilding size="1rem" />}
                     {...form.getInputProps("name")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -117,12 +118,13 @@ const AddStoreForm = ({ form }) => {
                       { value: "fashion", label: "Fashion" },
                     ]}
                     {...form.getInputProps("category")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 12 }}>
                   <TextInput
                     label="Store Tagline"
-                    placeholder="Enter store name"
+                    placeholder="Enter store tagline"
                     icon={<IconBuilding size="1rem" />}
                     {...form.getInputProps("tagline")}
                   />
@@ -154,7 +156,7 @@ const AddStoreForm = ({ form }) => {
                 <Grid.Col span={12}>
                   <SimpleGrid cols={2} mb={20}>
                     <Text size="sm" weight={500}>
-                      QR Primary Color
+                      QR Primary Color <span className="text-red-500">*</span>
                     </Text>
                     <Box style={{ flex: 1 }}>
                       <ColorInput
@@ -170,7 +172,7 @@ const AddStoreForm = ({ form }) => {
                       />
                     </Box>
                     <Text size="sm" weight={500}>
-                      QR Secondary Color
+                      QR Secondary Color <span className="text-red-500">*</span>
                     </Text>
                     <Box style={{ flex: 1 }}>
                       <ColorInput
@@ -186,13 +188,13 @@ const AddStoreForm = ({ form }) => {
                       />
                     </Box>
                     <Text size="sm" weight={500}>
-                      QR Primary Text
+                      QR Primary Text <span className="text-red-500">*</span>
                     </Text>
                     <Box style={{ flex: 1 }}>
                       <TextInput />
                     </Box>
                     <Text size="sm" weight={500}>
-                      QR Secondary Text
+                      QR Secondary Text <span className="text-red-500">*</span>
                     </Text>
                     <Box style={{ flex: 1 }}>
                       <Textarea />
@@ -200,7 +202,10 @@ const AddStoreForm = ({ form }) => {
                   </SimpleGrid>
                   <hr />
                   <SimpleGrid cols={2} mt={20}>
-                    <Text size="sm">Store Primary Color</Text>
+                    <Text size="sm">
+                      Store Primary Color{" "}
+                      <span className="text-red-500">*</span>
+                    </Text>
                     <Box style={{ flex: 1 }}>
                       <ColorInput
                         format="hex"
@@ -215,7 +220,8 @@ const AddStoreForm = ({ form }) => {
                       />
                     </Box>
                     <Text size="sm" weight={500}>
-                      Store Secondary Color
+                      Store Secondary Color{" "}
+                      <span className="text-red-500">*</span>
                     </Text>
                     <Box style={{ flex: 1 }}>
                       <ColorInput
@@ -239,13 +245,14 @@ const AddStoreForm = ({ form }) => {
                     accept="image/png,image/jpeg"
                     icon={<IconUpload size="1rem" />}
                     onChange={handleLogoChange}
+                    withAsterisk
                   />
                   {logoPreview && (
                     <Image
                       src={logoPreview}
                       alt="Store logo"
-                      width={120}
-                      height={120}
+                      width={50}
+                      height={50}
                       fit="contain"
                       radius="md"
                       mt="md"
@@ -254,7 +261,7 @@ const AddStoreForm = ({ form }) => {
                 </Grid.Col>
                 <Grid.Col span={12}>
                   <Text size="sm" weight={500} mb="xs">
-                    Store Images
+                    Store Images <span className="text-red-500">*</span>
                   </Text>
                   <input
                     type="file"
@@ -302,7 +309,7 @@ const AddStoreForm = ({ form }) => {
                     label="Owner Name"
                     placeholder="Enter owner name"
                     icon={<IconUser size="1rem" />}
-                    {...form.getInputProps("ownerName")}
+                    disabled
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -310,7 +317,7 @@ const AddStoreForm = ({ form }) => {
                     label="Phone Number"
                     placeholder="+1234567890"
                     icon={<IconPhone size="1rem" />}
-                    {...form.getInputProps("phone")}
+                    disabled
                   />
                 </Grid.Col>
                 <Grid.Col span={12}>
@@ -318,7 +325,7 @@ const AddStoreForm = ({ form }) => {
                     label="Email"
                     placeholder="Enter email address"
                     icon={<IconMail size="1rem" />}
-                    {...form.getInputProps("email")}
+                    disabled
                   />
                 </Grid.Col>
               </Grid>
@@ -342,6 +349,7 @@ const AddStoreForm = ({ form }) => {
                     label="Opening Time"
                     icon={<IconClock size="1rem" />}
                     {...form.getInputProps("openTime")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -349,6 +357,7 @@ const AddStoreForm = ({ form }) => {
                     label="Closing Time"
                     icon={<IconClock size="1rem" />}
                     {...form.getInputProps("closeTime")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -358,6 +367,7 @@ const AddStoreForm = ({ form }) => {
                     data={indianStates}
                     icon={<IconMapPin size="1rem" />}
                     {...form.getInputProps("state")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -366,6 +376,7 @@ const AddStoreForm = ({ form }) => {
                     placeholder="Enter city name"
                     icon={<IconMapPin size="1rem" />}
                     {...form.getInputProps("city")}
+                    withAsterisk
                   />
                 </Grid.Col>
                 <Grid.Col span={12}>
@@ -375,6 +386,7 @@ const AddStoreForm = ({ form }) => {
                     minRows={2}
                     icon={<IconMapPin size="1rem" />}
                     {...form.getInputProps("address")}
+                    withAsterisk
                   />
                 </Grid.Col>
               </Grid>
