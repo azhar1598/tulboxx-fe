@@ -1,28 +1,25 @@
-"use client";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
   Button,
-  Center,
+  Card,
+  Checkbox,
+  Divider,
   Flex,
   Group,
+  PasswordInput,
   rem,
-  Select,
-  Slider,
   Stack,
-  TextInput,
   Text,
-  Textarea,
-  Loader,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { signIn } from "next-auth/react";
 import { hasLength, isEmail, useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import Link from "next/link";
-
 import { useRouter } from "next/navigation";
-// import WoxaLogo from "../../../public/assets/logo/woxa.png";
 import Google from "../../public/assets/auth/google.webp";
 
 interface PropTypes {
@@ -30,89 +27,97 @@ interface PropTypes {
   isMobile: boolean;
 }
 
-const Login = ({ isMobile, login }: PropTypes) => {
+const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
   const form = useForm({
     initialValues: {
       email: "prototype@gmail.com",
       password: "12345678",
     },
     validate: {
-      email: isEmail("Please enter email address"),
+      email: isEmail("Please enter a valid email address"),
       password: (value: string) =>
         value.length < 6 ? "Password must be at least 6 characters long" : null,
     },
   });
 
   return (
-    <Stack
-      w={400}
-      className={`relative items-center p-1 bg-[#1e1e1ed4] h-[100vh] md:h-auto
-        shadow-xl rounded-md`}
+    <Card
+      shadow="xl"
+      radius="md"
+      p="xl"
+      withBorder
+      style={{
+        backgroundColor: "#1e1e1e",
+        color: "white",
+        maxWidth: 400,
+        width: "100%",
+      }}
     >
-      <Stack className={`${!isMobile && ""} text-white p-6 rounded-lg `}>
-        <Stack h={150} align="center" justify="center">
-          <Group className=" relative w-full h-12">
-            {/* <Image
-              src={WoxaLogo}
-              alt="Logo"
-              layout="fill"
-              unoptimized
-              objectFit="contain"
-            /> */}
-          </Group>{" "}
-          <Text>Web stories at its Best</Text>
-        </Stack>
+      <Stack align="center" spacing="md">
+        <Title order={2}>Welcome Back</Title>
+        <Text color="dimmed" size="sm">
+          Enter your credentials to access your account
+        </Text>
 
         <Button
-          type="button"
+          color="gray"
+          leftSection={
+            <Image
+              src={Google}
+              alt="Google logo"
+              width={20}
+              height={20}
+              style={{ marginRight: rem(10) }}
+            />
+          }
           onClick={() => signIn("google")}
-          className="w-full mt-2 bg-white text-black rounded-md flex items-center justify-center"
-          style={{ border: "1px solid #ccc" }}
+          w={300}
         >
-          <Image
-            src={Google}
-            alt="Google logo"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          Login with Google
+          Sign in with Google
         </Button>
 
-        <Text className="text-center font-montMedium" style={{ color: "gray" }}>
-          or
-        </Text>
+        <Divider label="Or continue with email" labelPosition="center" />
+
         <form
           onSubmit={form.onSubmit(() => {
             login.mutate(form);
           })}
         >
-          <Stack gap={20} justify="center">
+          <Stack spacing="xs">
             <TextInput
-              type="email"
-              placeholder="Email Address"
+              label="Email"
+              placeholder="your@email.com"
               {...form.getInputProps("email")}
+              w={300}
             />
-            <TextInput
-              type="password"
+            <PasswordInput
+              label="Password"
               placeholder="Password"
               {...form.getInputProps("password")}
+              fullWidth
             />
 
-            <Button type="submit" variant="primary" loading={login.isPending}>
-              Login →
+            <Button
+              type="submit"
+              variant="gradient"
+              gradient={{ from: "indigo", to: "cyan" }}
+              loading={login.isPending}
+              fullWidth
+            >
+              Sign in
             </Button>
-            <Text className="text-center " size="14px">
-              Don't have an account?
-              <Link href="/signup" className="link-global-style">
-                Signup
-              </Link>
-            </Text>
           </Stack>
         </form>
+
+        <Text color="dimmed" size="sm">
+          Don't have an account?{" "}
+          <Link href="/signup" className="link-global-style">
+            Sign up
+          </Link>
+        </Text>
       </Stack>
-    </Stack>
+    </Card>
   );
 };
 
-export default Login;
+export default EnhancedLogin;

@@ -1,6 +1,7 @@
 "use client";
 import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
+import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
 
 import { ActionIcon, Box, Button, Group, Stack } from "@mantine/core";

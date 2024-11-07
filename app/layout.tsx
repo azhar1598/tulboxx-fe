@@ -62,9 +62,9 @@ export default function RootLayout({
                   <Stack>
                     {pathname !== "/login" &&
                       pathname !== "/test" &&
-                      pathname !== "/signup" &&
-                      pathname != "/story-editor" && <Header />}
-                    <div className="main-content">{children}</div>
+                      pathname !== "/signup" && <Header />}
+
+                    {children}
                   </Stack>
                 </Flex>
               </Provider>
