@@ -26,12 +26,20 @@ import {
   IconBuilding,
   IconClock24,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function BusinessForm({ form, activeStep, prevStep, nextStep }) {
   const notification = usePageNotifications();
   const [loading, setLoading] = useState(false);
-  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedDays, setSelectedDays] = useState(() =>
+    form.values.businessHours.map((hour) => hour.day)
+  );
+
+  // Also add useEffect to keep selectedDays in sync with form values
+  useEffect(() => {
+    setSelectedDays(form.values.businessHours.map((hour) => hour.day));
+  }, [form.values.businessHours]);
+
   const [useCommonHours, setUseCommonHours] = useState(false);
   const [commonOpenTime, setCommonOpenTime] = useState("");
   const [commonCloseTime, setCommonCloseTime] = useState("");
@@ -102,16 +110,40 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
 
   const handleDaysChange = (values) => {
     setSelectedDays(values);
-    values.forEach((day) => {
-      form.setFieldValue(
-        `openTime_${day}`,
-        form.values[`openTime_${day}`] || ""
+
+    // Create or update businessHours array based on selected days
+    const updatedBusinessHours = values.map((day) => {
+      // Find existing entry for this day
+      const existingEntry = form.values.businessHours.find(
+        (hour) => hour.day === day
       );
-      form.setFieldValue(
-        `closeTime_${day}`,
-        form.values[`closeTime_${day}`] || ""
+
+      // If entry exists, keep it; otherwise create new entry
+      return (
+        existingEntry || {
+          day: day,
+          openTime: "09:00",
+          closeTime: "18:00",
+        }
       );
     });
+
+    // Update form with new business hours
+    form.setFieldValue("businessHours", updatedBusinessHours);
+  };
+
+  const handleTimeChange = (day, timeType, value) => {
+    const businessHours = [...form.values.businessHours];
+    const dayIndex = businessHours.findIndex((hour) => hour.day === day);
+
+    if (dayIndex !== -1) {
+      businessHours[dayIndex] = {
+        ...businessHours[dayIndex],
+        [timeType]: value,
+      };
+    }
+
+    form.setFieldValue("businessHours", businessHours);
   };
 
   const applyCommonHours = () => {
@@ -124,6 +156,17 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
     } else {
       notification.error("Please set both opening and closing times");
     }
+  };
+
+  const isFormValid = () => {
+    return (
+      form.values.businessHours[0]?.openTime.trim() &&
+      form.values.businessHours[0]?.closeTime.trim() &&
+      form.values.businessHours[0]?.day.trim() &&
+      form.values.state?.trim() &&
+      form.values.city?.trim() &&
+      form.values.address?.trim()
+    );
   };
 
   return (
@@ -155,9 +198,6 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
               ]}
               value={selectedDays}
               onChange={handleDaysChange}
-              // onChange={(e) => {
-              //   form.getInputProps(`businessHours.${e}.day`).onChange();
-              // }}
               searchable
               withAsterisk
             />
@@ -221,7 +261,9 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
         </Paper>
         <Group justify="" mt="xl">
           <Button onClick={prevStep}>Back</Button>
-          <Button onClick={nextStep}>Next step</Button>
+          <Button onClick={nextStep} disabled={!isFormValid()}>
+            Next step
+          </Button>
         </Group>
       </Grid.Col>
 
@@ -265,13 +307,13 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                         // value={commonOpenTime}
 
                         onChange={handleCommonOpenTime}
-                        format="24" // Add this to ensure 24-hour format
+                        format="12" // Add this to ensure 24-hour format
                       />
                       <TimeInput
                         label="Common Closing Time"
                         // value={commonCloseTime}
                         onChange={handleCommonCloseTime}
-                        format="24" // Add this to ensure 24-hour format
+                        format="12" // Add this to ensure 24-hour format
                       />
                     </Group>
                     <Button
@@ -297,17 +339,27 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                     <TimeInput
                       label="Opening Time"
                       icon={<IconClock size="1rem" />}
-                      {...form.getInputProps(`businessHours.${index}.openTime`)}
-                      format="24" // Add this to ensure 24-hour format
+                      format="12" // Add this to ensure 24-hour format
+                      value={
+                        form.values.businessHours.find((h) => h.day === day)
+                          ?.openTime || ""
+                      }
+                      onChange={(e) => {
+                        handleTimeChange(day, "openTime", e.target.value);
+                      }}
                       withAsterisk
                     />
                     <TimeInput
                       label="Closing Time"
                       icon={<IconClock size="1rem" />}
-                      {...form.getInputProps(
-                        `businessHours.${index}.closeTime`
-                      )}
-                      format="24" // Add this to ensure 24-hour format
+                      format="12" // Add this to ensure 24-hour format
+                      value={
+                        form.values.businessHours.find((h) => h.day === day)
+                          ?.closeTime || ""
+                      }
+                      onChange={(e) => {
+                        handleTimeChange(day, "closeTime", e.target.value);
+                      }}
                       withAsterisk
                     />
                   </Group>

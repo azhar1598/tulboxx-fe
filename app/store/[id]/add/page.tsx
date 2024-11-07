@@ -74,6 +74,7 @@ const StoreRegistration = () => {
       tagline: "",
       description: "",
       logo: null,
+      licenseId: "",
       address: "",
       state: "",
       city: "",
@@ -85,7 +86,7 @@ const StoreRegistration = () => {
         secondaryColor: "#ffffff",
         primaryText: "Scan Here",
         secondaryText: "To View Our Menu",
-        radius: "",
+        radius: 5,
       },
       website: {
         primaryColor: "#fab005",

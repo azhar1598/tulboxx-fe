@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Divider,
-  FileInput,
   Grid,
   Group,
   rem,
@@ -12,15 +11,10 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import {
-  IconBuilding,
-  IconPhoto,
-  IconUpload,
-  IconX,
-} from "@tabler/icons-react";
+import { IconBuilding, IconPhoto, IconX } from "@tabler/icons-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { Dropzone } from "@mantine/dropzone";
 
 function BasicForm({ form, active, nextStep, prevStep }) {
   const [logoPreview, setLogoPreview] = useState(null);
@@ -35,6 +29,16 @@ function BasicForm({ form, active, nextStep, prevStep }) {
       reader.readAsDataURL(file);
       form.setFieldValue("logo", file);
     }
+  };
+
+  // Check if required fields are filled
+  const isFormValid = () => {
+    return (
+      form.values.name?.trim() &&
+      form.values.category?.trim() &&
+      form.values.description?.trim() &&
+      form.values.tagline?.trim()
+    );
   };
 
   useEffect(() => {
@@ -75,6 +79,15 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             withAsterisk
           />
         </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <TextInput
+            label="Store License Id"
+            placeholder="Enter store licenseId"
+            icon={<IconBuilding size="1rem" />}
+            {...form.getInputProps("licenseId")}
+            // withAsterisk
+          />
+        </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
@@ -82,6 +95,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             placeholder="Enter store tagline"
             icon={<IconBuilding size="1rem" />}
             {...form.getInputProps("tagline")}
+            withAsterisk
           />
         </Grid.Col>
 
@@ -91,6 +105,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             placeholder="Enter store description"
             icon={<IconBuilding size="1rem" />}
             {...form.getInputProps("description")}
+            withAsterisk
           />
         </Grid.Col>
 
@@ -105,7 +120,6 @@ function BasicForm({ form, active, nextStep, prevStep }) {
               borderRadius: "10px",
               padding: "12px",
               cursor: "pointer",
-              // width: "308px",
             }}
           >
             {!logoPreview && (
@@ -115,20 +129,11 @@ function BasicForm({ form, active, nextStep, prevStep }) {
                     style={{
                       width: rem(52),
                       height: rem(52),
-                      // color: `${
-                      //   errorMessage ? "red" : "var(--mantine-color-dimmed)"
-                      // }`,
                     }}
                     stroke={1.5}
                   />
                 </Group>
-                <Group justify="center">
-                  {/* {errorMessage && (
-                  <Text color="red" size="sm" mt="sm">
-                    {errorMessage}
-                  </Text>
-                )} */}
-                </Group>
+                <Group justify="center"></Group>
               </Dropzone>
             )}
 
@@ -181,7 +186,6 @@ function BasicForm({ form, active, nextStep, prevStep }) {
                       cursor: "pointer",
                       textDecoration: "underline",
                     }}
-                    // onClick={() => setOpen(true)}
                   >
                     {imageName}
                   </Text>
@@ -190,25 +194,12 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             )}
           </div>
         </Grid.Col>
-
-        {console.log("form.value", form.values.logo)}
-        {/* <Grid.Col span={{ base: 12, md: 6 }}>
-          {logoPreview && (
-            <Image
-              src={logoPreview}
-              alt="Store logo"
-              width={120}
-              height={120}
-              fit="contain"
-              radius="md"
-              mt="md"
-            />
-          )}
-        </Grid.Col> */}
       </Grid>
       <Group justify="" mt="xl">
         <Button onClick={prevStep}>Back</Button>
-        <Button onClick={nextStep}>Next step</Button>
+        <Button onClick={nextStep} disabled={!isFormValid()}>
+          Next step
+        </Button>
       </Group>
     </Box>
   );

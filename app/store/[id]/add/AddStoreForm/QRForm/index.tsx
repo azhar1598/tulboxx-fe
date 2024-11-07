@@ -53,6 +53,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
       });
     }
   };
+
+  const isFormValid = () => {
+    const qrFieldsValid = Object.values(form.values.qr).every(
+      (value) => value !== null && value !== undefined && value !== ""
+    );
+    return qrFieldsValid;
+  };
   return (
     <Box p={10}>
       <Divider mb="md" />
@@ -152,7 +159,9 @@ function QRForm({ form, active, nextStep, prevStep }) {
           </Grid.Col>
           <Group justify="" mt="xl">
             <Button onClick={prevStep}>Back</Button>
-            <Button onClick={nextStep}>Next step</Button>
+            <Button onClick={nextStep} disabled={!isFormValid()}>
+              Next step
+            </Button>
           </Group>
         </Grid>
         <PreviewQR storeInfo={form.values} />

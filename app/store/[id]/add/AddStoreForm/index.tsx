@@ -39,7 +39,7 @@ import {
   IconPower,
   IconCircleCheck,
 } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates } from "@/lib/constants";
 import { useRouter } from "next/navigation";
@@ -62,6 +62,10 @@ const AddStoreForm = ({ form }) => {
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
 
+  useEffect(() => {
+    scrollTo(0, 0);
+  }, [active]);
+
   return (
     <>
       <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px] mb-20">
@@ -70,7 +74,7 @@ const AddStoreForm = ({ form }) => {
             <Stack spacing="xl">
               <Stepper
                 active={active}
-                onStepClick={setActive}
+                // onStepClick={setActive}
                 completedIcon={
                   <IconCircleCheck
                     style={{ width: rem(18), height: rem(18) }}
@@ -79,7 +83,7 @@ const AddStoreForm = ({ form }) => {
               >
                 <Stepper.Step
                   label="Basic Information"
-                  description="Create an account"
+                  description="Provide store information"
                 >
                   <BasicForm
                     form={form}
@@ -90,7 +94,7 @@ const AddStoreForm = ({ form }) => {
                 </Stepper.Step>
                 <Stepper.Step
                   label="Business Details"
-                  description="Get full access"
+                  description="Provide business details"
                 >
                   <BusinessForm
                     form={form}
@@ -99,7 +103,10 @@ const AddStoreForm = ({ form }) => {
                     prevStep={prevStep}
                   />
                 </Stepper.Step>
-                <Stepper.Step label="QR Preview" description="Verify email">
+                <Stepper.Step
+                  label="QR Code Setup"
+                  description="Design your QR"
+                >
                   <QRForm
                     form={form}
                     active={active}
@@ -107,7 +114,10 @@ const AddStoreForm = ({ form }) => {
                     prevStep={prevStep}
                   />
                 </Stepper.Step>
-                <Stepper.Step label="Web Preview" description="Verify email">
+                <Stepper.Step
+                  label="Website Setup"
+                  description="Customize website"
+                >
                   <WebForm
                     form={form}
                     active={active}
