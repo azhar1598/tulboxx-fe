@@ -41,7 +41,7 @@ function signup() {
       router.push("/");
     },
     onError: (err: Error) => {
-      notification.error(err.message);
+      // notification.error(err.message);
       console.error("Signup Error:", err.message);
     },
   });

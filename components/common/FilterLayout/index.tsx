@@ -13,7 +13,7 @@ export const FilterLayout = ({
   return (
     <Flex justify="space-between" align={"flex-start"} gap={10} px={20} pt={10}>
       {/* Left section with filters */}
-      <Group spacing="xs" position="left">
+      <Group gap="xs">
         {filters.map((filter, index) => (
           <Select
             key={index}
@@ -26,7 +26,7 @@ export const FilterLayout = ({
       </Group>
 
       {/* Right section with search bar */}
-      <Group position="right">
+      <Group>
         <TextInput
           rightSection={<IconSearch />}
           placeholder="Search..."

@@ -53,7 +53,7 @@ const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
         width: "100%",
       }}
     >
-      <Stack align="center" spacing="md">
+      <Stack align="center" gap="md">
         <Title order={2}>Welcome Back</Title>
         <Text color="dimmed" size="sm">
           Enter your credentials to access your account
@@ -83,7 +83,7 @@ const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
             login.mutate(form);
           })}
         >
-          <Stack spacing="xs">
+          <Stack gap="xs">
             <TextInput
               label="Email"
               placeholder="your@email.com"

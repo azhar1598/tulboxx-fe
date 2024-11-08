@@ -28,7 +28,7 @@ const PreviewQR = ({ storeInfo }) => {
   //   console.log("storeInfo,s", storeInfo);
   console.log("storeInfo", storeInfo);
 
-  const [logoPreview, setLogoPreview] = useState("");
+  const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
     if (!storeInfo?.logo) return;

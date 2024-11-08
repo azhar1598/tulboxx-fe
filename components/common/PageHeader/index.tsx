@@ -3,7 +3,12 @@ import { Group, Button, Title, Text } from "@mantine/core";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
-export const PageHeader = ({ title, rightSection }) => {
+interface PropType {
+  title: string;
+  rightSection?: any;
+}
+
+export const PageHeader = ({ title, rightSection }: PropType) => {
   const router = useRouter();
   const [leftTitle, rightTitle] = title.split(":");
 

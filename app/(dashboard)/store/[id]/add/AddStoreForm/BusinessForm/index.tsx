@@ -180,12 +180,12 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
             <ThemeIcon size="lg" variant="light">
               <IconBuilding size="1.2rem" />
             </ThemeIcon>
-            <Text size="lg" weight={500}>
+            <Text size="lg" fw={500}>
               Business Location
             </Text>
           </Group>
 
-          <Stack spacing="md">
+          <Stack gap="md">
             <MultiSelect
               label="Business Days"
               placeholder="Working days"
@@ -291,16 +291,16 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
             <ThemeIcon size="lg" variant="light">
               <IconClock24 size="1.2rem" />
             </ThemeIcon>
-            <Text size="lg" weight={500}>
+            <Text size="lg" fw={500}>
               Business Hours
             </Text>
           </Group>
 
-          <Stack spacing="md">
+          <Stack gap="md">
             {selectedDays.length > 0 && (
               <Paper p="sm" withBorder>
-                <Group position="apart" mb="xs">
-                  <Text size="sm" weight={500} color="dimmed">
+                <Group mb="xs">
+                  <Text size="sm" fw={500} color="dimmed">
                     Set Common Hours
                   </Text>
                   <Switch
@@ -319,13 +319,11 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                         // value={commonOpenTime}
 
                         onChange={handleCommonOpenTime}
-                        format="12" // Add this to ensure 24-hour format
                       />
                       <TimeInput
                         label="Common Closing Time"
                         // value={commonCloseTime}
                         onChange={handleCommonCloseTime}
-                        format="12" // Add this to ensure 24-hour format
                       />
                     </Group>
                     <Button
@@ -344,14 +342,13 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
             {selectedDays.length > 0 ? (
               selectedDays.map((day, index) => (
                 <Paper key={day} p="sm" withBorder>
-                  <Text size="sm" weight={500} mb="xs" color="dimmed">
+                  <Text size="sm" fw={500} mb="xs" color="dimmed">
                     {day}
                   </Text>
                   <Group grow>
                     <TimeInput
                       label="Opening Time"
-                      icon={<IconClock size="1rem" />}
-                      format="12" // Add this to ensure 24-hour format
+                      // icon={<IconClock size="1rem" />}
                       value={
                         form.values.businessHours.find((h) => h.day === day)
                           ?.openTime || ""
@@ -363,8 +360,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                     />
                     <TimeInput
                       label="Closing Time"
-                      icon={<IconClock size="1rem" />}
-                      format="12" // Add this to ensure 24-hour format
+                      // icon={<IconClock size="1rem" />}
                       value={
                         form.values.businessHours.find((h) => h.day === day)
                           ?.closeTime || ""
@@ -378,7 +374,7 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
                 </Paper>
               ))
             ) : (
-              <Text color="dimmed" size="sm" align="center" py="xl">
+              <Text color="dimmed" size="sm" py="xl">
                 Select business days to set operating hours
               </Text>
             )}

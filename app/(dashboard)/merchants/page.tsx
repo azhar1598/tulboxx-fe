@@ -68,7 +68,7 @@ function page() {
       id: "type",
       label: "Merchants",
       options: [{ value: "1", label: "Type 1" }],
-      onChange: (value) => handleTypeChange(value),
+      // onChange: (value) => handleTypeChange(value),
     },
     // ... more filters
   ];

@@ -45,21 +45,21 @@ const MerchantForm = () => {
     },
     onError: (err: Error) => {
       console.log("ee", err);
-      notification.error(err);
+      notification.error(`${err}`);
       console.log(err.message);
     },
   });
   return (
     <form
       onSubmit={form.onSubmit(() => {
-        createMerchant.mutate(form);
+        createMerchant.mutate();
       })}
     >
-      <Stack spacing="md">
+      <Stack gap="md">
         <TextInput
           label="Full Name"
           placeholder="Enter your full name"
-          icon={<IconUser size="1rem" />}
+          rightSection={<IconUser size="1rem" />}
           {...form.getInputProps("name")}
           withAsterisk
         />
@@ -67,7 +67,7 @@ const MerchantForm = () => {
         <TextInput
           label="Email"
           placeholder="your@email.com"
-          icon={<IconMail size="1rem" />}
+          rightSection={<IconMail size="1rem" />}
           {...form.getInputProps("email")}
           withAsterisk
         />
@@ -75,7 +75,7 @@ const MerchantForm = () => {
         <TextInput
           label="Phone Number"
           placeholder="+1234567890"
-          icon={<IconPhone size="1rem" />}
+          rightSection={<IconPhone size="1rem" />}
           {...form.getInputProps("phoneNumber")}
           withAsterisk
         />

@@ -121,19 +121,19 @@ const StoreRegistration = () => {
   };
 
   const createStore = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const formData = objectToFormData(form.values);
       console.log("formData", formData);
       callApi.post(`/v1/merchants/${id}/stores`, formData);
     },
-    onSuccess: async (res) => {
+    onSuccess: async (res: any) => {
       const { data } = res;
       console.log("res", data);
-      router.push(`/stores`);
-      notification.success(`Store created successfully`);
+      // router.push(`/stores`);
+      // notification.success(`Store created successfully`);
     },
     onError: (err: Error) => {
-      notification.error(err);
+      // notification.error(err);
       console.log(err.message);
     },
   });
@@ -187,7 +187,7 @@ const StoreRegistration = () => {
       </div>
       <div className="md:hidden block">
         <SimpleGrid cols={1}>
-          <AddStoreForm form={form} />
+          <AddStoreForm form={form} createStore={createStore} />
           <Flex direction={"column"}>
             <Tabs defaultValue="qr">
               <Tabs.List mb={10}>
@@ -199,7 +199,7 @@ const StoreRegistration = () => {
               </Tabs.Panel>
               <Tabs.Panel value="website" pb="xs">
                 <div className="relative">
-                  <WebPreview />
+                  <WebPreview storeInfo={form.values} />
                 </div>
               </Tabs.Panel>
             </Tabs>

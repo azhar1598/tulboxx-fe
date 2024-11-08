@@ -45,7 +45,6 @@ import { indianStates } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import BrandingForm from "./BrandingForm";
 import ContactForm from "./BusinessForm";
 import QRForm from "./QRForm";
 import WebForm from "./WebForm";
@@ -75,7 +74,7 @@ const AddStoreForm = ({ form, createStore }) => {
           })}
         >
           <Paper>
-            <Stack spacing="xl">
+            <Stack gap="xl">
               <Stepper
                 active={active}
                 // onStepClick={setActive}
@@ -102,7 +101,7 @@ const AddStoreForm = ({ form, createStore }) => {
                 >
                   <BusinessForm
                     form={form}
-                    active={active}
+                    activeStep={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
                   />
@@ -134,7 +133,7 @@ const AddStoreForm = ({ form, createStore }) => {
                   <Group mt="md">
                     <Button
                       onClick={() => {
-                        createStore.mutate(form);
+                        createStore.mutate();
                       }}
                       w={200}
                     >

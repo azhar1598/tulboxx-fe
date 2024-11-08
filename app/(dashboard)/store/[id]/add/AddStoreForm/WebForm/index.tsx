@@ -21,7 +21,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
 
   const handleImagesChange = (files) => {
     if (files) {
-      const newImages = Array.from(files).map((file) => {
+      const newImages = Array.from(files).map((file: File) => {
         return new Promise((resolve) => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -75,7 +75,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
               placeholder="Pick a color"
             />
           </Box>
-          <Text size="sm" weight={500}>
+          <Text size="sm" fw={500}>
             Store Secondary Color <span className="text-red-500">*</span>
           </Text>
           <Box style={{ flex: 1 }}>
@@ -90,7 +90,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
               placeholder="Pick a color"
             />
           </Box>
-          <Text size="sm" weight={500} mb="xs">
+          <Text size="sm" fw={500} mb="xs">
             Menu Images
           </Text>
           <input
@@ -111,11 +111,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <SimpleGrid cols={4} mt="md" spacing="md">
               {form.values.menuImages.map((image, index) => (
                 <div key={index} className="relative group">
-                  <Image
-                    src={image.preview}
-                    radius="md"
-                    caption={`Image ${index + 1}`}
-                  />
+                  <Image src={image.preview} radius="md" />
                   <button
                     onClick={() => handleRemoveImage(index)}
                     className="absolute top-2 right-2 p-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"

@@ -35,7 +35,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
 
   const handleImagesChange = (files) => {
     if (files) {
-      const newImages = Array.from(files).map((file) => {
+      const newImages = Array.from(files).map((file: File) => {
         return new Promise((resolve) => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -67,7 +67,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
         <ThemeIcon size="lg" variant="light" color="grape">
           <IconPalette size="1.2rem" />
         </ThemeIcon>
-        <Text size="lg" weight={500}>
+        <Text size="lg" fw={500}>
           Branding
         </Text>
       </Group> */}
@@ -76,7 +76,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
         <Grid>
           <Grid.Col span={12}>
             <SimpleGrid cols={2} mb={20}>
-              <Text size="sm" weight={500}>
+              <Text size="sm" fw={500}>
                 Title Font Size <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -88,7 +88,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   allowNegative={false}
                 />
               </Box>
-              <Text size="sm" weight={500}>
+              <Text size="sm" fw={500}>
                 QR Primary Color <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -104,7 +104,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   //   error={form.errors.qr.primaryColor}
                 />
               </Box>
-              <Text size="sm" weight={500}>
+              <Text size="sm" fw={500}>
                 QR Secondary Color <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -120,7 +120,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   //   error={form.errors.qr.secondaryColor}
                 />
               </Box>
-              <Text size="sm" weight={500}>
+              <Text size="sm" fw={500}>
                 QR Primary Text <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -130,7 +130,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   maxLength={10}
                 />
               </Box>
-              <Text size="sm" weight={500}>
+              <Text size="sm" fw={500}>
                 Logo Radius <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -144,7 +144,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   {...form.getInputProps("qr.radius")}
                 />
               </Box>
-              <Text size="sm" weight={500} mt={5}>
+              <Text size="sm" fw={500} mt={5}>
                 QR CTA Text <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
@@ -155,7 +155,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                   mt={5}
                 />
               </Box>
-              <Text size="sm" weight={500} mt={5}>
+              <Text size="sm" fw={500} mt={5}>
                 QR CTA Color <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
