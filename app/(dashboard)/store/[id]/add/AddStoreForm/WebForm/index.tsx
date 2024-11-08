@@ -49,6 +49,12 @@ function WebForm({ form, active, prevStep, nextStep }) {
     );
   };
 
+  const isFormValid = () => {
+    const webFieldValues = Object.values(form.values.website).every(
+      (value) => value !== null && value !== undefined && value !== ""
+    );
+    return webFieldValues;
+  };
   return (
     <Box p={10}>
       <Divider mb="md" />
@@ -122,7 +128,9 @@ function WebForm({ form, active, prevStep, nextStep }) {
           </Box>
           <Group justify="" mt="xl">
             <Button onClick={prevStep}>Back</Button>
-            <Button onClick={nextStep}>Next step</Button>
+            <Button onClick={nextStep} disabled={!isFormValid()}>
+              Next step
+            </Button>
           </Group>
         </SimpleGrid>
         <div className="reldative">

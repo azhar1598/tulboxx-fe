@@ -52,13 +52,13 @@ import WebForm from "./WebForm";
 import BusinessForm from "./BusinessForm";
 import BasicForm from "./BasicForm";
 
-const AddStoreForm = ({ form }) => {
+const AddStoreForm = ({ form, createStore }) => {
   const router = useRouter();
 
   const [active, setActive] = useState(0);
 
   const nextStep = () =>
-    setActive((current) => (current < 3 ? current + 1 : current));
+    setActive((current) => (current < 5 ? current + 1 : current));
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
 
@@ -69,7 +69,11 @@ const AddStoreForm = ({ form }) => {
   return (
     <>
       <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px] mb-20">
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+          onSubmit={form.onSubmit(() => {
+            createStore.mutate(form);
+          })}
+        >
           <Paper>
             <Stack spacing="xl">
               <Stepper
@@ -127,12 +131,16 @@ const AddStoreForm = ({ form }) => {
                 </Stepper.Step>
 
                 <Stepper.Step label="Payment" description="Get full access">
-                  <BusinessForm
-                    form={form}
-                    active={active}
-                    nextStep={nextStep}
-                    prevStep={prevStep}
-                  />
+                  <Group mt="md">
+                    <Button
+                      onClick={() => {
+                        createStore.mutate(form);
+                      }}
+                      w={200}
+                    >
+                      Create
+                    </Button>
+                  </Group>
                 </Stepper.Step>
                 <Stepper.Completed>
                   Completed, click back button to get to previous step

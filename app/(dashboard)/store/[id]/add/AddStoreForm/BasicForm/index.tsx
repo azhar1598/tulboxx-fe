@@ -35,7 +35,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
   const isFormValid = () => {
     return (
       form.values.name?.trim() &&
-      form.values.category?.trim() &&
+      form.values.categoryId?.trim() &&
       form.values.description?.trim() &&
       form.values.tagline?.trim()
     );
@@ -75,7 +75,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
               { value: "electronics", label: "Electronics" },
               { value: "fashion", label: "Fashion" },
             ]}
-            {...form.getInputProps("category")}
+            {...form.getInputProps("categoryId")}
             withAsterisk
           />
         </Grid.Col>

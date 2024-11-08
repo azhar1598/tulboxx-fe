@@ -80,7 +80,7 @@ const MerchantForm = () => {
           withAsterisk
         />
 
-        <Group position="right" mt="md">
+        <Group mt="md">
           <Button type="submit" w={200}>
             Create
           </Button>

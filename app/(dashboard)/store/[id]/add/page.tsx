@@ -38,7 +38,7 @@ import {
   IconPalette,
   IconPower,
 } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates, swatches } from "@/lib/constants";
 import { useParams, useRouter } from "next/navigation";
@@ -72,7 +72,7 @@ const StoreRegistration = () => {
     validate: zodResolver(storeSchema),
     initialValues: {
       name: "",
-      category: "",
+      categoryId: "",
       tagline: "",
       description:
         "We are dedicated to providing the best services to our customers. Your satisfaction is our priority.",
@@ -84,6 +84,7 @@ const StoreRegistration = () => {
       city: "",
       latitude: "",
       longitude: "",
+      storeUniqueId: "",
       qr: {
         titleFontSize: "24px",
         primaryColor: "#228be6",
@@ -103,21 +104,44 @@ const StoreRegistration = () => {
   });
 
   const { id } = useParams();
+  const objectToFormData = (
+    obj: any,
+    formData = new FormData(),
+    parentKey = ""
+  ) => {
+    if (obj && typeof obj === "object" && !(obj instanceof File)) {
+      Object.keys(obj).forEach((key) => {
+        const fullKey = parentKey ? `${parentKey}[${key}]` : key;
+        objectToFormData(obj[key], formData, fullKey);
+      });
+    } else {
+      formData.append(parentKey, obj);
+    }
+    return formData;
+  };
 
   const createStore = useMutation({
-    mutationFn: () => callApi.post(`/v1/merchants/${id}/stores`, form.values),
+    mutationFn: () => {
+      const formData = objectToFormData(form.values);
+      console.log("formData", formData);
+      callApi.post(`/v1/merchants/${id}/stores`, formData);
+    },
     onSuccess: async (res) => {
       const { data } = res;
       console.log("res", data);
-      router.push(`/store/${data?.data?.merchantUUID}/add`);
-      notification.success(`Merchant created successfully`);
+      router.push(`/stores`);
+      notification.success(`Store created successfully`);
     },
     onError: (err: Error) => {
-      console.log("ee", err);
       notification.error(err);
       console.log(err.message);
     },
   });
+
+  useEffect(() => {
+    if (!id) return;
+    form.setFieldValue("storeUniqueId", id);
+  }, [id]);
 
   // const getSingleMerchant = useMutation({
   //   mutationFn: () => callApi.post(`/v1/merchants/${id}/stores`, form.values),
@@ -141,7 +165,7 @@ const StoreRegistration = () => {
       <div className="hidden md:block">
         {/* <SimpleGrid cols={1}> */}
 
-        <AddStoreForm form={form} />
+        <AddStoreForm form={form} createStore={createStore} />
 
         {/* <Flex direction={"column"}>
             <Tabs defaultValue="qr">
