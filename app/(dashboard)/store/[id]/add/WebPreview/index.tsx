@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import { Card, Group, Text } from "@mantine/core";
 import {
@@ -9,8 +8,10 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import StoreLogo from "../../../../../public/assets/default-store-logo.png";
+import mobilePreview from "@/public/assets/placeholders/mobile-preview.png";
+import IPhoneFrame from "./IPhoneFrame";
 
-const WebPreview = ({ storeInfo }) => {
+const MobileWebPreview = ({ storeInfo }) => {
   const [logoPreview, setLogoPreview] = useState(null);
 
   useEffect(() => {
@@ -29,8 +30,6 @@ const WebPreview = ({ storeInfo }) => {
     return `${hours % 12 || 12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
   };
 
-  useEffect(() => {});
-
   const groupedHours = storeInfo?.businessHours.reduce((acc, hour) => {
     const { day, openTime, closeTime } = hour;
     const key = `${openTime}-${closeTime}`;
@@ -47,16 +46,13 @@ const WebPreview = ({ storeInfo }) => {
   }, {});
 
   return (
-    // Container wrapper
-    <>
-      {/* <div className="md:w-[390px] w-full overflow-hidden  absolute top-0 left-0 "> */}
-
+    <IPhoneFrame>
       <div
-        className="flex flex-col min-h-screen  overflow-scroll flex justify-center md:w-[390px] w-full  absolute top-0 left-0"
+        className="flex flex-col min-h-screen overflow-auto w-[340px] rounded-xl overflow-scroll"
         style={{ backgroundColor: storeInfo?.website.primaryColor }}
       >
         <div className="w-full relative ">
-          <div className=" w-full  z-20  flex justify-center items-center">
+          <div className=" w-full z-20 flex justify-center items-center">
             {!logoPreview && (
               <div
                 className="w-12 h-12 bg-white flex items-center justify-center mt-[20px]"
@@ -103,12 +99,6 @@ const WebPreview = ({ storeInfo }) => {
                     key={index}
                   />
                 ))}
-                {/* <img
-                  src="https://content.wepik.com/statics/29838533/preview-page0.jpg"
-                  width={530}
-                  height={130}
-                  alt=""
-                /> */}
               </Group>
             </div>
           </div>
@@ -116,13 +106,11 @@ const WebPreview = ({ storeInfo }) => {
 
         <footer className="bg-gray-800 text-white py-6 px-4 text-sm">
           <div className="flex flex-col space-y-4">
-            {/* About Us */}
             <div className="">
               <h2 className="font-semibold text-lg">About Us</h2>
               <p className="mt-1 text-gray-400">{storeInfo?.description}</p>
             </div>
 
-            {/* Location */}
             <div className="">
               <h2 className="font-semibold text-lg">Location</h2>
               <p className="mt-1 text-gray-400">
@@ -131,7 +119,6 @@ const WebPreview = ({ storeInfo }) => {
               </p>
             </div>
 
-            {/* Opening Hours */}
             <div className="">
               <h2 className="font-semibold text-lg">Our Timings</h2>
 
@@ -153,7 +140,6 @@ const WebPreview = ({ storeInfo }) => {
                 )}
             </div>
 
-            {/* Copyright & Powered By */}
             <div className=" border-t border-gray-700 pt-4 w-full">
               <p className="text-gray-500">
                 © {new Date().getFullYear()} Your Company. All rights reserved.
@@ -163,10 +149,8 @@ const WebPreview = ({ storeInfo }) => {
           </div>
         </footer>
       </div>
-
-      {/* </div> */}
-    </>
+    </IPhoneFrame>
   );
 };
 
-export default WebPreview;
+export default MobileWebPreview;

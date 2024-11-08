@@ -4,6 +4,7 @@ import {
   Button,
   ColorInput,
   Divider,
+  Flex,
   Group,
   Image,
   SimpleGrid,
@@ -51,7 +52,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
   return (
     <Box p={10}>
       <Divider mb="md" />
-      <SimpleGrid cols={2}>
+      <Flex align={"flex-start"} justify={"space-between"}>
         <SimpleGrid cols={2} mt={20}>
           <Text size="sm">
             Store Primary Color <span className="text-red-500">*</span>
@@ -124,10 +125,10 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <Button onClick={nextStep}>Next step</Button>
           </Group>
         </SimpleGrid>
-        <div className="relative">
+        <div className="reldative">
           <WebPreview storeInfo={form.values} />
         </div>
-      </SimpleGrid>
+      </Flex>
     </Box>
   );
 }

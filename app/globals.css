@@ -33,7 +33,7 @@ body {
   margin-left: calc(220px + 0rem);
   position: fixed;
   width: 100%;
-  z-index: 10;
+  z-index: 100;
   background-color: white;
   /* background-color: #1e476b; */
   /* background-color: #14141fd9; */
