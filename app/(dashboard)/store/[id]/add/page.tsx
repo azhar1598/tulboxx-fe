@@ -48,7 +48,7 @@ import PreviewQR from "./PreviewQR";
 import { PageHeader } from "@/components/common/PageHeader";
 import WebPreview from "./WebPreview";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 
 const storeSchema = z.object({
@@ -72,8 +72,8 @@ const StoreRegistration = () => {
     validate: zodResolver(storeSchema),
     initialValues: {
       name: "",
-      categoryId: "",
-      tagline: "",
+      categoryId: 1,
+      tagLine: "",
       description:
         "We are dedicated to providing the best services to our customers. Your satisfaction is our priority.",
       logo: null,
@@ -122,7 +122,12 @@ const StoreRegistration = () => {
 
   const createStore = useMutation({
     mutationFn: async () => {
-      const formData = objectToFormData(form.values);
+      const newFormValues = structuredClone(form.values);
+      const onlyFiles = newFormValues.menuImages.map(
+        (image: any) => image.file
+      );
+      newFormValues.menuImages = onlyFiles;
+      const formData = objectToFormData(newFormValues);
       console.log("formData", formData);
       callApi.post(`/v1/merchants/${id}/stores`, formData);
     },
@@ -143,25 +148,20 @@ const StoreRegistration = () => {
     form.setFieldValue("storeUniqueId", id);
   }, [id]);
 
-  // const getSingleMerchant = useMutation({
-  //   mutationFn: () => callApi.post(`/v1/merchants/${id}/stores`, form.values),
-  //   onSuccess: async (res) => {
-  //     const { data } = res;
-  //     console.log("res", data);
-  //     router.push(`/store/${data?.data?.merchantUUID}/add`);
-  //     notification.success(`Merchant created successfully`);
-  //   },
-  //   onError: (err: Error) => {
-  //     console.log("ee", err);
-  //     notification.error(err);
-  //     console.log(err.message);
-  //   },
-  // });
+  const getSingleMerchant = useQuery({
+    queryKey: ["get-content-by-id"],
+    queryFn: async () => {
+      const response = await callApi.get(`/v1/merchants/${id}`);
+      return response.data;
+    },
+  });
 
   return (
     <Stack>
       {" "}
-      <PageHeader title={`Create Store: Merchant name (${id}) `} />
+      <PageHeader
+        title={`Create Store: ${getSingleMerchant?.data?.data.name}`}
+      />
       <div className="hidden md:block">
         {/* <SimpleGrid cols={1}> */}
 

@@ -35,6 +35,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
       });
 
       Promise.all(newImages).then((images) => {
+        console.log("images", images);
         setImageFiles((prev) => [...prev, ...images]);
         form.setFieldValue("menuImages", (prev) => [...prev, ...images]);
       });

@@ -35,9 +35,9 @@ function BasicForm({ form, active, nextStep, prevStep }) {
   const isFormValid = () => {
     return (
       form.values.name?.trim() &&
-      form.values.categoryId?.trim() &&
+      // form.values.categoryId?.trim() &&
       form.values.description?.trim() &&
-      form.values.tagline?.trim()
+      form.values.tagLine?.trim()
     );
   };
 
@@ -69,13 +69,13 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             label="Category"
             placeholder="Select store category"
             data={[
-              { value: "restaurant", label: "Restaurant" },
-              { value: "retail", label: "Retail" },
-              { value: "grocery", label: "Grocery" },
-              { value: "electronics", label: "Electronics" },
-              { value: "fashion", label: "Fashion" },
+              { value: "1", label: "Restaurant" },
+              { value: "2", label: "Retail" },
+              { value: "3", label: "Grocery" },
+              { value: "4", label: "Electronics" },
+              { value: "5", label: "Fashion" },
             ]}
-            {...form.getInputProps("categoryId")}
+            // {...form.getInputProps("categoryId")}
             withAsterisk
           />
         </Grid.Col>
@@ -94,7 +94,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             label="Store Tagline"
             placeholder="Enter store tagline"
             icon={<IconBuilding size="1rem" />}
-            {...form.getInputProps("tagline")}
+            {...form.getInputProps("tagLine")}
             withAsterisk
           />
         </Grid.Col>

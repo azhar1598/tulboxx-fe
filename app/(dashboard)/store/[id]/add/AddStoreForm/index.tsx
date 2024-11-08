@@ -131,6 +131,7 @@ const AddStoreForm = ({ form, createStore }) => {
 
                 <Stepper.Step label="Payment" description="Get full access">
                   <Group mt="md">
+                    <Button onClick={prevStep}>Back</Button>
                     <Button
                       onClick={() => {
                         createStore.mutate();
