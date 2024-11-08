@@ -94,7 +94,6 @@ const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
               label="Password"
               placeholder="Password"
               {...form.getInputProps("password")}
-              fullWidth
             />
 
             <Button
@@ -109,12 +108,12 @@ const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
           </Stack>
         </form>
 
-        <Text color="dimmed" size="sm">
+        {/* <Text color="dimmed" size="sm">
           Don't have an account?{" "}
           <Link href="/signup" className="link-global-style">
             Sign up
           </Link>
-        </Text>
+        </Text> */}
       </Stack>
     </Card>
   );

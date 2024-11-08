@@ -52,7 +52,11 @@ function login() {
     );
   }
 
-  return <Login isMobile={isMobile} login={login} />;
+  return (
+    <div className="h-[100vh] flex items-center justify-center">
+      <Login isMobile={isMobile} login={login} />
+    </div>
+  );
 }
 
 export default login;

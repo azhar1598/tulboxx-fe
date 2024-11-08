@@ -65,7 +65,7 @@ const callApi = {
       return { data: response.data, status: response.status };
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        console.error("API Error:", error.message);
+        console.log("API Error:", error.message);
         throw error.response?.data || error.message;
       } else {
         console.error("Unexpected Error:", error);

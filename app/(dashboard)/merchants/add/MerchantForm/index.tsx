@@ -13,12 +13,14 @@ import {
 import { IconUser, IconPhone, IconMail } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { useMutation } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number"),
+  phoneNumber: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number"),
 });
 
 const MerchantForm = () => {
@@ -29,19 +31,30 @@ const MerchantForm = () => {
     initialValues: {
       name: "",
       email: "",
-      phone: "",
+      phoneNumber: "",
     },
   });
 
-  const handleSubmit = (values) => {
-    console.log("Form submitted:", values);
-    router.push("/store/m2830284hde/add");
-    notification.success(`Merchant created successfully`);
-    // Handle form submission here
-  };
-
+  const createMerchant = useMutation({
+    mutationFn: () => callApi.post(`/v1/merchants`, form.values),
+    onSuccess: async (res) => {
+      const { data } = res;
+      console.log("res", data);
+      router.push(`/store/${data?.data?.merchantUUID}/add`);
+      notification.success(`Merchant created successfully`);
+    },
+    onError: (err: Error) => {
+      console.log("ee", err);
+      notification.error(err);
+      console.log(err.message);
+    },
+  });
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form
+      onSubmit={form.onSubmit(() => {
+        createMerchant.mutate(form);
+      })}
+    >
       <Stack spacing="md">
         <TextInput
           label="Full Name"
@@ -63,7 +76,7 @@ const MerchantForm = () => {
           label="Phone Number"
           placeholder="+1234567890"
           icon={<IconPhone size="1rem" />}
-          {...form.getInputProps("phone")}
+          {...form.getInputProps("phoneNumber")}
           withAsterisk
         />
 
