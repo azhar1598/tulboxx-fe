@@ -39,7 +39,7 @@ function login() {
       router.push("/");
     },
     onError: (err: Error) => {
-      notification.error(err.message);
+      // notification.error(err.message);
       console.log(err.message);
     },
   });
