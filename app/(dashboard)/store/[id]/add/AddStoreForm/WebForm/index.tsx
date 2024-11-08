@@ -102,7 +102,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
               Upload Menu Images
             </Button>
             <SimpleGrid cols={4} mt="md" spacing="md">
-              {imageFiles.map((image, index) => (
+              {form.values.menuImages.map((image, index) => (
                 <div key={index} className="relative group">
                   <Image
                     src={image.preview}

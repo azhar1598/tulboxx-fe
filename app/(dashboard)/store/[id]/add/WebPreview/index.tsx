@@ -70,18 +70,21 @@ const WebPreview = ({ storeInfo }) => {
               </div>
 
               <Group gap={0} className=" rounded-t-3xl px-1">
-                <Image
-                  src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/resturant-menu-video-design-template-64d136abd3ffe2ca6d32b6a9297e56a7_screen.jpg?ts=1637036712"
-                  width={530}
-                  height={130}
-                  alt=""
-                />
-                <img
+                {storeInfo?.menuImages.map((img, index) => (
+                  <Image
+                    src={img.preview}
+                    width={530}
+                    height={130}
+                    alt=""
+                    key={index}
+                  />
+                ))}
+                {/* <img
                   src="https://content.wepik.com/statics/29838533/preview-page0.jpg"
                   width={530}
                   height={130}
                   alt=""
-                />
+                /> */}
               </Group>
             </div>
           </div>
