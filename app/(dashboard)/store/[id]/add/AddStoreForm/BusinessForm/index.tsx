@@ -15,6 +15,8 @@ import {
   Paper,
   Stack,
   Switch,
+  SimpleGrid,
+  NumberInput,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
@@ -201,6 +203,33 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
               searchable
               withAsterisk
             />
+            <Textarea
+              label="Address"
+              placeholder="Enter complete address"
+              minRows={2}
+              icon={<IconMapPin size="1rem" />}
+              {...form.getInputProps("address")}
+              withAsterisk
+            />
+            <SimpleGrid cols={2}>
+              <TextInput
+                label="City"
+                placeholder="Enter city name"
+                icon={<IconMapPin2 size="1rem" />}
+                {...form.getInputProps("city")}
+                withAsterisk
+              />
+              <NumberInput
+                label="Pincode"
+                placeholder="Enter pincode"
+                icon={<IconMapPin2 size="1rem" />}
+                {...form.getInputProps("pincode")}
+                withAsterisk
+                allowDecimal={false}
+                hideControls
+              />
+            </SimpleGrid>
+
             <Select
               label="State"
               placeholder="Select state"
@@ -209,23 +238,6 @@ function BusinessForm({ form, activeStep, prevStep, nextStep }) {
               {...form.getInputProps("state")}
               withAsterisk
               searchable
-            />
-
-            <TextInput
-              label="City"
-              placeholder="Enter city name"
-              icon={<IconMapPin2 size="1rem" />}
-              {...form.getInputProps("city")}
-              withAsterisk
-            />
-
-            <Textarea
-              label="Complete Address"
-              placeholder="Enter complete address"
-              minRows={2}
-              icon={<IconMapPin size="1rem" />}
-              {...form.getInputProps("address")}
-              withAsterisk
             />
 
             <Group grow align="flex-end">

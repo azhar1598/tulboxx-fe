@@ -95,17 +95,15 @@ const WebPreview = ({ storeInfo }) => {
             {/* About Us */}
             <div className="">
               <h2 className="font-semibold text-lg">About Us</h2>
-              <p className="mt-1 text-gray-400">
-                We are dedicated to providing the best services to our
-                customers. Your satisfaction is our priority.
-              </p>
+              <p className="mt-1 text-gray-400">{storeInfo?.description}</p>
             </div>
 
             {/* Location */}
             <div className="">
               <h2 className="font-semibold text-lg">Location</h2>
               <p className="mt-1 text-gray-400">
-                123 Main Street, City, Country
+                {storeInfo?.address},{storeInfo?.city},{storeInfo?.state},
+                {storeInfo?.pincode}.
               </p>
             </div>
 
