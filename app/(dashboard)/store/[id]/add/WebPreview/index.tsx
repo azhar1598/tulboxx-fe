@@ -22,6 +22,30 @@ const WebPreview = ({ storeInfo }) => {
     reader.readAsDataURL(file);
   }, []);
 
+  // Function to format time as AM/PM
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const ampm = hours >= 12 ? "PM" : "AM";
+    return `${hours % 12 || 12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+  };
+
+  useEffect(() => {});
+
+  const groupedHours = storeInfo?.businessHours.reduce((acc, hour) => {
+    const { day, openTime, closeTime } = hour;
+    const key = `${openTime}-${closeTime}`;
+    if (!acc[key]) {
+      acc[key] = {
+        days: [day],
+        openTime,
+        closeTime,
+      };
+    } else {
+      acc[key].days.push(day);
+    }
+    return acc;
+  }, {});
+
   return (
     // Container wrapper
     <>
@@ -109,10 +133,24 @@ const WebPreview = ({ storeInfo }) => {
 
             {/* Opening Hours */}
             <div className="">
-              <h2 className="font-semibold text-lg">Opening Hours</h2>
-              <p className="mt-1 text-gray-400">
-                Monday - Sunday: 9:00 AM - 8:00 PM
-              </p>
+              <h2 className="font-semibold text-lg">Our Timings</h2>
+
+              {groupedHours &&
+                Object?.values(groupedHours).map(
+                  ({ days, openTime, closeTime }) => (
+                    <p
+                      className="mt-1 text-gray-400"
+                      key={`${openTime}-${closeTime}`}
+                    >
+                      {days.length > 1
+                        ? `${days.slice(0, -1).join(", ")} and ${
+                            days[days.length - 1]
+                          }`
+                        : days[0]}
+                      : {formatTime(openTime)} - {formatTime(closeTime)}
+                    </p>
+                  )
+                )}
             </div>
 
             {/* Copyright & Powered By */}
