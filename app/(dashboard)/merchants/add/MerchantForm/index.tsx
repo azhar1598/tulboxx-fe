@@ -59,7 +59,7 @@ const MerchantForm = () => {
         <TextInput
           label="Full Name"
           placeholder="Enter your full name"
-          rightSection={<IconUser size="1rem" />}
+          leftSection={<IconUser size="1rem" />}
           {...form.getInputProps("name")}
           withAsterisk
         />
@@ -67,7 +67,7 @@ const MerchantForm = () => {
         <TextInput
           label="Email"
           placeholder="your@email.com"
-          rightSection={<IconMail size="1rem" />}
+          leftSection={<IconMail size="1rem" />}
           {...form.getInputProps("email")}
           withAsterisk
         />
@@ -75,7 +75,7 @@ const MerchantForm = () => {
         <TextInput
           label="Phone Number"
           placeholder="+1234567890"
-          rightSection={<IconPhone size="1rem" />}
+          leftSection={<IconPhone size="1rem" />}
           {...form.getInputProps("phoneNumber")}
           withAsterisk
         />
