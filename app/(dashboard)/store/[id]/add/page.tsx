@@ -48,6 +48,8 @@ import PreviewQR from "./PreviewQR";
 import { PageHeader } from "@/components/common/PageHeader";
 import WebPreview from "./WebPreview";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
+import { useMutation } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
 const storeSchema = z.object({
   name: z.string().min(2, "Store name must be at least 2 characters"),
@@ -101,6 +103,36 @@ const StoreRegistration = () => {
   });
 
   const { id } = useParams();
+
+  const createStore = useMutation({
+    mutationFn: () => callApi.post(`/v1/merchants/${id}/stores`, form.values),
+    onSuccess: async (res) => {
+      const { data } = res;
+      console.log("res", data);
+      router.push(`/store/${data?.data?.merchantUUID}/add`);
+      notification.success(`Merchant created successfully`);
+    },
+    onError: (err: Error) => {
+      console.log("ee", err);
+      notification.error(err);
+      console.log(err.message);
+    },
+  });
+
+  // const getSingleMerchant = useMutation({
+  //   mutationFn: () => callApi.post(`/v1/merchants/${id}/stores`, form.values),
+  //   onSuccess: async (res) => {
+  //     const { data } = res;
+  //     console.log("res", data);
+  //     router.push(`/store/${data?.data?.merchantUUID}/add`);
+  //     notification.success(`Merchant created successfully`);
+  //   },
+  //   onError: (err: Error) => {
+  //     console.log("ee", err);
+  //     notification.error(err);
+  //     console.log(err.message);
+  //   },
+  // });
 
   return (
     <Stack>
