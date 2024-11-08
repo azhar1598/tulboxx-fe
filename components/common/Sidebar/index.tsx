@@ -89,7 +89,7 @@ export function Sidebar() {
   return (
     <nav className={classes.navbar}>
       <Center>
-        <Text c={""} fw={600} size="22px">
+        <Text c={"white"} fw={600} size="22px">
           Digi Menu
         </Text>
       </Center>

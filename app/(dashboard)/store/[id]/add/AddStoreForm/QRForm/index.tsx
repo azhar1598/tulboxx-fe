@@ -145,14 +145,28 @@ function QRForm({ form, active, nextStep, prevStep }) {
                 />
               </Box>
               <Text size="sm" weight={500} mt={5}>
-                QR Secondary Text <span className="text-red-500">*</span>
+                QR CTA Text <span className="text-red-500">*</span>
               </Text>
               <Box style={{ flex: 1 }}>
                 <Textarea
-                  placeholder="Enter secondary text"
-                  {...form.getInputProps("qr.secondaryText")}
+                  placeholder="Enter CTA text"
+                  {...form.getInputProps("qr.ctaText")}
                   maxLength={20}
                   mt={5}
+                />
+              </Box>
+              <Text size="sm" weight={500} mt={5}>
+                QR CTA Color <span className="text-red-500">*</span>
+              </Text>
+              <Box style={{ flex: 1 }}>
+                <ColorInput
+                  format="hex"
+                  swatches={swatches}
+                  value={form.values.qr.ctaColor}
+                  onChange={(color) => form.setFieldValue("qr.ctaColor", color)}
+                  withEyeDropper
+                  placeholder="Pick a color"
+                  //   error={form.errors.qr.secondaryColor}
                 />
               </Box>
             </SimpleGrid>

@@ -93,8 +93,11 @@ const PreviewQR = ({ storeInfo }) => {
           >
             {storeInfo.qr.primaryText}
           </h1>
-          <div className="bg-orange-400 text-white text-xl py-2 px-6 rounded-full inline-block">
-            {storeInfo.qr.secondaryText}
+          <div
+            className=" text-white text-xl py-2 px-6 rounded-full inline-block"
+            style={{ backgroundColor: storeInfo?.qr.ctaColor }}
+          >
+            {storeInfo.qr.ctaText}
           </div>
         </div>
 

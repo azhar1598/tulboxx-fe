@@ -87,7 +87,8 @@ const StoreRegistration = () => {
         primaryColor: "#228be6",
         secondaryColor: "#ffffff",
         primaryText: "Scan Here",
-        secondaryText: "To View Our Menu",
+        ctaText: "To View Our Menu",
+        ctaColor: "#fab005",
         radius: 5,
       },
       website: {

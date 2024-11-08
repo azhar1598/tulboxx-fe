@@ -6,7 +6,7 @@
   /* padding: var(--mantine-spacing-md); */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  background-color: rgb(255, 255, 255) !important;
+  background-color: #182a4d !important;
   flex-direction: column;
   position: fixed;
   /* border-right: 1px solid
@@ -27,20 +27,21 @@
   align-items: center;
   justify-content: flex-start;
 
-  color: #1b2559;
+  color: white;
 
   &:hover {
-    background-color: #f4f7fe;
+    background-color: #ffffff;
+    color: black;
   }
 
   &[data-active] {
     &,
     &:hover {
-      background-color: #735dff;
+      background-color: white;
 
       transition: 0.5s;
       /* background-size: 200% auto; */
-      color: white;
+      color: black;
 
       /* display: block; */
     }
