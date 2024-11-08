@@ -5,13 +5,49 @@ import {
   ColorInput,
   Divider,
   Group,
+  Image,
   SimpleGrid,
   Text,
 } from "@mantine/core";
-import React from "react";
+import React, { useRef, useState } from "react";
 import WebPreview from "../../WebPreview";
 
+import { IconPhoto, IconX } from "@tabler/icons-react";
+
 function WebForm({ form, active, prevStep, nextStep }) {
+  const [imageFiles, setImageFiles] = useState([]);
+  const imageInputRef = useRef(null);
+
+  const handleImagesChange = (files) => {
+    if (files) {
+      const newImages = Array.from(files).map((file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            resolve({
+              file,
+              preview: reader.result,
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(newImages).then((images) => {
+        setImageFiles((prev) => [...prev, ...images]);
+        form.setFieldValue("menuImages", (prev) => [...prev, ...images]);
+      });
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImageFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
+    form.setFieldValue(
+      "menuImages",
+      form.values.menuImages.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
   return (
     <Box p={10}>
       <Divider mb="md" />
@@ -46,6 +82,42 @@ function WebForm({ form, active, prevStep, nextStep }) {
               withEyeDropper
               placeholder="Pick a color"
             />
+          </Box>
+          <Text size="sm" weight={500} mb="xs">
+            Menu Images
+          </Text>
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg"
+            style={{ display: "none" }}
+            ref={imageInputRef}
+            onChange={(e) => handleImagesChange(e.target.files)}
+          />
+          <Box style={{ flex: 1 }}>
+            <Button
+              leftSection={<IconPhoto size="1rem" />}
+              onClick={() => imageInputRef.current?.click()}
+            >
+              Upload Menu Images
+            </Button>
+            <SimpleGrid cols={4} mt="md" spacing="md">
+              {imageFiles.map((image, index) => (
+                <div key={index} className="relative group">
+                  <Image
+                    src={image.preview}
+                    radius="md"
+                    caption={`Image ${index + 1}`}
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"
+                  >
+                    <IconX size={16} className="text-gray-600" />
+                  </button>
+                </div>
+              ))}
+            </SimpleGrid>
           </Box>
           <Group justify="" mt="xl">
             <Button onClick={prevStep}>Back</Button>

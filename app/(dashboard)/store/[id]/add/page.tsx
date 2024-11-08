@@ -93,7 +93,7 @@ const StoreRegistration = () => {
         secondaryColor: "#091151",
       },
       businessHours: [{ openTime: "", closeTime: "", day: "" }],
-      storeImages: [],
+      menuImages: [],
     },
   });
 
