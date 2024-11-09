@@ -28,7 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import PreviewQR from "./[id]/add/PreviewQR";
+import PreviewQR from "./add/PreviewQR";
 
 function page() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -44,6 +44,7 @@ function page() {
   };
 
   useEffect(() => {
+    if (!qrCode) return;
     open();
   }, [qrCode]);
 
@@ -51,13 +52,16 @@ function page() {
     {
       accessor: "name",
       title: "Store Name (Tagline)",
-      render: ({ name, tagline }: any) => (
-        <span>
+      render: ({ name, tagline, id }: any) => (
+        <Link
+          href={`/stores/${id}`}
+          style={{ color: "blue", textDecoration: "underline" }}
+        >
           {name}{" "}
           <small>
             <i>({tagline})</i>
           </small>
-        </span>
+        </Link>
       ),
     },
     {

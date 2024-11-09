@@ -30,12 +30,16 @@ function page() {
       index: "phoneNumber",
       render: ({ phoneNumber }: any) => phoneNumber,
     },
-    // {
-    //   accessor: "actions",
-    //   title: <Box mr={6}>Row actions</Box>,
-    //   textAlign: "right",
-    //   render: () => <p>asca</p>,
-    // },
+    {
+      accessor: "actions",
+      title: <Box mr={6}>Row actions</Box>,
+      textAlign: "right",
+      render: ({ id }) => (
+        <Link href={`/stores/add?merchantId=${id}`}>
+          <Button>Create store</Button>
+        </Link>
+      ),
+    },
   ];
 
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];

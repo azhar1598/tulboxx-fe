@@ -40,7 +40,7 @@ const MerchantForm = () => {
     onSuccess: async (res) => {
       const { data } = res;
       console.log("res", data);
-      router.push(`/stores/${data?.data?.id}/add`);
+      router.push(`/stores/add?merchantId=${data?.data?.id}`);
       notification.success(`Merchant created successfully`);
     },
     onError: (err: Error) => {
@@ -81,7 +81,7 @@ const MerchantForm = () => {
         />
 
         <Group mt="md">
-          <Button type="submit" w={200}>
+          <Button type="submit" w={200} loading={createMerchant.isPending}>
             Create
           </Button>
         </Group>

@@ -41,7 +41,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates, swatches } from "@/lib/constants";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import AddStoreForm from "./AddStoreForm";
 import PreviewQR from "./PreviewQR";
@@ -101,8 +101,8 @@ const StoreRegistration = () => {
       menuImages: [],
     },
   });
-
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("merchantId");
 
   const objectToFormData = (
     obj: any,
