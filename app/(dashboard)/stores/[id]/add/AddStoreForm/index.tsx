@@ -69,9 +69,9 @@ const AddStoreForm = ({ form, createStore }) => {
     <>
       <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px] mb-20">
         <form
-          onSubmit={form.onSubmit(() => {
-            createStore.mutate(form);
-          })}
+        // onSubmit={form.onSubmit(() => {
+        //   createStore.mutate(form);
+        // })}
         >
           <Paper>
             <Stack gap="xl">
@@ -134,6 +134,7 @@ const AddStoreForm = ({ form, createStore }) => {
                     <Button onClick={prevStep}>Back</Button>
                     <Button
                       onClick={() => {
+                        console.log("form", form.errors);
                         createStore.mutate();
                       }}
                       w={200}

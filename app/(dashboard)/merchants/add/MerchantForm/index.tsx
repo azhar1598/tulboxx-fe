@@ -40,7 +40,7 @@ const MerchantForm = () => {
     onSuccess: async (res) => {
       const { data } = res;
       console.log("res", data);
-      router.push(`/store/${data?.data?.merchantUUID}/add`);
+      router.push(`/stores/${data?.data?.id}/add`);
       notification.success(`Merchant created successfully`);
     },
     onError: (err: Error) => {

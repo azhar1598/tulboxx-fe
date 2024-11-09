@@ -16,13 +16,18 @@ function CustomTable({ records, columns }) {
     const to = from + PAGE_SIZE;
     // setRecords(employees.slice(from, to));
   }, [page]);
+
+  console.log("rrr", records);
   return (
     <div className="data-table">
       <DataTable
         withTableBorder
         columns={columns}
         height={500}
-        records={records}
+        records={records?.map((record) => ({
+          ...record,
+          id: record.id,
+        }))}
         classNames={{
           table: classes.table,
           header: classes.header,

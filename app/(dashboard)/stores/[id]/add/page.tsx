@@ -76,7 +76,7 @@ const StoreRegistration = () => {
       tagLine: "",
       description:
         "We are dedicated to providing the best services to our customers. Your satisfaction is our priority.",
-      logo: null,
+      logo: "",
       licenseId: "",
       address: "",
       state: "",
@@ -84,8 +84,7 @@ const StoreRegistration = () => {
       city: "",
       latitude: "",
       longitude: "",
-      storeUniqueId: "",
-      qr: {
+      qrTheme: {
         titleFontSize: "24px",
         primaryColor: "#228be6",
         secondaryColor: "#ffffff",
@@ -94,7 +93,7 @@ const StoreRegistration = () => {
         ctaColor: "#fab005",
         radius: 5,
       },
-      website: {
+      websiteTheme: {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
       },
@@ -104,6 +103,7 @@ const StoreRegistration = () => {
   });
 
   const { id } = useParams();
+
   const objectToFormData = (
     obj: any,
     formData = new FormData(),
@@ -112,10 +112,24 @@ const StoreRegistration = () => {
     if (obj && typeof obj === "object" && !(obj instanceof File)) {
       Object.keys(obj).forEach((key) => {
         const fullKey = parentKey ? `${parentKey}[${key}]` : key;
-        objectToFormData(obj[key], formData, fullKey);
+
+        // Check if the key is 'menuImages' to append all values under the same key
+        if (parentKey === "menuImages") {
+          // Append each item directly to 'menuImages' key, skipping empty strings
+          obj.forEach((value: any) => {
+            if (value !== "") {
+              formData.append("menuImages", value);
+            }
+          });
+        } else {
+          objectToFormData(obj[key], formData, fullKey);
+        }
       });
     } else {
-      formData.append(parentKey, obj);
+      // Only append if the value is not an empty string
+      if (obj !== "") {
+        formData.append(parentKey, obj);
+      }
     }
     return formData;
   };
@@ -142,11 +156,6 @@ const StoreRegistration = () => {
       console.log(err.message);
     },
   });
-
-  useEffect(() => {
-    if (!id) return;
-    form.setFieldValue("storeUniqueId", id);
-  }, [id]);
 
   const getSingleMerchant = useQuery({
     queryKey: ["get-content-by-id"],

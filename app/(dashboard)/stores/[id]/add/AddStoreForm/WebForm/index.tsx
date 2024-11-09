@@ -51,7 +51,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
   };
 
   const isFormValid = () => {
-    const webFieldValues = Object.values(form.values.website).every(
+    const webFieldValues = Object.values(form.values.websiteTheme).every(
       (value) => value !== null && value !== undefined && value !== ""
     );
     return webFieldValues;
@@ -68,9 +68,9 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <ColorInput
               format="hex"
               swatches={swatches}
-              value={form.values.website.primaryColor}
+              value={form.values.websiteTheme.primaryColor}
               onChange={(color) =>
-                form.setFieldValue("website.primaryColor", color)
+                form.setFieldValue("websiteTheme.primaryColor", color)
               }
               withEyeDropper
               placeholder="Pick a color"
@@ -83,9 +83,9 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <ColorInput
               format="hex"
               swatches={swatches}
-              value={form.values.website.secondaryColor}
+              value={form.values.websiteTheme.secondaryColor}
               onChange={(color) =>
-                form.setFieldValue("website.secondaryColor", color)
+                form.setFieldValue("websiteTheme.secondaryColor", color)
               }
               withEyeDropper
               placeholder="Pick a color"

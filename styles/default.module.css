@@ -93,4 +93,7 @@
   &[data-variant="primary"] {
     background-color: #dfff5d;
   }
+  &[data-variant="table"] {
+    background-color: #dfff5d;
+  }
 }

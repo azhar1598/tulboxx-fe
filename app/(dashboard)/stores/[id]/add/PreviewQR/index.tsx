@@ -3,8 +3,9 @@ import { Avatar, Text } from "@mantine/core";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 
-const PreviewQR = ({ storeInfo }) => {
+const PreviewQR = ({ storeInfo, qrCode }) => {
   //   const { theme } = useParams();
   //   console.log("params", theme);
   //   const searchParams = useSearchParams();
@@ -26,13 +27,13 @@ const PreviewQR = ({ storeInfo }) => {
   //     }
   //   }, [searchParams]);
   //   console.log("storeInfo,s", storeInfo);
-  console.log("storeInfo", storeInfo);
+  console.log("storeInfo", storeInfo, qrCode);
 
   const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
     if (!storeInfo?.logo) return;
-    const file = storeInfo.logo;
+    const file = storeInfo?.logo;
     const reader = new FileReader();
     reader.onload = () => setLogoPreview(reader.result);
 
@@ -42,14 +43,14 @@ const PreviewQR = ({ storeInfo }) => {
   return (
     <div
       className={`md:h-[720px] p-8 flex items-center justify-center`}
-      style={{ backgroundColor: `${storeInfo.qr.primaryColor}` }}
+      style={{ backgroundColor: `${storeInfo?.qrTheme.primaryColor}` }}
     >
       <div className="max-w-md w-full text-center space-y-6">
         {/* Logo and Restaurant Name */}
         <div className="flex items-center justify-center gap-2 text-white">
           <div
             className="w-12 h-12 bg-white flex items-center justify-center"
-            style={{ borderRadius: storeInfo.qr.radius }}
+            style={{ borderRadius: storeInfo?.qrTheme.radius }}
           >
             {/* <svg
               className="w-5 h-5 text-green-700"
@@ -66,20 +67,21 @@ const PreviewQR = ({ storeInfo }) => {
               </Text>
             )}
 
-            {logoPreview && (
+            {logoPreview && !qrCode && (
               <Image
                 src={logoPreview}
                 width={130}
                 height={130}
                 alt=""
-                style={{ borderRadius: storeInfo.qr.radius }}
+                style={{ borderRadius: storeInfo?.qrTheme.radius }}
               />
             )}
+
             {/* </div> */}
           </div>
           <span
             className="text-xl font-semibold"
-            style={{ fontSize: storeInfo.qr.titleFontSize || "16px" }}
+            style={{ fontSize: storeInfo?.qrTheme.titleFontSize || "16px" }}
           >
             {storeInfo?.name || "Your Store"}
           </span>
@@ -89,15 +91,15 @@ const PreviewQR = ({ storeInfo }) => {
         <div className="space-y-4">
           <h1
             className={`text-6xl font-serif text-white font-bold`}
-            style={{ color: storeInfo.qr.secondaryColor }}
+            style={{ color: storeInfo?.qrTheme.secondaryColor }}
           >
-            {storeInfo.qr.primaryText}
+            {storeInfo?.qrTheme.primaryText}
           </h1>
           <div
             className=" text-white text-xl py-2 px-6 rounded-full inline-block"
-            style={{ backgroundColor: storeInfo?.qr.ctaColor }}
+            style={{ backgroundColor: storeInfo?.qrTheme.ctaColor }}
           >
-            {storeInfo.qr.ctaText}
+            {storeInfo?.qrTheme.ctaText}
           </div>
         </div>
 
@@ -110,7 +112,17 @@ const PreviewQR = ({ storeInfo }) => {
             <br />
             HERE
           </span> */}
-          <img src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958" />
+          {!qrCode && (
+            <img src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958" />
+          )}
+          {qrCode && (
+            <QRCode
+              id="store-qr-code"
+              value={qrCode}
+              size={256}
+              className="h-64 w-64"
+            />
+          )}
         </div>
 
         {/* Footer Text */}

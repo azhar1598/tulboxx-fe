@@ -55,7 +55,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
   };
 
   const isFormValid = () => {
-    const qrFieldsValid = Object.values(form.values.qr).every(
+    const qrFieldsValid = Object.values(form.values.qrTheme).every(
       (value) => value !== null && value !== undefined && value !== ""
     );
     return qrFieldsValid;
@@ -82,7 +82,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
               <Box style={{ flex: 1 }}>
                 <NumberInput
                   placeholder="Enter font size"
-                  {...form.getInputProps("qr.titleFontSize")}
+                  {...form.getInputProps("qrTheme.titleFontSize")}
                   maxLength={2}
                   allowDecimal={false}
                   allowNegative={false}
@@ -95,13 +95,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
                 <ColorInput
                   format="hex"
                   swatches={swatches}
-                  value={form.values.qr.primaryColor}
+                  value={form.values.qrTheme.primaryColor}
                   onChange={(color) =>
-                    form.setFieldValue("qr.primaryColor", color)
+                    form.setFieldValue("qrTheme.primaryColor", color)
                   }
                   withEyeDropper
                   placeholder="Pick a color"
-                  //   error={form.errors.qr.primaryColor}
+                  //   error={form.errors.qrTheme.primaryColor}
                 />
               </Box>
               <Text size="sm" fw={500}>
@@ -111,13 +111,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
                 <ColorInput
                   format="hex"
                   swatches={swatches}
-                  value={form.values.qr.secondaryColor}
+                  value={form.values.qrTheme.secondaryColor}
                   onChange={(color) =>
-                    form.setFieldValue("qr.secondaryColor", color)
+                    form.setFieldValue("qrTheme.secondaryColor", color)
                   }
                   withEyeDropper
                   placeholder="Pick a color"
-                  //   error={form.errors.qr.secondaryColor}
+                  //   error={form.errors.qrTheme.secondaryColor}
                 />
               </Box>
               <Text size="sm" fw={500}>
@@ -126,7 +126,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
               <Box style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Enter primary text"
-                  {...form.getInputProps("qr.primaryText")}
+                  {...form.getInputProps("qrTheme.primaryText")}
                   maxLength={10}
                 />
               </Box>
@@ -141,7 +141,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
                     { value: 50, label: "" },
                     { value: 80, label: "" },
                   ]}
-                  {...form.getInputProps("qr.radius")}
+                  {...form.getInputProps("qrTheme.radius")}
                 />
               </Box>
               <Text size="sm" fw={500} mt={5}>
@@ -150,7 +150,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
               <Box style={{ flex: 1 }}>
                 <Textarea
                   placeholder="Enter CTA text"
-                  {...form.getInputProps("qr.ctaText")}
+                  {...form.getInputProps("qrTheme.ctaText")}
                   maxLength={20}
                   mt={5}
                 />
@@ -162,11 +162,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
                 <ColorInput
                   format="hex"
                   swatches={swatches}
-                  value={form.values.qr.ctaColor}
-                  onChange={(color) => form.setFieldValue("qr.ctaColor", color)}
+                  value={form.values.qrTheme.ctaColor}
+                  onChange={(color) =>
+                    form.setFieldValue("qrTheme.ctaColor", color)
+                  }
                   withEyeDropper
                   placeholder="Pick a color"
-                  //   error={form.errors.qr.secondaryColor}
+                  //   error={form.errors.qrTheme.secondaryColor}
                 />
               </Box>
             </SimpleGrid>
