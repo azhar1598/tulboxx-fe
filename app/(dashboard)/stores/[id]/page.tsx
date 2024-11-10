@@ -58,7 +58,7 @@ function StoreEditPage() {
     initialValues: {
       name: "",
       description: "",
-      tagline: "",
+      tagLine: "",
       address: "",
       state: "",
       city: "",
@@ -416,10 +416,12 @@ function StoreEditPage() {
             </Paper>
 
             <Group mt="xl">
-              <Button type="button" variant="default">
+              <Button type="button" disabled>
                 Cancel
               </Button>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit" disabled>
+                Save Changes
+              </Button>
             </Group>
           </Stack>
         </form>

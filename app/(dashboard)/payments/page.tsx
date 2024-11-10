@@ -3,9 +3,18 @@ import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
 import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
-import callApi from "@/services/apiService";
+import { checkStatus } from "@/lib/constants";
+import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
-import { ActionIcon, Box, Button, Group, Stack } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  Button,
+  Group,
+  Stack,
+  Text,
+} from "@mantine/core";
 import {
   IconDownload,
   IconEdit,
@@ -16,19 +25,38 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
-function page() {
+function PaymentsPage() {
   let columns = [
     {
-      accessor: "name",
-      render: ({ name }: any) => name,
+      accessor: "paymentCode",
+      render: ({ id }: any) => id,
     },
-    { accessor: "email", index: "email", render: ({ email }: any) => email },
     {
-      accessor: "phoneNumber",
-      index: "phoneNumber",
-      render: ({ phoneNumber }: any) => phoneNumber,
+      accessor: "amount",
+      render: ({ amount, currency }: any) => (
+        <Text>
+          {currency} {amount}
+        </Text>
+      ),
+    },
+    {
+      accessor: "paymentType",
+      index: "paymentType",
+      render: ({ paymentType }: any) => paymentType,
+    },
+    {
+      accessor: "paidAt",
+      index: "paidAt",
+      render: ({ paidAt }: any) => <Text>{paidAt || "N/A"}</Text>,
+    },
+    {
+      accessor: "status",
+      index: "status",
+      render: ({ status }: any) => (
+        <Badge color={checkStatus(status)}>{status}</Badge>
+      ),
     },
     // {
     //   accessor: "actions",
@@ -42,8 +70,8 @@ function page() {
     // },
   ];
 
-  const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
-
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const handleTypeChange = () => {};
   const handleSearch = () => {};
 
@@ -59,21 +87,42 @@ function page() {
     // ... more filters
   ];
 
-  const getPaymentsQuery = useQuery({
-    queryKey: ["get-payments"],
-    queryFn: async () => {
-      const response = await callApi.get(`v1/payments`);
-      return response.data;
-    },
-    select: (data) => {
-      console.log("ddd", data);
-      return {
-        tableData: data?.data?.result,
-      };
-    },
-  });
+  // const getPaymentsQuery = useQuery({
+  //   queryKey: ["get-payments", page],
+  //   queryFn: async () => {
+  //     const response = await callApi.get(`v1/payments`, {
+  //       params: {
+  //         page: page,
+  //         pageSize: pageSize,
+  //       },
+  //     });
+  //     return response.data;
+  //   },
+  //   select: (data) => {
+  //     return {
+  //       tableData: data?.result,
+  //       totalResults: data?.totalResults,
+  //       currentPage: data?.currentPage,
+  //       pageSize: data?.pageSize,
+  //     };
+  //   },
+  //   keepPreviousData: true, // Important for smooth pagination
+  //   staleTime: 0, // Ensure fresh data on page changes
 
-  console.log("mmm", getPaymentsQuery?.data?.tableData);
+  // });
+  const queryFilters = {
+    url: "v1/payments",
+    key: "get-payments",
+    page,
+    pageSize,
+  };
+  const getPaymentsQuery = useTableQuery(queryFilters);
+
+  console.log("mmm", getPaymentsQuery);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <>
@@ -87,12 +136,17 @@ function page() {
           onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          records={getPaymentsQuery?.data?.tableData}
+          records={getPaymentsQuery?.tableData || []}
           columns={columns}
+          totalRecords={getPaymentsQuery?.totalResults || 0}
+          currentPage={getPaymentsQuery?.currentPage || 0}
+          pageSize={getPaymentsQuery?.pageSize || 0}
+          onPageChange={handlePageChange}
+          isLoading={getPaymentsQuery.isLoading}
         />
       </Stack>
     </>
   );
 }
 
-export default page;
+export default PaymentsPage;

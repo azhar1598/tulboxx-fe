@@ -32,8 +32,9 @@ import React, { useEffect, useState } from "react";
 import PreviewQR from "./add/PreviewQR";
 import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
+import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
-function page() {
+function StoresPage() {
   const [opened, { open, close }] = useDisclosure(false);
   // const [storeId, setStoreId] = useState();
   const [qrCode, setQrCode] = useState("");
@@ -126,21 +127,21 @@ function page() {
     // ... more filters
   ];
 
-  const getStoresQuery = useQuery({
-    queryKey: ["get-stores"],
-    queryFn: async () => {
-      const response = await callApi.get(`/v1/stores`);
-      return response.data;
-    },
-    select: (data) => {
-      console.log("ddd", data);
-      return {
-        tableData: data?.data?.result,
-      };
-    },
-  });
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  console.log("mmm", getStoresQuery?.data?.tableData);
+  const queryFilters = {
+    url: "/v1/stores",
+    key: "get-stores",
+    page,
+    pageSize,
+  };
+
+  const getStoresQuery = useTableQuery(queryFilters);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
   // Generate QR data based on merchant info
 
@@ -174,8 +175,13 @@ function page() {
           onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          records={getStoresQuery?.data?.tableData}
+          records={getStoresQuery?.tableData || []}
           columns={columns}
+          totalRecords={getStoresQuery?.totalResults || 0}
+          currentPage={getStoresQuery?.currentPage || 0}
+          pageSize={getStoresQuery?.pageSize || 0}
+          onPageChange={handlePageChange}
+          isLoading={getStoresQuery.isLoading}
         />
       </Stack>
 
@@ -205,4 +211,4 @@ function page() {
   );
 }
 
-export default page;
+export default StoresPage;

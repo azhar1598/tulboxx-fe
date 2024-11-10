@@ -3,6 +3,7 @@ import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
 import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
+import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import callApi from "@/services/apiService";
 
 import { ActionIcon, Box, Button, Group, Stack } from "@mantine/core";
@@ -16,7 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 function page() {
   let columns = [
@@ -59,21 +60,21 @@ function page() {
     // ... more filters
   ];
 
-  const getMerchantsQuery = useQuery({
-    queryKey: ["get-content-by-id"],
-    queryFn: async () => {
-      const response = await callApi.get(`/v1/merchants`);
-      return response.data;
-    },
-    select: (data) => {
-      console.log("ddd", data);
-      return {
-        tableData: data?.data?.result,
-      };
-    },
-  });
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  console.log("mmm", getMerchantsQuery?.data?.tableData);
+  const queryFilters = {
+    url: "/v1/merchants",
+    key: "get-merchants",
+    page,
+    pageSize,
+  };
+
+  const getMerchantsQuery = useTableQuery(queryFilters);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <>
@@ -98,8 +99,13 @@ function page() {
           onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          records={getMerchantsQuery?.data?.tableData}
+          records={getMerchantsQuery?.tableData || []}
           columns={columns}
+          totalRecords={getMerchantsQuery?.totalResults || 0}
+          currentPage={getMerchantsQuery?.currentPage || 0}
+          pageSize={getMerchantsQuery?.pageSize || 0}
+          onPageChange={handlePageChange}
+          isLoading={getMerchantsQuery.isLoading}
         />
       </Stack>
     </>

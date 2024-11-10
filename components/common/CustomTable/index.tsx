@@ -1,25 +1,37 @@
 "use client";
-import { ActionIcon, Box, Group } from "@mantine/core";
-import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
+import { Box, Loader } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import classes from "./customtable.module.css";
 
-const PAGE_SIZE = 15;
+function CustomTable({
+  records,
+  columns,
+  totalRecords,
+  currentPage: initialPage = 1,
+  pageSize = 10,
+  onPageChange: externalPageChange,
+  isLoading,
+}) {
+  const [page, setPage] = useState(initialPage);
 
-function CustomTable({ records, columns }) {
-  const [page, setPage] = useState(1);
-  //   const [records, setRecords] = useState([].slice(0, PAGE_SIZE));
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    if (externalPageChange) {
+      externalPageChange(newPage);
+    }
+  };
 
+  // Reset page when total records changes
   useEffect(() => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-    // setRecords(employees.slice(from, to));
-  }, [page]);
+    setPage(initialPage);
+  }, [totalRecords, initialPage]);
 
-  console.log("rrr", records);
+  console.log("isLoading", isLoading);
+
   return (
-    <div className="data-table">
+    <Box className="data-table">
       <DataTable
         withTableBorder
         columns={columns}
@@ -44,7 +56,7 @@ function CustomTable({ records, columns }) {
           }),
         }}
         rowStyle={({ state }) =>
-          state != "NH" ? { padding: "20px" } : undefined
+          state !== "NH" ? { padding: "20px" } : undefined
         }
         styles={{
           header: {
@@ -54,16 +66,17 @@ function CustomTable({ records, columns }) {
             height: "30px",
           },
           footer: {
-            backgroundColor: "#14141fd9",
-            border: "5px solid red",
+            backgroundColor: "#f0f3f8",
+            borderTop: "1px solid #e9ecef",
           },
         }}
-        totalRecords={["1"].length}
-        recordsPerPage={PAGE_SIZE}
+        totalRecords={totalRecords}
+        recordsPerPage={pageSize}
         page={page}
-        onPageChange={(p) => setPage(p)}
+        onPageChange={handlePageChange}
+        fetching={isLoading && !records.length}
       />
-    </div>
+    </Box>
   );
 }
 
