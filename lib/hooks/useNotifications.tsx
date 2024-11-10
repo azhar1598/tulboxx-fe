@@ -31,6 +31,22 @@ function error(message: string, title: string = "Error") {
   });
 }
 
+function warn(message: string, title: string = "Warning") {
+  return notifications.show({
+    title: title || `Warning`,
+    color: "yellow",
+    message: message,
+    icon: (
+      <IconExclamationCircle
+        stroke={2}
+        style={{ width: rem(18), height: rem(18) }}
+      />
+    ),
+    withBorder: true,
+    autoClose: DEFAULT_AUTO_CLOSE_TIME,
+  });
+}
+
 export function usePageNotifications() {
-  return { success, error };
+  return { success, error, warn };
 }

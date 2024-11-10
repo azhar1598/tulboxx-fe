@@ -49,6 +49,7 @@ import PageMainWrapper from "@/components/common/PageMainWrapper";
 import {
   checkPaymentStatusBadge,
   checkStatus,
+  PAYMENT_STATUS,
   STORE_STATUS,
 } from "@/lib/constants";
 import { useDisclosure, useSetState } from "@mantine/hooks";
@@ -137,7 +138,7 @@ function StoreEditPage() {
     },
   ];
 
-  const { data: store, isLoading } = useQuery({
+  const { data: store } = useQuery({
     queryKey: ["get-store-by-id", id],
     queryFn: async () => {
       const response = await callApi.get(`/v1/stores/${id}`);
@@ -201,11 +202,12 @@ function StoreEditPage() {
         paymentUrl: data.data.paymentUrl,
         paymentCode: data.data.paymentCode,
       });
+      store.refetch();
       // router.push(`/stores/${data.data.id}`);
       // notification.success(`Store created successfully`);
     },
     onError: (err: Error) => {
-      // notification.error(err);
+      notification.error(err);
       console.log(err.message);
     },
   });
@@ -219,9 +221,21 @@ function StoreEditPage() {
     mutationFn: () => callApi.get(`/v1/payments/${state.paymentCode}`),
     onSuccess: async (res: any) => {
       const { data } = res;
-      close();
-      // router.push(`/stores/${data.data.id}`);
-      notification.success(`Payment Done Successfully`);
+
+      console.log("data", data);
+      if (data.data.status === PAYMENT_STATUS.SUCCESS) {
+        close();
+        notification.success(`Payment Done Successfully`);
+      } else if (data.data.status === PAYMENT_STATUS.FAILED) {
+        close();
+        notification.error(
+          "Kindly reinitiate the payment, as the previous attempt was unsuccessful."
+        );
+      } else {
+        notification.warn(
+          "Kindly ensure the merchant has been requested to make the payment, if not done already"
+        );
+      }
     },
     onError: (err: Error) => {
       // notification.error(err);
@@ -307,7 +321,7 @@ function StoreEditPage() {
                   <CustomTable
                     records={store?.data?.payments || []}
                     columns={columns}
-                    totalRecords={0}
+                    totalRecords={store?.data?.payments?.length}
                     currentPage={1}
                     pageSize={10}
                     // onPageChange={handlePageChange}
@@ -544,6 +558,7 @@ function StoreEditPage() {
                 // Add your payment status check logic here
                 console.log("Checking payment status...");
               }}
+              loading={checkPaymentStatus.isPending}
             >
               Check Payment Status
             </Button>

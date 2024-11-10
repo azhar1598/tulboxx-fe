@@ -12,7 +12,7 @@ function CustomTable({
   pageSize = 10,
   onPageChange: externalPageChange,
   isLoading,
-}) {
+}: any) {
   const [page, setPage] = useState(initialPage);
 
   // Handle page change
