@@ -46,13 +46,20 @@ import callApi from "@/services/apiService";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { checkStatus, STORE_STATUS } from "@/lib/constants";
-import { useDisclosure } from "@mantine/hooks";
+import {
+  checkPaymentStatusBadge,
+  checkStatus,
+  STORE_STATUS,
+} from "@/lib/constants";
+import { useDisclosure, useSetState } from "@mantine/hooks";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import CustomTable from "@/components/common/CustomTable";
 
 function StoreEditPage() {
   const { id } = useParams();
 
   const [opened, { open, close }] = useDisclosure(false);
+  const notification = usePageNotifications();
 
   const form = useForm({
     initialValues: {
@@ -99,6 +106,37 @@ function StoreEditPage() {
     },
   });
 
+  let columns = [
+    {
+      accessor: "id",
+      title: "Payment Code",
+      render: ({ id }: any) => id || "N/A",
+    },
+    {
+      accessor: "amount",
+      title: "Amount",
+      render: ({ currency, amount }: any) => (
+        <Text size="14px">
+          {currency} {amount || "N/A"}
+        </Text>
+      ),
+    },
+    {
+      accessor: "paymentType",
+      title: "paymentType",
+      render: ({ paymentType }: any) => (
+        <Text size="14px">{paymentType || "N/A"}</Text>
+      ),
+    },
+    {
+      accessor: "status",
+      title: "Status",
+      render: ({ status }: any) => (
+        <Badge color={checkPaymentStatusBadge(status)}>{status}</Badge>
+      ),
+    },
+  ];
+
   const { data: store, isLoading } = useQuery({
     queryKey: ["get-store-by-id", id],
     queryFn: async () => {
@@ -143,7 +181,11 @@ function StoreEditPage() {
   };
 
   const [couponCode, setCouponCode] = useState("");
-  const [paymentUrl, setPaymentUrl] = useState<string>("");
+
+  const [state, setState] = useSetState({
+    paymentUrl: "",
+    paymentCode: "",
+  });
 
   const makePayment = useMutation({
     mutationFn: () =>
@@ -155,7 +197,10 @@ function StoreEditPage() {
       const { data } = res;
       console.log("data----->", data.data.paymentUrl);
 
-      setPaymentUrl(data.data.paymentUrl);
+      setState({
+        paymentUrl: data.data.paymentUrl,
+        paymentCode: data.data.paymentCode,
+      });
       // router.push(`/stores/${data.data.id}`);
       // notification.success(`Store created successfully`);
     },
@@ -166,16 +211,41 @@ function StoreEditPage() {
   });
 
   useEffect(() => {
-    if (!paymentUrl) return;
+    if (!state.paymentUrl) return;
     open();
-  }, [paymentUrl]);
+  }, [state.paymentUrl]);
+
+  const checkPaymentStatus = useMutation({
+    mutationFn: () => callApi.get(`/v1/payments/${state.paymentCode}`),
+    onSuccess: async (res: any) => {
+      const { data } = res;
+      close();
+      // router.push(`/stores/${data.data.id}`);
+      notification.success(`Payment Done Successfully`);
+    },
+    onError: (err: Error) => {
+      // notification.error(err);
+      console.log(err.message);
+    },
+  });
+
+  // const makePaymentAvailable = () => {
+  //   return store?.data?.payments?.some(
+  //     (payment) => payment.status === "SUCCESS" || payment.status === "PENDING"
+  //   );
+  // };
 
   return (
     <Container size="lg" pb="xl">
       <PageHeader
         title="Edit Store"
-        leftSection={<Badge color={checkStatus("INITIATED")}>Initiated</Badge>}
+        leftSection={
+          <Badge color={checkStatus(store?.data?.status)}>
+            {store?.data?.status}
+          </Badge>
+        }
         rightSection={
+          // !makePaymentAvailable() && (
           <Flex gap={10}>
             <TextInput
               value={couponCode}
@@ -193,6 +263,7 @@ function StoreEditPage() {
               Make Payment
             </Button>
           </Flex>
+          // )
         }
       />
       <Flex gap={12}>
@@ -201,8 +272,8 @@ function StoreEditPage() {
             {/* <LoadingOverlay visible={isLoading} /> */}
 
             {/* Basic Information */}
-            <Flex gap={10} mt={10}>
-              <Paper shadow="sm" p="md" withBorder w={"70%"}>
+            <SimpleGrid cols={2} gap={10} mt={10}>
+              <Paper shadow="sm" p="md" withBorder>
                 <Title order={3} mb="md">
                   Basic Information
                 </Title>
@@ -230,12 +301,21 @@ function StoreEditPage() {
                   />
                 </Stack>
               </Paper>
-              <Card shadow="md" w={"30%"}>
+              <Card shadow="md">
                 <Center h={"100%"}>
-                  <Text color="gray">No Transactions Yet</Text>
+                  {/* <Text color="gray">No Transactions Yet</Text> */}
+                  <CustomTable
+                    records={store?.data?.payments || []}
+                    columns={columns}
+                    totalRecords={0}
+                    currentPage={1}
+                    pageSize={10}
+                    // onPageChange={handlePageChange}
+                    // isLoading={getPaymentsQuery.isLoading}
+                  />
                 </Center>
               </Card>
-            </Flex>
+            </SimpleGrid>
 
             {/* Location */}
             <Paper shadow="sm" p="md" withBorder>
@@ -447,7 +527,7 @@ function StoreEditPage() {
               {/* <div className="relative h-full overflow-hidden"> */}
               <div className="absolute inset-0 top-10 ">
                 <Image
-                  src={paymentUrl}
+                  src={state.paymentUrl}
                   alt="BHIM"
                   // fallbackSrc={<Loader />}
                   className="w-full h-full object-cover"
@@ -460,6 +540,7 @@ function StoreEditPage() {
               mt={20}
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded  "
               onClick={() => {
+                checkPaymentStatus.mutate();
                 // Add your payment status check logic here
                 console.log("Checking payment status...");
               }}

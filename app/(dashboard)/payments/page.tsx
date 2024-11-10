@@ -3,7 +3,7 @@ import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
 import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
-import { checkStatus } from "@/lib/constants";
+import { checkPaymentStatusBadge, checkStatus } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
 import {
@@ -47,6 +47,13 @@ function PaymentsPage() {
       render: ({ paymentType }: any) => paymentType,
     },
     {
+      accessor: "paymentReferenceId",
+      index: "paymentReferenceId",
+      render: ({ paymentReferenceId }: any) => (
+        <Text>{paymentReferenceId || "N/A"}</Text>
+      ),
+    },
+    {
       accessor: "paidAt",
       index: "paidAt",
       render: ({ paidAt }: any) => <Text>{paidAt || "N/A"}</Text>,
@@ -55,7 +62,7 @@ function PaymentsPage() {
       accessor: "status",
       index: "status",
       render: ({ status }: any) => (
-        <Badge color={checkStatus(status)}>{status}</Badge>
+        <Badge color={checkPaymentStatusBadge(status)}>{status}</Badge>
       ),
     },
     // {

@@ -78,3 +78,25 @@ export const checkStatus = (status) => {
     ? "red"
     : "";
 };
+
+export enum PAYMENT_STATUS {
+  INITIAL = "INITIAL",
+  PENDING = "PENDING",
+  FAILED = "FAILED",
+  SUCCESS = "SUCCESS",
+  CANCELLED = "CANCELLED",
+}
+
+export const checkPaymentStatusBadge = (status) => {
+  return PAYMENT_STATUS.INITIAL === status
+    ? "blue"
+    : PAYMENT_STATUS.PENDING === status
+    ? "orange"
+    : PAYMENT_STATUS.SUCCESS === status
+    ? "green"
+    : PAYMENT_STATUS.FAILED === status
+    ? "red"
+    : PAYMENT_STATUS.CANCELLED === status
+    ? "yellow"
+    : "";
+};
