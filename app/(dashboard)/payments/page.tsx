@@ -59,10 +59,10 @@ function page() {
     // ... more filters
   ];
 
-  const getMerchantsQuery = useQuery({
-    queryKey: ["get-content-by-id"],
+  const getPaymentsQuery = useQuery({
+    queryKey: ["get-payments"],
     queryFn: async () => {
-      const response = await callApi.get(`/v1/merchants`);
+      const response = await callApi.get(`v1/payments`);
       return response.data;
     },
     select: (data) => {
@@ -73,7 +73,7 @@ function page() {
     },
   });
 
-  console.log("mmm", getMerchantsQuery?.data?.tableData);
+  console.log("mmm", getPaymentsQuery?.data?.tableData);
 
   return (
     <>
@@ -87,7 +87,7 @@ function page() {
           onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          records={getMerchantsQuery?.data?.tableData}
+          records={getPaymentsQuery?.data?.tableData}
           columns={columns}
         />
       </Stack>
