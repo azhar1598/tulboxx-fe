@@ -8,6 +8,7 @@ import QRCode from "react-qr-code";
 
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
   Group,
@@ -30,6 +31,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import PreviewQR from "./add/PreviewQR";
 import { PrintLayout } from "./PrintLayout";
+import { checkStatus } from "@/lib/constants";
 
 function page() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -53,14 +55,14 @@ function page() {
     {
       accessor: "name",
       title: "Store Name (Tagline)",
-      render: ({ name, tagline, id }: any) => (
+      render: ({ name, tagLine, id }: any) => (
         <Link
           href={`/stores/${id}`}
           style={{ color: "blue", textDecoration: "underline" }}
         >
           {name}{" "}
           <small>
-            <i>({tagline})</i>
+            <i className="text-gray-500">({tagLine})</i>
           </small>
         </Link>
       ),
@@ -83,7 +85,9 @@ function page() {
     {
       accessor: "status",
       title: "Status",
-      render: ({ status }: any) => status || "N/A",
+      render: ({ status }: any) => (
+        <Badge color={checkStatus(status)}>{status}</Badge>
+      ),
     },
 
     {

@@ -66,3 +66,15 @@ export enum STORE_STATUS {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
 }
+
+export const checkStatus = (status) => {
+  return STORE_STATUS.INITIATED === status
+    ? "blue"
+    : STORE_STATUS.PENDING === status
+    ? "yellow"
+    : STORE_STATUS.ACTIVE === status
+    ? "green"
+    : STORE_STATUS.INACTIVE === status
+    ? "red"
+    : "";
+};

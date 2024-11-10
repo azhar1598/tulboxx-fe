@@ -46,7 +46,7 @@ import callApi from "@/services/apiService";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { STORE_STATUS } from "@/lib/constants";
+import { checkStatus, STORE_STATUS } from "@/lib/constants";
 import { useDisclosure } from "@mantine/hooks";
 
 function StoreEditPage() {
@@ -174,18 +174,7 @@ function StoreEditPage() {
     <Container size="lg" pb="xl">
       <PageHeader
         title="Edit Store"
-        leftSection={
-          <Badge
-            color={
-              STORE_STATUS.INITIATED === "blue" ||
-              STORE_STATUS.PENDING === "yellow" ||
-              STORE_STATUS.ACTIVE === "green" ||
-              STORE_STATUS.INACTIVE === "red"
-            }
-          >
-            Initiated
-          </Badge>
-        }
+        leftSection={<Badge color={checkStatus("INITIATED")}>Initiated</Badge>}
         rightSection={
           <Flex gap={10}>
             <TextInput
@@ -237,7 +226,7 @@ function StoreEditPage() {
                     label="Tagline"
                     placeholder="Enter store tagline"
                     leftSection={<IconTypography size={16} />}
-                    {...form.getInputProps("tagline")}
+                    {...form.getInputProps("tagLine")}
                   />
                 </Stack>
               </Paper>

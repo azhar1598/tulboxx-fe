@@ -117,7 +117,7 @@ const StoreRegistration = () => {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
       },
-      businessHours: [{ openTime: "", closeTime: "", day: "" }],
+      businessHours: [],
       menuImages: [],
     },
   });
