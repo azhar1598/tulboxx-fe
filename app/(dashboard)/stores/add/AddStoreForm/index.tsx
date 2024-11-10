@@ -38,11 +38,12 @@ import {
   IconPalette,
   IconPower,
   IconCircleCheck,
+  IconPlus,
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates } from "@/lib/constants";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import ContactForm from "./BusinessForm";
@@ -50,11 +51,15 @@ import QRForm from "./QRForm";
 import WebForm from "./WebForm";
 import BusinessForm from "./BusinessForm";
 import BasicForm from "./BasicForm";
+import { useMutation } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
-const AddStoreForm = ({ form, createStore }) => {
+const AddStoreForm = ({ form, id }) => {
   const router = useRouter();
 
   const [active, setActive] = useState(0);
+  const notification = usePageNotifications();
 
   const nextStep = () =>
     setActive((current) => (current < 5 ? current + 1 : current));
@@ -65,16 +70,70 @@ const AddStoreForm = ({ form, createStore }) => {
     scrollTo(0, 0);
   }, [active]);
 
+  const objectToFormData = (
+    obj: any,
+    formData = new FormData(),
+    parentKey = ""
+  ) => {
+    if (obj && typeof obj === "object" && !(obj instanceof File)) {
+      Object.keys(obj).forEach((key) => {
+        const fullKey = parentKey ? `${parentKey}[${key}]` : key;
+
+        // Check if the key is 'menuImages' to append all values under the same key
+        if (parentKey === "menuImages") {
+          // Append each item directly to 'menuImages' key, skipping empty strings
+          obj.forEach((value: any) => {
+            if (value !== "") {
+              formData.append("menuImages", value);
+            }
+          });
+        } else {
+          objectToFormData(obj[key], formData, fullKey);
+        }
+      });
+    } else {
+      // Only append if the value is not an empty string
+      if (obj !== "") {
+        formData.append(parentKey, obj);
+      }
+    }
+    return formData;
+  };
+
+  const createStore = useMutation({
+    mutationFn: (formData) =>
+      callApi.post(`/v1/merchants/${id}/stores`, formData),
+    onSuccess: async (res: any) => {
+      const { data } = res;
+      console.log("res", data);
+      router.push(`/stores/${data.data.id}`);
+      notification.success(`Store created successfully`);
+    },
+    onError: (err: Error) => {
+      // notification.error(err);
+      console.log(err.message);
+    },
+  });
+
+  console.log("iisisisi", createStore.isPending);
+
   return (
     <>
       <div className="bg-white w-fulal mt-5 page-main-wrapper p-[20px] mb-20">
-        <form
-        // onSubmit={form.onSubmit(() => {
-        //   createStore.mutate(form);
-        // })}
-        >
-          <Paper>
-            <Stack gap="xl">
+        <Paper>
+          <Stack gap="xl">
+            <form
+              onSubmit={form.onSubmit(() => {
+                const newFormValues = structuredClone(form.values);
+                const onlyFiles = newFormValues.menuImages.map(
+                  (image: any) => image.file
+                );
+                newFormValues.menuImages = onlyFiles;
+                const formData = objectToFormData(newFormValues);
+                console.log("formData", formData);
+                createStore.mutate(formData);
+              })}
+            >
               <Stepper
                 active={active}
                 // onStepClick={setActive}
@@ -126,30 +185,17 @@ const AddStoreForm = ({ form, createStore }) => {
                     active={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
+                    createStore={createStore}
                   />
                 </Stepper.Step>
 
-                <Stepper.Step label="Payment" description="Get full access">
-                  <Group mt="md">
-                    <Button onClick={prevStep}>Back</Button>
-                    <Button
-                      onClick={() => {
-                        console.log("form", form.errors);
-                        createStore.mutate();
-                      }}
-                      w={200}
-                    >
-                      Create
-                    </Button>
-                  </Group>
-                </Stepper.Step>
                 <Stepper.Completed>
-                  Completed, click back button to get to previous step
+                  Completed, click back buttons to get to previous step
                 </Stepper.Completed>
               </Stepper>
-            </Stack>
-          </Paper>
-        </form>
+            </form>
+          </Stack>
+        </Paper>
       </div>
       {/* <PageMainWrapper> */}
       {/* <Card radius="md" p={0}> */}

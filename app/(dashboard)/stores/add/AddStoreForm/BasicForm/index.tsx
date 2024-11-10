@@ -91,7 +91,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
 
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
-            label="Store Tagline"
+            label="Store tagline"
             placeholder="Enter store tagline"
             icon={<IconBuilding size="1rem" />}
             {...form.getInputProps("tagLine")}

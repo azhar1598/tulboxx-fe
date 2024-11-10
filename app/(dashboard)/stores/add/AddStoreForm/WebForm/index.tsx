@@ -13,9 +13,9 @@ import {
 import React, { useRef, useState } from "react";
 import WebPreview from "../../WebPreview";
 
-import { IconPhoto, IconX } from "@tabler/icons-react";
+import { IconPhoto, IconPlus, IconX } from "@tabler/icons-react";
 
-function WebForm({ form, active, prevStep, nextStep }) {
+function WebForm({ form, active, prevStep, nextStep, createStore }) {
   const [imageFiles, setImageFiles] = useState([]);
   const imageInputRef = useRef(null);
 
@@ -52,7 +52,11 @@ function WebForm({ form, active, prevStep, nextStep }) {
 
   const isFormValid = () => {
     const webFieldValues = Object.values(form.values.websiteTheme).every(
-      (value) => value !== null && value !== undefined && value !== ""
+      (value) =>
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        form.values.menuImages.length != 0
     );
     return webFieldValues;
   };
@@ -123,12 +127,17 @@ function WebForm({ form, active, prevStep, nextStep }) {
               ))}
             </SimpleGrid>
           </Box>
-          <Group justify="" mt="xl">
+          <Flex gap={10} justify="" mt="xl" w={600}>
             <Button onClick={prevStep}>Back</Button>
-            <Button onClick={nextStep} disabled={!isFormValid()}>
-              Next step
+            <Button
+              type="submit"
+              leftSection={<IconPlus />}
+              disabled={!isFormValid()}
+              loading={createStore.isPending}
+            >
+              Create Store
             </Button>
-          </Group>
+          </Flex>
         </SimpleGrid>
         <div className="reldative">
           <WebPreview storeInfo={form.values} />

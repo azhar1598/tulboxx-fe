@@ -1,14 +1,15 @@
 import React from "react";
-import { Group, Button, Title, Text } from "@mantine/core";
+import { Group, Button, Title, Text, Badge } from "@mantine/core";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
 interface PropType {
   title: string;
   rightSection?: any;
+  leftSection?: any;
 }
 
-export const PageHeader = ({ title, rightSection }: PropType) => {
+export const PageHeader = ({ title, rightSection, leftSection }: PropType) => {
   const router = useRouter();
   const [leftTitle, rightTitle] = title.split(":");
 
@@ -44,6 +45,7 @@ export const PageHeader = ({ title, rightSection }: PropType) => {
             </>
           )}
         </Title>
+        {leftSection}
       </Group>
 
       {rightSection}

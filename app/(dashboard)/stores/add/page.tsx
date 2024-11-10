@@ -52,19 +52,39 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 
 const storeSchema = z.object({
-  name: z.string().min(2, "Store name must be at least 2 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  category: z.string().min(1, "Please select a category"),
-  tagline: z.string().min(5, "Description must be at least 10 characters"),
-  ownerName: z.string().min(2, "Owner name must be at least 2 characters"),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
-  email: z.string().email("Invalid email address"),
-  openTime: z.string().min(1, "Opening time is required"),
-  closeTime: z.string().min(1, "Closing time is required"),
-  address: z.string().min(10, "Please enter complete address"),
-  themeColor: z.string().min(1, "Theme color is required"),
-  storeLogo: z.any().optional(),
-  storeImages: z.array(z.any()).optional(),
+  name: z.string().min(1, "Name is required"),
+  categoryId: z.number(),
+  tagLine: z.string(),
+  description: z.string(),
+  logo: z.string(),
+  licenseId: z.string(),
+  address: z.string(),
+  state: z.string(),
+  pincode: z.number(),
+  city: z.string(),
+  latitude: z.string(),
+  longitude: z.string(),
+  qrTheme: z.object({
+    titleFontSize: z.string(),
+    primaryColor: z.string(),
+    secondaryColor: z.string(),
+    primaryText: z.string(),
+    ctaText: z.string(),
+    ctaColor: z.string(),
+    radius: z.number(),
+  }),
+  websiteTheme: z.object({
+    primaryColor: z.string(),
+    secondaryColor: z.string(),
+  }),
+  businessHours: z.array(
+    z.object({
+      openTime: z.string(),
+      closeTime: z.string(),
+      day: z.string(),
+    })
+  ),
+  menuImages: z.array(z.any()),
 });
 
 const StoreRegistration = () => {
@@ -101,61 +121,6 @@ const StoreRegistration = () => {
       menuImages: [],
     },
   });
-  const searchParams = useSearchParams();
-  const id = searchParams.get("merchantId");
-
-  const objectToFormData = (
-    obj: any,
-    formData = new FormData(),
-    parentKey = ""
-  ) => {
-    if (obj && typeof obj === "object" && !(obj instanceof File)) {
-      Object.keys(obj).forEach((key) => {
-        const fullKey = parentKey ? `${parentKey}[${key}]` : key;
-
-        // Check if the key is 'menuImages' to append all values under the same key
-        if (parentKey === "menuImages") {
-          // Append each item directly to 'menuImages' key, skipping empty strings
-          obj.forEach((value: any) => {
-            if (value !== "") {
-              formData.append("menuImages", value);
-            }
-          });
-        } else {
-          objectToFormData(obj[key], formData, fullKey);
-        }
-      });
-    } else {
-      // Only append if the value is not an empty string
-      if (obj !== "") {
-        formData.append(parentKey, obj);
-      }
-    }
-    return formData;
-  };
-
-  const createStore = useMutation({
-    mutationFn: async () => {
-      const newFormValues = structuredClone(form.values);
-      const onlyFiles = newFormValues.menuImages.map(
-        (image: any) => image.file
-      );
-      newFormValues.menuImages = onlyFiles;
-      const formData = objectToFormData(newFormValues);
-      console.log("formData", formData);
-      callApi.post(`/v1/merchants/${id}/stores`, formData);
-    },
-    onSuccess: async (res: any) => {
-      const { data } = res;
-      console.log("res", data);
-      // router.push(`/stores`);
-      // notification.success(`Store created successfully`);
-    },
-    onError: (err: Error) => {
-      // notification.error(err);
-      console.log(err.message);
-    },
-  });
 
   const getSingleMerchant = useQuery({
     queryKey: ["get-content-by-id"],
@@ -164,6 +129,9 @@ const StoreRegistration = () => {
       return response.data;
     },
   });
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("merchantId");
 
   return (
     <Stack>
@@ -174,7 +142,7 @@ const StoreRegistration = () => {
       <div className="hidden md:block">
         {/* <SimpleGrid cols={1}> */}
 
-        <AddStoreForm form={form} createStore={createStore} />
+        <AddStoreForm form={form} id={id} />
 
         {/* <Flex direction={"column"}>
             <Tabs defaultValue="qr">
@@ -194,9 +162,9 @@ const StoreRegistration = () => {
           </Flex> */}
         {/* </SimpleGrid> */}
       </div>
-      <div className="md:hidden block">
+      {/* <div className="md:hidden block">
         <SimpleGrid cols={1}>
-          <AddStoreForm form={form} createStore={createStore} />
+          <AddStoreForm form={form} />
           <Flex direction={"column"}>
             <Tabs defaultValue="qr">
               <Tabs.List mb={10}>
@@ -214,7 +182,7 @@ const StoreRegistration = () => {
             </Tabs>
           </Flex>
         </SimpleGrid>
-      </div>
+      </div> */}
     </Stack>
   );
 };

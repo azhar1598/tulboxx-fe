@@ -59,3 +59,10 @@ export const swatches = [
   "#fab005",
   "#fd7e14",
 ];
+
+export enum STORE_STATUS {
+  INITIATED = "INITIATED",
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
