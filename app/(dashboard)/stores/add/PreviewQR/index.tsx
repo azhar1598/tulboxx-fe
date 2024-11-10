@@ -6,29 +6,6 @@ import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 
 const PreviewQR = ({ storeInfo, qrCode }) => {
-  //   const { theme } = useParams();
-  //   console.log("params", theme);
-  //   const searchParams = useSearchParams();
-
-  //   const [storeInfo, setStoreInfo] = useState(null);
-
-  //   useEffect(() => {
-  //     // Get the storeInfo parameter from the URL
-  //     const storeInfoString = searchParams.get("storeInfo");
-
-  //     if (storeInfoString) {
-  //       try {
-  //         // Parse the JSON string into an object
-  //         const parsedStoreInfo = JSON.parse(storeInfoString);
-  //         setStoreInfo(parsedStoreInfo);
-  //       } catch (error) {
-  //         console.error("Error parsing storeInfo:", error);
-  //       }
-  //     }
-  //   }, [searchParams]);
-  //   console.log("storeInfo,s", storeInfo);
-  console.log("storeInfo", storeInfo, qrCode);
-
   const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
@@ -52,15 +29,6 @@ const PreviewQR = ({ storeInfo, qrCode }) => {
             className="w-12 h-12 bg-white flex items-center justify-center"
             style={{ borderRadius: storeInfo?.qrTheme.radius }}
           >
-            {/* <svg
-              className="w-5 h-5 text-green-700"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
-            </svg> */}
-            {/* <div className="  w-full  z-20  flex justify-center items-center"> */}
-
             {!logoPreview && (
               <Text color="cyan" className="rounded-full" fw={550}>
                 {storeInfo?.name.slice(0, 2).toUpperCase()}
@@ -105,15 +73,11 @@ const PreviewQR = ({ storeInfo, qrCode }) => {
 
         {/* QR Code Placeholder */}
         <div className="bg-white w-48 h-48 mx-auto rounded-lg flex items-center justify-center">
-          {/* <span className="text-green-700 font-bold text-2xl text-center leading-tight">
-            QR
-            <br />
-            CODE
-            <br />
-            HERE
-          </span> */}
           {!qrCode && (
-            <img src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958" />
+            <img
+              src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958"
+              alt="sample qr"
+            />
           )}
           {qrCode && (
             <QRCode

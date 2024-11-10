@@ -14,6 +14,7 @@ import { IconSwitchHorizontal, IconLogout } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
+import { signOut } from "next-auth/react";
 
 interface NavbarLinkProps {
   icon: any;
@@ -81,11 +82,6 @@ export function Sidebar() {
     console.log("Switching account");
   };
 
-  const handleLogout = () => {
-    router.push("/login");
-    // Add any additional logout logic here
-  };
-
   return (
     <nav className={classes.navbar}>
       <Center>
@@ -97,6 +93,18 @@ export function Sidebar() {
       <div className={classes.navbarMain}>
         <Stack justify="flex-start" gap={5}>
           {links}
+          <UnstyledButton
+            onClick={() => {
+              signOut({ callbackUrl: "/login" });
+            }}
+            className={classes.link}
+            // data-active={}
+          >
+            <IconLogout style={{ width: "", height: "100px" }} stroke={1.5} />
+            <Text size="14px" ml={10}>
+              Logout
+            </Text>
+          </UnstyledButton>
         </Stack>
       </div>
     </nav>

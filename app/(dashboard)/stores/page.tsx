@@ -29,6 +29,7 @@ import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import PreviewQR from "./add/PreviewQR";
+import { PrintLayout } from "./PrintLayout";
 
 function page() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -193,6 +194,7 @@ function page() {
           >
             Download QR Code
           </Button>
+          <PrintLayout qrCode={qrCode} storeInfo={storeInfo} />
         </Stack>
       </Modal>
     </>

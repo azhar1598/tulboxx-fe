@@ -12,13 +12,14 @@ import {
   IconShoppingBag,
   IconBuildingStore,
   IconCategory2,
+  IconCreditCardPay,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
   // { label: "Generate", icon: IconWandOff, link: "/" },
   { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
   { label: "Stores", icon: IconBuildingStore, link: "/stores" },
-  { label: "Products", icon: IconCategory2, link: "/templates" },
+  { label: "Products", icon: IconCategory2, link: "/products" },
+  { label: "Payments", icon: IconCreditCardPay, link: "/payments" },
   { label: "Settings", icon: IconSettings, link: "/settings" },
-  { label: "Logout", icon: IconLogout2, link: "/login" },
 ];

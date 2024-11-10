@@ -30,7 +30,7 @@ interface PropTypes {
 const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
   const form = useForm({
     initialValues: {
-      email: "prototype@gmail.com",
+      email: "admin@gmail.com",
       password: "12345678",
     },
     validate: {
