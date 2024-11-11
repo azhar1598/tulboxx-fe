@@ -125,8 +125,6 @@ function PaymentsPage() {
   };
   const getPaymentsQuery = useTableQuery(queryFilters);
 
-  console.log("mmm", getPaymentsQuery);
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -149,7 +147,7 @@ function PaymentsPage() {
           currentPage={getPaymentsQuery?.currentPage || 0}
           pageSize={getPaymentsQuery?.pageSize || 0}
           onPageChange={handlePageChange}
-          isLoading={getPaymentsQuery.isLoading}
+          isLoading={getPaymentsQuery?.isLoading}
         />
       </Stack>
     </>
