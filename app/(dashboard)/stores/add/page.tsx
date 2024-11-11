@@ -38,7 +38,7 @@ import {
   IconPalette,
   IconPower,
 } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates, swatches } from "@/lib/constants";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -87,7 +87,7 @@ const storeSchema = z.object({
   menuImages: z.array(z.any()),
 });
 
-const StoreRegistration = () => {
+const StoreRegistrationContent = () => {
   const form = useForm({
     validate: zodResolver(storeSchema),
     initialValues: {
@@ -123,6 +123,9 @@ const StoreRegistration = () => {
     },
   });
 
+  const searchParams = useSearchParams();
+  const id = searchParams.get("merchantId");
+
   const getSingleMerchant = useQuery({
     queryKey: ["get-content-by-id"],
     queryFn: async () => {
@@ -130,9 +133,6 @@ const StoreRegistration = () => {
       return response.data;
     },
   });
-
-  const searchParams = useSearchParams();
-  const id = searchParams.get("merchantId");
 
   return (
     <Stack>
@@ -185,6 +185,14 @@ const StoreRegistration = () => {
         </SimpleGrid>
       </div> */}
     </Stack>
+  );
+};
+
+const StoreRegistration = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StoreRegistrationContent />
+    </Suspense>
   );
 };
 

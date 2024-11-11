@@ -271,7 +271,7 @@ function WebForm({ form, active, prevStep, nextStep, createStore }) {
           !getPexelsImages?.isLoading && (
             <Pagination
               mt={10}
-              page={pexelsPage}
+              // page={pexelsPage}
               onChange={setPexelsPage}
               total={10}
               siblings={1}

@@ -3,7 +3,7 @@ import { Modal, Text, NumberInput, Button, Group, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPrinter } from "@tabler/icons-react";
 
-export const PrintLayout = ({ storeInfo, qrCode, logoPreview }) => {
+export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [numStickers, setNumStickers] = useState(4);
 

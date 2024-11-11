@@ -101,7 +101,7 @@ const AddStoreForm = ({ form, id }) => {
   };
 
   const createStore = useMutation({
-    mutationFn: (formData) =>
+    mutationFn: (formData: any) =>
       callApi.post(`/v1/merchants/${id}/stores`, formData),
     onSuccess: async (res: any) => {
       const { data } = res;

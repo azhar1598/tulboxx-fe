@@ -156,7 +156,7 @@ function StoresPage() {
 
     const downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
-    downloadLink.download = `store-${storeId}-qr.svg`;
+    // downloadLink.download = `store-${storeId}-qr.svg`;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);

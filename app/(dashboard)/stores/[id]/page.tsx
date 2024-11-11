@@ -98,13 +98,13 @@ function StoreEditPage() {
         phoneNumber: "",
       },
     },
-    validate: {
-      name: (value) => (value ? null : "Store name is required"),
-      "merchantDetails.email": (value) =>
-        /^\S+@\S+$/.test(value) ? null : "Invalid email",
-      "merchantDetails.phoneNumber": (value) =>
-        value ? null : "Phone number is required",
-    },
+    // validate: {
+    //   name: (value) => (value ? null : "Store name is required"),
+    //   "merchantDetails.email": (value) =>
+    //     /^\S+@\S+$/.test(value) ? null : "Invalid email",
+    //   "merchantDetails.phoneNumber": (value) =>
+    //     value ? null : "Phone number is required",
+    // },
   });
 
   let columns = [
@@ -206,7 +206,7 @@ function StoreEditPage() {
       // router.push(`/stores/${data.data.id}`);
       // notification.success(`Store created successfully`);
     },
-    onError: (err: Error) => {
+    onError: (err: any) => {
       notification.error(err);
       console.log(err.message);
     },
@@ -286,7 +286,7 @@ function StoreEditPage() {
             {/* <LoadingOverlay visible={isLoading} /> */}
 
             {/* Basic Information */}
-            <SimpleGrid cols={2} gap={10} mt={10}>
+            <SimpleGrid cols={2} spacing={10} mt={10}>
               <Paper shadow="sm" p="md" withBorder>
                 <Title order={3} mb="md">
                   Basic Information
