@@ -196,27 +196,13 @@ function WebForm({ form, active, prevStep, nextStep, createStore }) {
 
             <Box style={{ flex: 1 }}>
               <Button
-                leftSection={<IconSearch size={16} />}
+                leftSection={<IconPhoto size={16} />}
                 onClick={() => setPexelsModalOpen(true)}
               >
-                Upload Background
+                {form.values.websiteTheme.backgroundImage
+                  ? "Replace Background"
+                  : "Upload Background"}
               </Button>
-              <SimpleGrid cols={4} mt="md" spacing="md">
-                {form.values.websiteTheme.backgroundImage && (
-                  <div className="relative group">
-                    <Image src={form.values.websiteTheme.backgroundImage} />
-
-                    <button
-                      onClick={() => {
-                        form.setFieldValue("websiteTheme.backgroundImage", "");
-                      }}
-                      className="absolute top-2 right-2 p-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"
-                    >
-                      <IconX size={16} className="text-gray-600" />
-                    </button>
-                  </div>
-                )}
-              </SimpleGrid>
             </Box>
           </Box>
           <Flex gap={10} justify="" mt="xl" w={600}>
