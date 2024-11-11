@@ -202,7 +202,7 @@ function StoreEditPage() {
         paymentUrl: data.data.paymentUrl,
         paymentCode: data.data.paymentCode,
       });
-      store.refetch();
+      // store.refetch();
       // router.push(`/stores/${data.data.id}`);
       // notification.success(`Store created successfully`);
     },

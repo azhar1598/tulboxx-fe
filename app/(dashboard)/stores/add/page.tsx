@@ -116,6 +116,7 @@ const StoreRegistration = () => {
       websiteTheme: {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
+        backgroundImage: "",
       },
       businessHours: [],
       menuImages: [],
