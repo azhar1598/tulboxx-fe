@@ -180,7 +180,7 @@ function QRForm({ form, active, nextStep, prevStep }) {
             </Button>
           </Group>
         </Grid>
-        {/* <PreviewQR storeInfo={form.values} /> */}
+        <PreviewQR storeInfo={form.values} />
       </SimpleGrid>
     </Box>
   );

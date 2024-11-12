@@ -115,7 +115,7 @@ const AddStoreForm = ({ form, id }) => {
     },
   });
 
-  console.log("iisisisi", createStore.isPending);
+  console.log("iisisisi", form, createStore.isPending);
 
   return (
     <>
