@@ -90,10 +90,23 @@
 .button {
   height: rem(80);
   background-color: #182a4d !important;
+
   &[data-variant="primary"] {
-    background-color: #dfff5d;
+    background-color: #dfff5d !important;
   }
-  &[data-variant="table"] {
-    background-color: #dfff5d;
+  &[data-variant="table-btn-primary"] {
+    height: 30px !important;
+    font-size: 12px !important;
+    padding: 0px !important;
+    padding: 0px 10px 0px 10px !important;
+    min-width: 100px;
+  }
+  &[data-variant="table-btn-danger"] {
+    height: 30px !important;
+    font-size: 12px !important;
+    padding: 0px !important;
+    padding: 0px 10px 0px 10px !important;
+    background-color: #c8102e !important;
+    min-width: 100px;
   }
 }

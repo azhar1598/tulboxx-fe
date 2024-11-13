@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import callApi from "@/services/apiService";
 
-import { ActionIcon, Box, Button, Group, Stack } from "@mantine/core";
+import { ActionIcon, Box, Button, Flex, Group, Stack } from "@mantine/core";
 import {
   IconDownload,
   IconEdit,
@@ -34,11 +34,17 @@ function page() {
     {
       accessor: "actions",
       title: <Box mr={6}>Row actions</Box>,
+      width: "220px",
       textAlign: "right",
       render: ({ id }) => (
-        <Link href={`/stores/add?merchantId=${id}`}>
-          <Button>Create store</Button>
-        </Link>
+        <Flex gap={2}>
+          <Link href={`/stores/add?merchantId=${id}`}>
+            <Button variant="table-btn-primary">Create store</Button>
+          </Link>
+          <Link href={`/stores/add?merchantId=${id}`}>
+            <Button variant="table-btn-danger">Delete</Button>
+          </Link>
+        </Flex>
       ),
     },
   ];

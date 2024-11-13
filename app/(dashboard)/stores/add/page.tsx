@@ -65,7 +65,7 @@ const storeSchema = z.object({
   latitude: z.string(),
   longitude: z.string(),
   qrTheme: z.object({
-    titleFontSize: z.string(),
+    titleFontSize: z.number(),
     primaryColor: z.string(),
     secondaryColor: z.string(),
     primaryText: z.string(),
