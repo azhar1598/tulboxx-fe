@@ -1,5 +1,5 @@
 "use client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
   Container,
@@ -138,8 +138,8 @@ function StoreEditPage() {
     },
   ];
 
-  const { data: store } = useQuery({
-    queryKey: ["get-store-by-id", id],
+  const getStoreById = useQuery({
+    queryKey: ["get-store-by-id"],
     queryFn: async () => {
       const response = await callApi.get(`/v1/stores/${id}`);
       return response.data;
@@ -150,21 +150,22 @@ function StoreEditPage() {
       return data;
     },
   });
+  console.log("getStoreById", getStoreById?.data?.data);
 
   useEffect(() => {
-    if (!store?.data) return;
+    if (!getStoreById?.data) return;
     form.setValues({
-      ...store.data,
+      ...getStoreById.data?.data,
       businessHours: [
         ...form.values.businessHours.map((hour) => {
-          const foundHour = store.data.businessHours.find(
+          const foundHour = getStoreById.data?.data.businessHours.find(
             (h) => h.day === hour.day
           );
           return foundHour ? { ...hour, ...foundHour, isOpen: true } : hour;
         }),
       ],
     });
-  }, [store]);
+  }, [getStoreById?.data]);
 
   const handleSubmit = (values) => {
     // Filter out closed days from business hours
@@ -187,6 +188,7 @@ function StoreEditPage() {
     paymentUrl: "",
     paymentCode: "",
   });
+  const queryClient = useQueryClient();
 
   const makePayment = useMutation({
     mutationFn: () =>
@@ -196,15 +198,11 @@ function StoreEditPage() {
       }),
     onSuccess: async (res: any) => {
       const { data } = res;
-      console.log("data----->", data.data.paymentUrl);
 
       setState({
         paymentUrl: data.data.paymentUrl,
         paymentCode: data.data.paymentCode,
       });
-      // store.refetch();
-      // router.push(`/stores/${data.data.id}`);
-      // notification.success(`Store created successfully`);
     },
     onError: (err: any) => {
       notification.error(err);
@@ -221,8 +219,8 @@ function StoreEditPage() {
     mutationFn: () => callApi.get(`/v1/payments/${state.paymentCode}`),
     onSuccess: async (res: any) => {
       const { data } = res;
+      getStoreById.refetch();
 
-      console.log("data", data);
       if (data.data.status === PAYMENT_STATUS.SUCCESS) {
         close();
         notification.success(`Payment Done Successfully`);
@@ -254,8 +252,8 @@ function StoreEditPage() {
       <PageHeader
         title="Edit Store"
         leftSection={
-          <Badge color={checkStatus(store?.data?.status)}>
-            {store?.data?.status}
+          <Badge color={checkStatus(getStoreById?.data?.data?.status)}>
+            {getStoreById?.data?.data?.status}
           </Badge>
         }
         rightSection={
@@ -319,9 +317,9 @@ function StoreEditPage() {
                 <Center h={"100%"}>
                   {/* <Text color="gray">No Transactions Yet</Text> */}
                   <CustomTable
-                    records={store?.data?.payments || []}
+                    records={getStoreById?.data?.data?.payments || []}
                     columns={columns}
-                    totalRecords={store?.data?.payments?.length}
+                    totalRecords={getStoreById?.data?.data?.payments?.length}
                     currentPage={1}
                     pageSize={10}
                     // onPageChange={handlePageChange}

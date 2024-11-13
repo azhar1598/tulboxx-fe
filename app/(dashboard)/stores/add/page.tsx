@@ -117,6 +117,8 @@ const StoreRegistrationContent = () => {
         primaryColor: "#fab005",
         secondaryColor: "#091151",
         backgroundImage: "",
+        titleColor: "",
+        taglineColor: "",
       },
       businessHours: [],
       menuImages: [],

@@ -95,12 +95,21 @@ function WebPreview({ storeInfo }: any) {
           {/* Restaurant Name */}
 
           <Indicator color="green" position="top-end" processing>
-            <h1 className="text-lg font-bold text-white px-2 ">
+            <h1
+              className="text-lg font-bold text-white px-2 "
+              style={{ color: storeInfo?.websiteTheme?.titleColor }}
+            >
               {storeInfo?.name}
             </h1>
           </Indicator>
 
-          <p className="text-gray-400 -mt-3"> {storeInfo?.tagLine}</p>
+          <p
+            className="text-gray-400 -mt-3"
+            style={{ color: storeInfo?.websiteTheme?.taglineColor }}
+          >
+            {" "}
+            {storeInfo?.tagLine}
+          </p>
 
           {/* <Badge
             style={{

@@ -106,6 +106,7 @@ function QRForm({ form, active, createStore, prevStep }) {
                   }
                   withEyeDropper
                   placeholder="Pick a color"
+
                   //   error={form.errors.qrTheme.primaryColor}
                 />
               </Box>

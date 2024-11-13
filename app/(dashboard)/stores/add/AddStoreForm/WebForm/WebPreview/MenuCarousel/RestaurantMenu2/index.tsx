@@ -5,7 +5,7 @@ import { IconCurrencyRupee } from "@tabler/icons-react";
 
 const RestaurantMenu2 = ({ title, storeInfo }: any) => {
   return (
-    <div className="min-h- bg-zinc/30 backdrop-blur-sm  py-3 mx-3 text-white rounded-sm menu-bg2">
+    <div className="min-h- bg-black/30 backdrop-blur-sm  py-3 mx-3 text-white rounded-sm menu-bg2">
       <div className="max-w- mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

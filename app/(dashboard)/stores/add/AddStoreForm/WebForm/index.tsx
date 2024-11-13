@@ -122,9 +122,10 @@ function WebForm({ form, active, prevStep, nextStep }) {
               format="hex"
               swatches={swatches}
               value={form.values.websiteTheme.primaryColor}
-              onChange={(color) =>
-                form.setFieldValue("websiteTheme.primaryColor", color)
-              }
+              onChange={(color) => {
+                form.setFieldValue("websiteTheme.primaryColor", color);
+                form.setFieldValue("qrTheme.primaryColor", color);
+              }}
               withEyeDropper
               placeholder="Pick a color"
             />
@@ -139,6 +140,36 @@ function WebForm({ form, active, prevStep, nextStep }) {
               value={form.values.websiteTheme.secondaryColor}
               onChange={(color) =>
                 form.setFieldValue("websiteTheme.secondaryColor", color)
+              }
+              withEyeDropper
+              placeholder="Pick a color"
+            />
+          </Box>
+          <Text size="sm">
+            Store Title Color <span className="text-red-500">*</span>
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <ColorInput
+              format="hex"
+              swatches={swatches}
+              value={form.values.websiteTheme.titleColor}
+              onChange={(color) =>
+                form.setFieldValue("websiteTheme.titleColor", color)
+              }
+              withEyeDropper
+              placeholder="Pick a color"
+            />
+          </Box>
+          <Text size="sm">
+            Store Tagline Color <span className="text-red-500">*</span>
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <ColorInput
+              format="hex"
+              swatches={swatches}
+              value={form.values.websiteTheme.taglineColor}
+              onChange={(color) =>
+                form.setFieldValue("websiteTheme.taglineColor", color)
               }
               withEyeDropper
               placeholder="Pick a color"
