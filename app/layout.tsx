@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Box, Container, Flex, MantineProvider, Stack } from "@mantine/core";
+import { Flex, MantineProvider, Stack } from "@mantine/core";
 import { theme } from "@/theme";
 import { queryClient } from "@/lib/queryClient";
 import "@mantine/core/styles.css";
@@ -14,9 +14,9 @@ import store from "@/redux/store";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/common/Sidebar";
 import Header from "@/components/common/Header";
-import "mantine-datatable/styles.layer.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
+import "@mantine/carousel/styles.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

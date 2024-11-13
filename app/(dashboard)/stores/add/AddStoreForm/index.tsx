@@ -175,7 +175,6 @@ const AddStoreForm = ({ form, id }) => {
                     active={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
-                    createStore={createStore}
                   />
                 </Stepper.Step>
                 <Stepper.Step
@@ -185,7 +184,7 @@ const AddStoreForm = ({ form, id }) => {
                   <QRForm
                     form={form}
                     active={active}
-                    nextStep={nextStep}
+                    createStore={createStore}
                     prevStep={prevStep}
                   />
                 </Stepper.Step>

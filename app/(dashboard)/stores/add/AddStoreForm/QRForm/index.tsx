@@ -16,11 +16,16 @@ import {
   TextInput,
   ThemeIcon,
 } from "@mantine/core";
-import { IconPalette, IconPhoto, IconUpload } from "@tabler/icons-react";
+import {
+  IconPalette,
+  IconPhoto,
+  IconPlus,
+  IconUpload,
+} from "@tabler/icons-react";
 import React, { useRef, useState } from "react";
 import PreviewQR from "../../PreviewQR";
 
-function QRForm({ form, active, nextStep, prevStep }) {
+function QRForm({ form, active, createStore, prevStep }) {
   const imageInputRef = useRef(null);
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -175,8 +180,13 @@ function QRForm({ form, active, nextStep, prevStep }) {
           </Grid.Col>
           <Group justify="" mt="xl">
             <Button onClick={prevStep}>Back</Button>
-            <Button onClick={nextStep} disabled={!isFormValid()}>
-              Next step
+            <Button
+              type="submit"
+              leftSection={<IconPlus />}
+              disabled={!isFormValid()}
+              loading={createStore.isPending}
+            >
+              Create Store
             </Button>
           </Group>
         </Grid>

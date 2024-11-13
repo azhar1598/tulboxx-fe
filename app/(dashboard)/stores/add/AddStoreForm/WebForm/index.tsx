@@ -16,16 +16,18 @@ import {
   Center,
 } from "@mantine/core";
 import React, { useRef, useState, useEffect } from "react";
-import WebPreview from "../../WebPreview";
+import WebPreview from "./WebPreview";
 import axios from "axios";
 
 import { IconPhoto, IconPlus, IconX, IconSearch } from "@tabler/icons-react";
 import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
+import TestWeb from "../TestWeb";
+import IPhoneFrame from "./WebPreview/IPhoneFrame";
 
 const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
 
-function WebForm({ form, active, prevStep, nextStep, createStore }) {
+function WebForm({ form, active, prevStep, nextStep }) {
   const [imageFiles, setImageFiles] = useState([]);
   const [pexelsSearchTerm, setPexelsSearchTerm] = useDebouncedState("", 800);
   const [pexelsImages, setPexelsImages] = useState([]);
@@ -207,18 +209,16 @@ function WebForm({ form, active, prevStep, nextStep, createStore }) {
           </Box>
           <Flex gap={10} justify="" mt="xl" w={600}>
             <Button onClick={prevStep}>Back</Button>
-            <Button
-              type="submit"
-              leftSection={<IconPlus />}
-              disabled={!isFormValid()}
-              loading={createStore.isPending}
-            >
-              Create Store
+            <Button onClick={nextStep} disabled={!isFormValid()}>
+              Next
             </Button>
           </Flex>
         </SimpleGrid>
         <div className="reldative">
-          <WebPreview storeInfo={form.values} />
+          {/* <WebPreview storeInfo={form.values} /> */}
+          <IPhoneFrame>
+            <WebPreview storeInfo={form.values} />
+          </IPhoneFrame>
         </div>
       </Flex>
 

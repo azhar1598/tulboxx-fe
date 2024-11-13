@@ -46,7 +46,7 @@ import { signOut } from "next-auth/react";
 import AddStoreForm from "./AddStoreForm";
 import PreviewQR from "./PreviewQR";
 import { PageHeader } from "@/components/common/PageHeader";
-import WebPreview from "./WebPreview";
+import WebPreview from "./AddStoreForm/WebForm/WebPreview";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
