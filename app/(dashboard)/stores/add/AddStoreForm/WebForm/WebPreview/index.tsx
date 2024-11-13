@@ -68,6 +68,25 @@ function WebPreview({ storeInfo }: any) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [showCarousel, storeInfo?.menuImages?.length]);
 
+  const groupedHours = storeInfo?.businessHours?.reduce((acc, hour) => {
+    const { day, openTime, closeTime } = hour;
+    const key = `${openTime}-${closeTime}`;
+    if (!acc[key]) {
+      acc[key] = { days: [day], openTime, closeTime };
+    } else {
+      acc[key].days.push(day);
+    }
+    return acc;
+  }, {});
+
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const ampm = hours >= 12 ? "PM" : "AM";
+    return `${hours % 12 || 12}:${minutes
+      ?.toString()
+      .padStart(2, "0")} ${ampm}`;
+  };
+
   return (
     <Stack>
       <div
@@ -89,7 +108,10 @@ function WebPreview({ storeInfo }: any) {
         <Stack align="center" pt={20}>
           {/* Logo */}
           <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center ">
-            <span className="text-xl font-bold text-white">RT</span>
+            <span className="text-xl font-bold text-white">
+              {" "}
+              {storeInfo?.name.slice(0, 2).toUpperCase()}
+            </span>
           </div>
 
           {/* Restaurant Name */}
@@ -235,14 +257,25 @@ function WebPreview({ storeInfo }: any) {
                   Business Hours
                 </h2>
               </Flex>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-200 text-sm">
-                <div>Monday - Friday</div>
-                <div>7:00 AM - 10:00 PM</div>
-                <div>Saturday</div>
-                <div>7:00 AM - 10:00 PM</div>
-                <div>Sunday</div>
-                <div>7:00 AM - 9:00 PM</div>
-              </div>
+
+              {groupedHours &&
+                Object.values(groupedHours).map(
+                  ({ days, openTime, closeTime }) => (
+                    <div
+                      key={`${openTime}-${closeTime}`}
+                      className="text-white/80"
+                    >
+                      <span className="font-medium">
+                        {days.length > 1
+                          ? `${days.slice(0, -1).join(", ")} and ${
+                              days[days.length - 1]
+                            }`
+                          : days[0]}
+                      </span>
+                      : {formatTime(openTime)} - {formatTime(closeTime)}
+                    </div>
+                  )
+                )}
             </Flex>
 
             <Group
