@@ -10,17 +10,29 @@ export const FilterLayout = ({
   recordsPerPageOptions = ["10", "25", "50", "100"],
   defaultRecordsPerPage = "10",
 }) => {
+  console.log(
+    "goooo",
+
+    filters[0].form?.getInputProps(`${filters[0].fieldName}`)
+  );
   return (
     <Flex justify="space-between" align={"flex-start"} gap={10} px={20} pt={10}>
       {/* Left section with filters */}
       <Group gap="xs">
-        {filters.map((filter, index) => (
+        {filters?.map((filter, index) => (
           <Select
             key={index}
             label={filter.label}
             data={filter.options}
-            onChange={filter.onChange}
+            onChange={(e, option) => {
+              filter.onChange(option);
+            }}
+            value={
+              filter.form?.getInputProps(`${filter.fieldName}`).value.value
+            }
             className={classes.filter_input}
+            searchable
+            allowDeselect={false}
           />
         ))}
       </Group>
