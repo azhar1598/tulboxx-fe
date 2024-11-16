@@ -87,6 +87,14 @@ function WebPreview({ storeInfo }: any) {
       .padStart(2, "0")} ${ampm}`;
   };
 
+  const [storeLogo, setStoreLogo] = useState("");
+
+  useEffect(() => {
+    if (!storeInfo.logo) return;
+    console.log("sss", storeInfo.logo[0]);
+    setStoreLogo(URL.createObjectURL(storeInfo.logo));
+  }, [storeInfo]);
+
   return (
     <Stack>
       <div
@@ -106,12 +114,22 @@ function WebPreview({ storeInfo }: any) {
         {/* <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div> */}
 
         <Stack align="center" pt={20}>
-          {/* Logo */}
           <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center ">
-            <span className="text-xl font-bold text-white">
-              {" "}
-              {storeInfo?.name.slice(0, 2).toUpperCase()}
-            </span>
+            {!storeLogo ? (
+              <span className="text-xl font-bold text-white">
+                {" "}
+                {storeInfo?.name.slice(0, 2).toUpperCase()}
+              </span>
+            ) : (
+              <Image
+                src={storeLogo}
+                alt="logo here"
+                width={100}
+                height={100}
+                style={{ borderRadius: "100px" }}
+                className="rouned-full"
+              />
+            )}
           </div>
 
           {/* Restaurant Name */}

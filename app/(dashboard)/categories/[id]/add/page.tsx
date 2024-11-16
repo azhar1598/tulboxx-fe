@@ -47,20 +47,20 @@ function AddProductPage() {
     ]);
   };
 
-  const createCategory = useMutation({
-    mutationFn: () => callApi.post(`/v1/merchants`, form.values),
-    onSuccess: async (res) => {
-      const { data } = res;
-      console.log("res", data);
-      router.push(`/products/${id}/add`);
-      notification.success(`Category created successfully`);
-    },
-    onError: (err: Error) => {
-      console.log("ee", err);
-      notification.error(`${err}`);
-      console.log(err.message);
-    },
-  });
+  // const createCategory = useMutation({
+  //   mutationFn: () => callApi.post(`/v1/merchants`, form.values),
+  //   onSuccess: async (res) => {
+  //     const { data } = res;
+  //     console.log("res", data);
+  //     router.push(`/products/${id}/add`);
+  //     notification.success(`Category created successfully`);
+  //   },
+  //   onError: (err: Error) => {
+  //     console.log("ee", err);
+  //     notification.error(`${err}`);
+  //     console.log(err.message);
+  //   },
+  // });
 
   return (
     <>
@@ -69,9 +69,10 @@ function AddProductPage() {
       />
       <PageMainWrapper>
         <form
-          onSubmit={() => {
-            createCategory.mutate();
-          }}
+          onSubmit={form.onSubmit(() => {
+            console.log("fff", form.values);
+            // createMerchant.mutate();
+          })}
         >
           {form.values.categories.map((_, index) => (
             <Stack key={index} mb={20}>
@@ -100,7 +101,11 @@ function AddProductPage() {
             </Stack>
           ))}
 
-          <Button type="submit" w={200} loading={createCategory.isPending}>
+          <Button
+            type="submit"
+            w={200}
+            // loading={createCategory.isPending}
+          >
             Create
           </Button>
         </form>
