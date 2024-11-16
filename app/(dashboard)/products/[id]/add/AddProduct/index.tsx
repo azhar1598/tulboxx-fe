@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { IconPlus } from "@tabler/icons-react";
 import { Button, Group } from "@mantine/core";
 import Link from "next/link";
+import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 
 function AddProductPage() {
   const { id } = useParams();
@@ -27,6 +28,16 @@ function AddProductPage() {
       return data;
     },
   });
+
+  const queryFilters = {
+    url: `/v1/stores/${id}/categories`,
+    key: "get-stores",
+    page: 1,
+    pageSize: 100,
+  };
+
+  const getCategoriesQuery = useDropdownOptions(queryFilters);
+
   return (
     <>
       <PageHeader
@@ -42,7 +53,12 @@ function AddProductPage() {
         }
       />
       <PageMainWrapper w={"full"}>
-        <AddProductsForm />
+        <AddProductsForm
+          storeId={getStoreById?.data?.data?.id}
+          storeName={getStoreById?.data?.data?.name}
+          getCategoriesQuery={getCategoriesQuery}
+          id={id}
+        />
       </PageMainWrapper>
     </>
   );

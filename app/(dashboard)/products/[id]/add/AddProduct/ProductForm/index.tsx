@@ -1,3 +1,5 @@
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import callApi from "@/services/apiService";
 import {
   Button,
   Group,
@@ -7,11 +9,14 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+
 import React from "react";
 import { z } from "zod";
 
 const formSchema = z.object({
-  products: z.array(
+  categoryProducts: z.array(
     z.object({
       categoryId: z.string().min(1, "Category ID is required"),
       products: z.array(
@@ -24,10 +29,12 @@ const formSchema = z.object({
   ),
 });
 
-function AddProductForm() {
+function AddProductForm({ getCategoriesQuery, id, storeId, storeName }: any) {
+  const router = useRouter();
+  const notification = usePageNotifications();
   const form = useForm({
     initialValues: {
-      products: [
+      categoryProducts: [
         {
           categoryId: "",
           products: [{ name: "", price: "" }],
@@ -37,11 +44,7 @@ function AddProductForm() {
   });
 
   // Sample categories - replace with your actual categories
-  const categories = [
-    { value: "1", label: "Electronics" },
-    { value: "2", label: "Clothing" },
-    { value: "3", label: "Books" },
-  ];
+  console.log("getCategories", getCategoriesQuery);
 
   const handleTextAreaChange = (value: string, index: number) => {
     // Split the textarea content by new lines
@@ -62,27 +65,42 @@ function AddProductForm() {
     });
 
     // Update the form with new products array
-    form.setFieldValue(`products.${index}.products`, newProducts);
+    form.setFieldValue(`categoryProducts.${index}.products`, newProducts);
   };
 
   const handleSubmit = (values) => {
     console.log("Submitted data:", values);
   };
 
-  console.log("ssss", form.values);
+  const addProducts = useMutation({
+    mutationFn: () => callApi.post(`/v1/stores/${id}/products`, form.values),
+    onSuccess: async (res) => {
+      const { data } = res;
+      router.push(`/products?storeName=${storeName}&storeId=${storeId}`);
+      notification.success(`Products added   successfully`);
+    },
+    onError: (err) => {
+      notification.error(err.message);
+      console.error(err);
+    },
+  });
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form
+      onSubmit={form.onSubmit((values) => {
+        addProducts.mutate();
+      })}
+    >
       <SimpleGrid cols={2} spacing="lg">
-        {form.values.products.map((item, index) => (
+        {form.values.categoryProducts.map((item, index) => (
           <React.Fragment key={index}>
             <Group gap={0}>
               <Select
                 label="Choose category"
                 placeholder="Select a category"
-                data={categories}
+                data={getCategoriesQuery}
                 w="100%"
-                {...form.getInputProps(`products.${index}.categoryId`)}
+                {...form.getInputProps(`categoryProducts.${index}.categoryId`)}
               />
               <Text
                 size="xs"
@@ -90,7 +108,8 @@ function AddProductForm() {
                 td="underline"
                 className="cursor-pointer"
                 onClick={() => {
-                  const categoryId = form.values.products[index].categoryId;
+                  const categoryId =
+                    form.values.categoryProducts[index].categoryId;
                   if (categoryId) {
                     console.log(`View products for category ${categoryId}`);
                   }

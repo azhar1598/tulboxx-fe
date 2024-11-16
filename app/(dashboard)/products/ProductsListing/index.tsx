@@ -27,6 +27,7 @@ import { checkStatus } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useForm } from "@mantine/form";
+import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
 function ProductsListing() {
   const formFilters = useForm({
@@ -72,27 +73,16 @@ function ProductsListing() {
     {
       accessor: "name",
       title: "Product Name",
-      render: ({ name, tagLine, id }: any) => (
-        <Link
-          href={`/stores/${id}`}
-          style={{ color: "blue", textDecoration: "underline" }}
-        >
-          {name}{" "}
-          <small>
-            <i className="text-gray-500">({tagLine})</i>
-          </small>
-        </Link>
-      ),
+      render: ({ name, tagLine, id }: any) => name,
     },
     {
       accessor: "price",
       title: "Price",
-      render: ({ licenseId }: any) => licenseId || "N/A",
-    },
-    {
-      accessor: "category",
-      title: "Category",
-      render: ({ city }: any) => city || "N/A",
+      render: ({ currency, price }: any) => (
+        <Text size="14px" c={"gray"}>
+          {currency} {price}
+        </Text>
+      ),
     },
 
     {
@@ -159,6 +149,15 @@ function ProductsListing() {
     },
   ];
 
+  const tableQueryFilters = {
+    url: `/v1/stores/${id}/products`,
+    key: "get-products",
+    page,
+    pageSize,
+  };
+
+  const getProductsQuery = useTableQuery(tableQueryFilters);
+
   return (
     <>
       <div className="mb-4">
@@ -182,13 +181,13 @@ function ProductsListing() {
           onRecordsPerPage={handleRecordsPerPage}
         />
         <CustomTable
-          records={getStoresQuery?.tableData || []}
+          records={getProductsQuery?.tableData || []}
           columns={columns}
-          totalRecords={getStoresQuery?.totalResults || 0}
-          currentPage={getStoresQuery?.currentPage || 0}
-          pageSize={getStoresQuery?.pageSize || 0}
+          totalRecords={getProductsQuery?.totalResults || 0}
+          currentPage={getProductsQuery?.currentPage || 0}
+          pageSize={getProductsQuery?.pageSize || 0}
           onPageChange={handlePageChange}
-          //   isLoading={getStoresQuery.isLoading}
+          isLoading={getProductsQuery.isLoading}
         />
       </Stack>
 

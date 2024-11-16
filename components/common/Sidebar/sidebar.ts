@@ -20,6 +20,7 @@ export const sidebarItems = [
   { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
   { label: "Stores", icon: IconBuildingStore, link: "/stores" },
   { label: "Products", icon: IconCategory2, link: "/products" },
+  { label: "Categories", icon: IconCreditCardPay, link: "/categories" },
   { label: "Payments", icon: IconCreditCardPay, link: "/payments" },
   { label: "Settings", icon: IconSettings, link: "/settings" },
 ];

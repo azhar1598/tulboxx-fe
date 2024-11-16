@@ -47,20 +47,45 @@ function AddProductPage() {
     ]);
   };
 
-  // const createCategory = useMutation({
-  //   mutationFn: () => callApi.post(`/v1/merchants`, form.values),
-  //   onSuccess: async (res) => {
-  //     const { data } = res;
-  //     console.log("res", data);
-  //     router.push(`/products/${id}/add`);
-  //     notification.success(`Category created successfully`);
-  //   },
-  //   onError: (err: Error) => {
-  //     console.log("ee", err);
-  //     notification.error(`${err}`);
-  //     console.log(err.message);
-  //   },
-  // });
+  const prepareFormData = (values) => {
+    const formData = new FormData();
+
+    values.categories.forEach((category, categoryIndex) => {
+      formData.append(`categories[${categoryIndex}][name]`, category.name);
+
+      if (category.image && Array.isArray(category.image)) {
+        category.image.forEach((file, imageIndex) => {
+          formData.append(
+            `category-${categoryIndex}-${imageIndex}-image`,
+            file,
+            file.name
+          );
+        });
+      } else if (category.image) {
+        formData.append(
+          `category-${categoryIndex}-0-image`,
+          category.image,
+          category.image.name
+        );
+      }
+    });
+
+    return formData;
+  };
+
+  const createCategory = useMutation({
+    mutationFn: (formData) =>
+      callApi.post(`/v1/stores/${id}/categories`, formData),
+    onSuccess: async (res) => {
+      const { data } = res;
+      router.push(`/products/${id}/add`);
+      notification.success(`Category created successfully`);
+    },
+    onError: (err) => {
+      notification.error(err.message);
+      console.error(err);
+    },
+  });
 
   return (
     <>
@@ -69,9 +94,11 @@ function AddProductPage() {
       />
       <PageMainWrapper>
         <form
-          onSubmit={form.onSubmit(() => {
-            console.log("fff", form.values);
-            // createMerchant.mutate();
+          onSubmit={form.onSubmit((values) => {
+            const formData = prepareFormData(values);
+
+            console.log("fff", formData, values);
+            createCategory.mutate(formData);
           })}
         >
           {form.values.categories.map((_, index) => (
@@ -86,6 +113,8 @@ function AddProductPage() {
                   label="Category Image"
                   {...form.getInputProps(`categories.${index}.image`)}
                   w={300}
+                  multiple
+                  accept="image/*"
                 />
                 {form.values.categories.length === index + 1 && (
                   <Button
@@ -101,11 +130,7 @@ function AddProductPage() {
             </Stack>
           ))}
 
-          <Button
-            type="submit"
-            w={200}
-            // loading={createCategory.isPending}
-          >
+          <Button type="submit" w={200} loading={createCategory.isPending}>
             Create
           </Button>
         </form>
