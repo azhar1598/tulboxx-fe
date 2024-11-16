@@ -32,7 +32,7 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import { useMutation } from "@tanstack/react-query";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
-function ProductsListing() {
+function CategoryListing() {
   const formFilters = useForm({
     initialValues: {
       store: { label: "", value: "" },
@@ -58,7 +58,7 @@ function ProductsListing() {
 
   const handleContinue = () => {
     router.push(
-      `/products?storeName=${formFilters.values.store.label}&storeId=${formFilters.values.store.value}`
+      `/categories?storeName=${formFilters.values.store.label}&storeId=${formFilters.values.store.value}`
     );
     close();
   };
@@ -73,12 +73,10 @@ function ProductsListing() {
     }
   };
 
-  const [selectedItem, setSelectedItem] = useState();
-
   let columns = [
     {
       accessor: "name",
-      title: "Product Name",
+      title: "Category Name",
       render: ({ name, tagLine, id }: any) => name,
     },
     {
@@ -97,7 +95,7 @@ function ProductsListing() {
       textAlign: "right",
       render: (record) => (
         <Flex gap={5}>
-          <Link href={`/products/${record.id}/edit?storeId=${id}`}>
+          <Link href={`/categories/${record.id}/edit?storeId=${id}`}>
             <Button variant="table-btn-primary" onClick={() => {}}>
               Edit
             </Button>
@@ -105,12 +103,9 @@ function ProductsListing() {
           <Button
             variant="table-btn-danger"
             onClick={() => {
-              setSelectedItem(record.id);
-              deleteProductMutation.mutate(record);
+              deleteCategoryMutation.mutate(record);
             }}
-            loading={
-              record.id === selectedItem && deleteProductMutation.isPending
-            }
+            loading={deleteCategoryMutation.isPending}
           >
             Delete
           </Button>
@@ -152,7 +147,7 @@ function ProductsListing() {
         // setSelectedStore(option);
         console.log("ooo", option);
         router.push(
-          `/products?storeName=${option.label}&storeId=${option.value}`
+          `/categories?storeName=${option.label}&storeId=${option.value}`
         );
       },
     },
@@ -165,24 +160,24 @@ function ProductsListing() {
   ];
 
   const tableQueryFilters = {
-    url: `/v1/stores/${id}/products`,
-    key: "get-products",
+    url: `/v1/stores/${id}/categories`,
+    key: "get-categories",
     page,
     pageSize,
   };
 
-  const getProductsQuery = useTableQuery(tableQueryFilters);
+  const getCategoriesQuery = useTableQuery(tableQueryFilters);
 
-  const deleteProductMutation = useMutation({
+  const deleteCategoryMutation = useMutation({
     mutationFn: (record: any) =>
-      callApi.delete(`/v1/stores/${id}/products/${record.id}`, {
+      callApi.delete(`/v1/stores/${id}/categories/${record.id}`, {
         data: {
           sharedColorwayIds: [record.id],
         },
       }),
     onSuccess: (record) => {
-      getProductsQuery.refetch;
-      notification.success(`Product deleted successfully`);
+      //   getCategoriesQuery.refetch;
+      notification.success(`Category deleted successfully`);
     },
   });
 
@@ -190,12 +185,12 @@ function ProductsListing() {
     <>
       <div className="mb-4">
         <PageHeader
-          title={`Products: ${name}`}
+          title={`Categories: ${name}`}
           rightSection={
             <Group>
-              <Link href={`/products/${id}/add`}>
+              <Link href={`/categories/${id}/add`}>
                 <Button leftSection={<IconPlus size={16} />}>
-                  Add Products
+                  Add Category
                 </Button>
               </Link>
             </Group>
@@ -209,13 +204,13 @@ function ProductsListing() {
           onRecordsPerPage={handleRecordsPerPage}
         />
         <CustomTable
-          records={getProductsQuery?.tableData || []}
+          records={getCategoriesQuery?.tableData || []}
           columns={columns}
-          totalRecords={getProductsQuery?.totalResults || 0}
-          currentPage={getProductsQuery?.currentPage || 0}
-          pageSize={getProductsQuery?.pageSize || 0}
+          totalRecords={getCategoriesQuery?.totalResults || 0}
+          currentPage={getCategoriesQuery?.currentPage || 0}
+          pageSize={getCategoriesQuery?.pageSize || 0}
           onPageChange={handlePageChange}
-          isLoading={getProductsQuery.isLoading}
+          isLoading={getCategoriesQuery.isLoading}
         />
       </Stack>
 
@@ -256,4 +251,4 @@ function ProductsListing() {
   );
 }
 
-export default ProductsListing;
+export default CategoryListing;

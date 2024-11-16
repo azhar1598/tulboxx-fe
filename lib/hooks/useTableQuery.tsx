@@ -37,5 +37,6 @@ export const useTableQuery = ({ url, key, page, pageSize }: PropTypes) => {
     isLoading: getTableData.isLoading,
     isError: getTableData.isError,
     error: getTableData.error,
+    refetch: getTableData.refetch(),
   };
 };

@@ -1,13 +1,13 @@
 import ProductsListing from "@/app/(dashboard)/products/ProductsListing";
 import React, { Suspense } from "react";
-import AddCategoryForm from "./AddCategoryForm";
+import EditCategoryForm from "./EditCategoryForm";
 
-function CategoryAddPage() {
+function CategoryEditPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <AddCategoryForm />
+      <EditCategoryForm />
     </Suspense>
   );
 }
 
-export default CategoryAddPage;
+export default CategoryEditPage;

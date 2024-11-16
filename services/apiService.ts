@@ -33,6 +33,13 @@ const callApi = {
   ): Promise<ApiResponse<T>> {
     return await callApi.request<T>(url, "PUT", data, config);
   },
+  async patch<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    return await callApi.request<T>(url, "PATCH", data, config);
+  },
   async delete<T = any>(
     url: string,
     config?: AxiosRequestConfig
@@ -41,7 +48,7 @@ const callApi = {
   },
   async request<T = any>(
     url: string,
-    method: "GET" | "POST" | "PUT" | "DELETE",
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
