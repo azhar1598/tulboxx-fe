@@ -62,8 +62,6 @@ function EditCategoryForm() {
     });
   }, [getCategoryById?.data]);
 
-  console.log("nnnn", getCategoryById?.data, form.values);
-
   //   const prepareFormData = (values) => {
   //     const formData = new FormData();
 

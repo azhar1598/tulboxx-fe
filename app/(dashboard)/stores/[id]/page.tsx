@@ -146,11 +146,10 @@ function StoreEditPage() {
     },
     select: (data) => {
       // Update form with fetched data
-      console.log("ddd", data.data);
+
       return data;
     },
   });
-  console.log("getStoreById", getStoreById?.data?.data);
 
   useEffect(() => {
     if (!getStoreById?.data) return;
@@ -178,7 +177,6 @@ function StoreEditPage() {
       businessHours: filteredHours,
     };
 
-    console.log("Form data to submit:", submitData);
     // Add your submission logic here
   };
 
@@ -553,8 +551,6 @@ function StoreEditPage() {
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded  "
               onClick={() => {
                 checkPaymentStatus.mutate();
-                // Add your payment status check logic here
-                console.log("Checking payment status...");
               }}
               loading={checkPaymentStatus.isPending}
             >

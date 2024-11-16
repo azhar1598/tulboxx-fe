@@ -56,7 +56,7 @@ const storeSchema = z.object({
   categoryId: z.number(),
   tagLine: z.string(),
   description: z.string(),
-  logo: z.any(),
+  storeLogo: z.any(),
   licenseId: z.string(),
   address: z.string(),
   state: z.string(),
@@ -95,7 +95,7 @@ const StoreRegistrationContent = () => {
       tagLine: "",
       description:
         "We are dedicated to providing the best services to our customers. Your satisfaction is our priority.",
-      logo: "",
+      storeLogo: "",
       licenseId: "",
       address: "",
       state: "",

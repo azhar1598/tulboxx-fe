@@ -26,7 +26,6 @@ function EditProductPage() {
       return response.data;
     },
     select: (data) => {
-      console.log("ddd", data.data);
       return data;
     },
   });
@@ -40,7 +39,6 @@ function EditProductPage() {
       return response.data;
     },
     select: (data) => {
-      console.log("ddd", data.data);
       return data;
     },
   });
@@ -72,7 +70,6 @@ function EditProductPage() {
         <EditProductForm
           storeId={getStoreById?.data?.data?.id}
           storeName={getStoreById?.data?.data?.name}
-          getCategoriesQuery={getCategoriesQuery}
           getProductById={getProductById?.data}
           id={id}
         />

@@ -97,7 +97,7 @@ const AddStoreForm = ({ form, id }) => {
       callApi.post(`/v1/merchants/${id}/stores`, formData),
     onSuccess: async (res: any) => {
       const { data } = res;
-      console.log("res", data);
+
       router.push(`/stores/${data.data.id}`);
       notification.success(`Store created successfully`);
     },
@@ -106,8 +106,6 @@ const AddStoreForm = ({ form, id }) => {
       console.log(err.message);
     },
   });
-
-  console.log("iisisisi", form, createStore.isPending);
 
   return (
     <>
@@ -118,7 +116,7 @@ const AddStoreForm = ({ form, id }) => {
               onSubmit={form.onSubmit(() => {
                 const newFormValues = structuredClone(form.values);
                 const formData = objectToFormData(newFormValues);
-                console.log("formData", formData);
+
                 createStore.mutate(formData);
               })}
             >

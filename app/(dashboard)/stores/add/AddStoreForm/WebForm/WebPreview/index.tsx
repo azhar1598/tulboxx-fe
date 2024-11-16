@@ -92,7 +92,7 @@ function WebPreview({ storeInfo }: any) {
 
   useEffect(() => {
     if (!storeInfo.logo) return;
-    console.log("sss", storeInfo.logo[0]);
+
     setStoreLogo(URL.createObjectURL(storeInfo.logo));
   }, [storeInfo]);
 

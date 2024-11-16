@@ -57,10 +57,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
     },
   });
 
-  console.log("orange", getPexelsImages?.data?.photos);
-
   const handlePexelsImageSelect = (image) => {
-    console.log("image", image);
     form.setFieldValue("websiteTheme.backgroundImage", image.src.original);
     setPexelsModalOpen(false);
     setPexelsSearchTerm("");

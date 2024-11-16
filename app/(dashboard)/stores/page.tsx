@@ -43,7 +43,7 @@ function StoresPage() {
   const handleModal = (id, record) => {
     // setStoreId(id);
     setQrCode(`${process.env.SITE_URL}/stores/${id}`);
-    console.log("record", record);
+
     setStoreInfo(record);
   };
 

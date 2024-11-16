@@ -1,7 +1,6 @@
 "use client";
 import { PageHeader } from "@/components/common/PageHeader";
 import React from "react";
-import MerchantForm from "./MerchantForm";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import MainLayout from "@/components/common/MainLayout";
 import AddProductsForm from "./ProductForm";
@@ -23,8 +22,6 @@ function AddProductPage() {
       return response.data;
     },
     select: (data) => {
-      // Update form with fetched data
-      console.log("ddd", data.data);
       return data;
     },
   });

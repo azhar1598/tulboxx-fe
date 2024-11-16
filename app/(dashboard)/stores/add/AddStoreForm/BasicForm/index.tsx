@@ -27,7 +27,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
       reader.onload = () => setLogoPreview(reader.result);
       setImageName(file.name);
       reader.readAsDataURL(file);
-      form.setFieldValue("logo", file);
+      form.setFieldValue("storeLogo", file);
     }
   };
 
@@ -42,8 +42,8 @@ function BasicForm({ form, active, nextStep, prevStep }) {
   };
 
   useEffect(() => {
-    if (!form.values.logo) return;
-    const file = form.values.logo;
+    if (!form.values.storeLogo) return;
+    const file = form.values.storeLogo;
     const reader = new FileReader();
     reader.onload = () => setLogoPreview(reader.result);
     setImageName(file.name);
@@ -165,7 +165,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
                     }}
                     onClick={() => {
                       setLogoPreview(null);
-                      form.setFieldValue("logo", null);
+                      form.setFieldValue("storeLogo", null);
                     }}
                   >
                     <IconX size={14} />

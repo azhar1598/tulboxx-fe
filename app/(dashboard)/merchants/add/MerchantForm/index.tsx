@@ -39,12 +39,11 @@ const MerchantForm = () => {
     mutationFn: () => callApi.post(`/v1/merchants`, form.values),
     onSuccess: async (res) => {
       const { data } = res;
-      console.log("res", data);
+
       router.push(`/stores/add?merchantId=${data?.data?.id}`);
       notification.success(`Merchant created successfully`);
     },
     onError: (err: Error) => {
-      console.log("ee", err);
       notification.error(`${err}`);
       console.log(err.message);
     },

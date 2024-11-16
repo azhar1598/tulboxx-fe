@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 const QRMenuSign = () => {
   const { theme } = useParams();
-  console.log("params", theme);
+
   const searchParams = useSearchParams();
 
   const [storeInfo, setStoreInfo] = useState(null);
@@ -23,7 +23,6 @@ const QRMenuSign = () => {
       }
     }
   }, [searchParams]);
-  console.log("storeInfo,s", storeInfo);
 
   return (
     <div

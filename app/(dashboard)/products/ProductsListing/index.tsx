@@ -63,8 +63,6 @@ function ProductsListing() {
     close();
   };
 
-  console.log("form.valies", formFilters.values.store);
-
   const handleModalClose = () => {
     // Only allow closing if a store is selected
     if (id) {
@@ -150,7 +148,6 @@ function ProductsListing() {
       onChange: (option) => {
         // formFilters.getInputProps("store").onChange(option);
         // setSelectedStore(option);
-        console.log("ooo", option);
         router.push(
           `/products?storeName=${option.label}&storeId=${option.value}`
         );
@@ -206,7 +203,7 @@ function ProductsListing() {
         <FilterLayout
           filters={!id ? [filters[0]] : filters}
           onSearch={handleSearch}
-          onRecordsPerPage={handleRecordsPerPage}
+          // onRecordsPerPage={handleRecordsPerPage}
         />
         <CustomTable
           records={getProductsQuery?.tableData || []}

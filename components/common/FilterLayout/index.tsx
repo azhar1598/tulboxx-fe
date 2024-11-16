@@ -6,15 +6,9 @@ import classes from "./filter.module.css";
 export const FilterLayout = ({
   filters = [],
   onSearch,
-  onRecordsPerPageChange,
   recordsPerPageOptions = ["10", "25", "50", "100"],
   defaultRecordsPerPage = "10",
 }) => {
-  console.log(
-    "goooo",
-
-    filters[0].form?.getInputProps(`${filters[0].fieldName}`)
-  );
   return (
     <Flex justify="space-between" align={"flex-start"} gap={10} px={20} pt={10}>
       {/* Left section with filters */}

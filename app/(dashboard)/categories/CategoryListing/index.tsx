@@ -63,8 +63,6 @@ function CategoryListing() {
     close();
   };
 
-  console.log("form.valies", formFilters.values.store);
-
   const handleModalClose = () => {
     // Only allow closing if a store is selected
     if (id) {
@@ -145,7 +143,7 @@ function CategoryListing() {
       onChange: (option) => {
         // formFilters.getInputProps("store").onChange(option);
         // setSelectedStore(option);
-        console.log("ooo", option);
+
         router.push(
           `/categories?storeName=${option.label}&storeId=${option.value}`
         );
@@ -201,7 +199,7 @@ function CategoryListing() {
         <FilterLayout
           filters={!id ? [filters[0]] : filters}
           onSearch={handleSearch}
-          onRecordsPerPage={handleRecordsPerPage}
+          //   onRecordsPerPage={handleRecordsPerPage}
         />
         <CustomTable
           records={getCategoriesQuery?.tableData || []}

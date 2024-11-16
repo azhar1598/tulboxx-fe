@@ -28,8 +28,6 @@ function CustomTable({
     setPage(initialPage);
   }, [totalRecords, initialPage]);
 
-  console.log("isLoading", isLoading);
-
   return (
     <Box className="data-table">
       <DataTable

@@ -42,7 +42,7 @@ function CategoryForm() {
 
   const handleAddCategory = () => {
     form.setFieldValue("categories", [
-      ...form.values.categories,
+      ...form.values?.categories,
       { name: "", image: null },
     ]);
   };

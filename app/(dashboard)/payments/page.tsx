@@ -138,7 +138,7 @@ function PaymentsPage() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
-          onRecordsPerPageChange={handleRecordsPerPage}
+          // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
           records={getPaymentsQuery?.tableData || []}
