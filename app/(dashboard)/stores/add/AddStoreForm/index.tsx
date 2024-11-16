@@ -80,16 +80,8 @@ const AddStoreForm = ({ form, id }) => {
         const fullKey = parentKey ? `${parentKey}[${key}]` : key;
 
         // Check if the key is 'menuImages' to append all values under the same key
-        if (parentKey === "menuImages") {
-          // Append each item directly to 'menuImages' key, skipping empty strings
-          obj.forEach((value: any) => {
-            if (value !== "") {
-              formData.append("menuImages", value);
-            }
-          });
-        } else {
-          objectToFormData(obj[key], formData, fullKey);
-        }
+
+        objectToFormData(obj[key], formData, fullKey);
       });
     } else {
       // Only append if the value is not an empty string
@@ -125,10 +117,6 @@ const AddStoreForm = ({ form, id }) => {
             <form
               onSubmit={form.onSubmit(() => {
                 const newFormValues = structuredClone(form.values);
-                const onlyFiles = newFormValues.menuImages.map(
-                  (image: any) => image.file
-                );
-                newFormValues.menuImages = onlyFiles;
                 const formData = objectToFormData(newFormValues);
                 console.log("formData", formData);
                 createStore.mutate(formData);

@@ -56,7 +56,7 @@ const storeSchema = z.object({
   categoryId: z.number(),
   tagLine: z.string(),
   description: z.string(),
-  logo: z.string(),
+  logo: z.any(),
   licenseId: z.string(),
   address: z.string(),
   state: z.string(),
@@ -84,7 +84,6 @@ const storeSchema = z.object({
       day: z.string(),
     })
   ),
-  menuImages: z.array(z.any()),
 });
 
 const StoreRegistrationContent = () => {
