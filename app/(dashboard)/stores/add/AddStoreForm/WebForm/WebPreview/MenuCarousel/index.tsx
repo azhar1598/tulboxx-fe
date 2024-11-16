@@ -3,7 +3,6 @@ import { Carousel } from "@mantine/carousel";
 import RestaurantMenu2 from "./RestaurantMenu2";
 
 interface MenuCarouselProps {
-  images: string[];
   currentIndex?: number;
   onClose?: () => void;
   storeInfo: any;

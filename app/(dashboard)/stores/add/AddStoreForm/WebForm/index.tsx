@@ -28,7 +28,6 @@ import {
 } from "@tabler/icons-react";
 import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import TestWeb from "../TestWeb";
 import IPhoneFrame from "./WebPreview/IPhoneFrame";
 
 const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;

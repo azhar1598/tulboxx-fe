@@ -44,7 +44,7 @@ function EditCategoryForm() {
     select: (data) => data,
   });
 
-  const form = useForm({
+  const form = useForm<any>({
     validate: zodResolver(formSchema),
     initialValues: {
       name: "",

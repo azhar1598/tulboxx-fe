@@ -172,7 +172,7 @@ function StoresPage() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
-          onRecordsPerPageChange={handleRecordsPerPage}
+          // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
           records={getStoresQuery?.tableData || []}
@@ -196,7 +196,7 @@ function StoresPage() {
         centered
       >
         <Stack className="items-center p-4">
-          <PreviewQR storeInfo={storeInfo} qrCode={qrCode} />
+          <PreviewQR storeInfo={storeInfo} />
           <Button
             onClick={downloadQRCode}
             leftSection={<IconDownload size={16} />}

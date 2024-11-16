@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 
-const PreviewQR = ({ storeInfo, qrCode }) => {
+const PreviewQR = ({ storeInfo }) => {
   const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const PreviewQR = ({ storeInfo, qrCode }) => {
               </Text>
             )}
 
-            {logoPreview && !qrCode && (
+            {logoPreview && (
               <Image
                 src={logoPreview}
                 width={130}
@@ -73,20 +73,19 @@ const PreviewQR = ({ storeInfo, qrCode }) => {
 
         {/* QR Code Placeholder */}
         <div className="bg-white w-48 h-48 mx-auto rounded-lg flex items-center justify-center">
-          {!qrCode && (
-            <img
-              src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958"
-              alt="sample qr"
-            />
-          )}
-          {qrCode && (
+          <img
+            src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958"
+            alt="sample qr"
+          />
+
+          {/* {qrCode && (
             <QRCode
               id="store-qr-code"
               value={qrCode}
               size={256}
               className="h-64 w-64"
             />
-          )}
+          )} */}
         </div>
 
         {/* Footer Text */}

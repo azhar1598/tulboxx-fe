@@ -33,11 +33,11 @@ function CategoryForm() {
     select: (data) => data,
   });
 
-  const form = useForm({
-    validate: zodResolver(formSchema),
+  const form = useForm<any>({
     initialValues: {
       categories: [{ name: "", image: null }],
     },
+    validate: zodResolver(formSchema),
   });
 
   const handleAddCategory = () => {
@@ -98,7 +98,7 @@ function CategoryForm() {
       <PageMainWrapper>
         <form
           onSubmit={form.onSubmit((values) => {
-            const formData = prepareFormData(values);
+            const formData: any = prepareFormData(values);
             createCategory.mutate(formData);
           })}
         >
