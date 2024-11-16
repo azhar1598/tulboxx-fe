@@ -30,7 +30,7 @@ import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import IPhoneFrame from "./WebPreview/IPhoneFrame";
 
-const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
+const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 
 function WebForm({ form, active, prevStep, nextStep }) {
   const [imageFiles, setImageFiles] = useState([]);
