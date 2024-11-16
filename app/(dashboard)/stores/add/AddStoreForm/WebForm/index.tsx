@@ -199,7 +199,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <TextInput
               placeholder="Enter store facebook url"
               icon={<IconBrandTwitter size="1rem" />}
-              {...form.getInputProps("websiteTheme.facebookUrl")}
+              {...form.getInputProps("websiteTheme.socialLinks.facebookUrl")}
               withAsterisk
             />
           </Box>
@@ -211,7 +211,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <TextInput
               placeholder="Enter store instagram url"
               icon={<IconBrandTwitter size="1rem" />}
-              {...form.getInputProps("websiteTheme.instagramUrl")}
+              {...form.getInputProps("websiteTheme.socialLinks.instagramUrl")}
               withAsterisk
             />
           </Box>
@@ -223,7 +223,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <TextInput
               placeholder="Enter store twitter url"
               icon={<IconBrandTwitter size="1rem" />}
-              {...form.getInputProps("websiteTheme.twitterUrl")}
+              {...form.getInputProps("websiteTheme.socialLinks.twitterUrl")}
               withAsterisk
             />
           </Box>
@@ -235,7 +235,7 @@ function WebForm({ form, active, prevStep, nextStep }) {
             <TextInput
               placeholder="Enter store youtube url"
               icon={<IconBrandTwitter size="1rem" />}
-              {...form.getInputProps("websiteTheme.youtubeUrl")}
+              {...form.getInputProps("websiteTheme.socialLinks.youtubeUrl")}
               withAsterisk
             />
           </Box>
