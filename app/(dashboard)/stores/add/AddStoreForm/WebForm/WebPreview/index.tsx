@@ -16,6 +16,7 @@ import {
   IconBrandFacebook,
   IconBrandInstagram,
   IconBrandTwitter,
+  IconBrandYoutube,
   IconClock,
   IconInfoSquare,
   IconMail,
@@ -346,6 +347,7 @@ function WebPreview({ storeInfo }: any) {
                   { icon: IconBrandFacebook, link: "#" },
                   { icon: IconBrandInstagram, link: "#" },
                   { icon: IconBrandTwitter, link: "#" },
+                  { icon: IconBrandYoutube, link: "#" },
                 ].map((social, index) => (
                   <ActionIcon
                     key={index}

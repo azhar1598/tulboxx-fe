@@ -19,7 +19,13 @@ import React, { useRef, useState, useEffect } from "react";
 import WebPreview from "./WebPreview";
 import axios from "axios";
 
-import { IconPhoto, IconPlus, IconX, IconSearch } from "@tabler/icons-react";
+import {
+  IconPhoto,
+  IconPlus,
+  IconX,
+  IconSearch,
+  IconBrandTwitter,
+} from "@tabler/icons-react";
 import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import TestWeb from "../TestWeb";
@@ -67,14 +73,23 @@ function WebForm({ form, active, prevStep, nextStep }) {
   );
 
   const isFormValid = () => {
-    const webFieldValues = Object.values(form.values.websiteTheme).every(
+    const {
+      facebookUrl,
+      instagramUrl,
+      twitterUrl,
+      youtubeUrl,
+      reviewUrl,
+      ...otherValues
+    } = form.values.websiteTheme;
+
+    const webFieldValues = Object.values(otherValues).every(
       (value) =>
         value !== null &&
         value !== undefined &&
         value !== "" &&
         form.values.websiteTheme.backgroundImage != ""
     );
-    console.log("form----", form, form.values.websiteTheme);
+
     return webFieldValues;
   };
 
@@ -176,6 +191,55 @@ function WebForm({ form, active, prevStep, nextStep }) {
               </Button>
             </Box>
           </Box>
+
+          <Text size="sm" fw={500} mb="xs">
+            Facebook Link
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Enter store facebook url"
+              icon={<IconBrandTwitter size="1rem" />}
+              {...form.getInputProps("websiteTheme.facebookUrl")}
+              withAsterisk
+            />
+          </Box>
+
+          <Text size="sm" fw={500} mb="xs">
+            Instagram Link
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Enter store instagram url"
+              icon={<IconBrandTwitter size="1rem" />}
+              {...form.getInputProps("websiteTheme.instagramUrl")}
+              withAsterisk
+            />
+          </Box>
+
+          <Text size="sm" fw={500} mb="xs">
+            Twitter Link
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Enter store twitter url"
+              icon={<IconBrandTwitter size="1rem" />}
+              {...form.getInputProps("websiteTheme.twitterUrl")}
+              withAsterisk
+            />
+          </Box>
+
+          <Text size="sm" fw={500} mb="xs">
+            Youtube Link
+          </Text>
+          <Box style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Enter store youtube url"
+              icon={<IconBrandTwitter size="1rem" />}
+              {...form.getInputProps("websiteTheme.youtubeUrl")}
+              withAsterisk
+            />
+          </Box>
+
           <Flex gap={10} justify="" mt="xl" w={600}>
             <Button onClick={prevStep}>Back</Button>
             <Button onClick={nextStep} disabled={!isFormValid()}>
