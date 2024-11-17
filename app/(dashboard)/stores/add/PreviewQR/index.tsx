@@ -10,6 +10,10 @@ const PreviewQR = ({ storeInfo }) => {
 
   useEffect(() => {
     if (!storeInfo?.logo) return;
+    if (typeof storeInfo?.logo === "string") {
+      setLogoPreview(storeInfo?.logo);
+      return;
+    }
     const file = storeInfo?.logo;
     const reader = new FileReader();
     reader.onload = () => setLogoPreview(reader.result);

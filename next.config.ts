@@ -7,6 +7,7 @@ const nextConfig = {
       "third-domain.net",
       "png.pngtree.com",
       "d1csarkz8obe9u.cloudfront.net",
+      "storage.googleapis.com",
     ],
   },
   env: {
