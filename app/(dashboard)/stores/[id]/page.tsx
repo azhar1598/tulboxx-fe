@@ -55,6 +55,7 @@ import {
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import CustomTable from "@/components/common/CustomTable";
+import Link from "next/link";
 
 function StoreEditPage() {
   const { id } = useParams();
@@ -250,9 +251,20 @@ function StoreEditPage() {
       <PageHeader
         title="Edit Store"
         leftSection={
-          <Badge color={checkStatus(getStoreById?.data?.data?.status)}>
-            {getStoreById?.data?.data?.status}
-          </Badge>
+          <Group>
+            <Badge color={checkStatus(getStoreById?.data?.data?.status)}>
+              {getStoreById?.data?.data?.status}
+            </Badge>
+            <Link
+              href={`https://stores.sourcestation.net/stores/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Text c={"blue"} size="12px" fw={550} td={"underline"}>
+                View Stores
+              </Text>
+            </Link>
+          </Group>
         }
         rightSection={
           // !makePaymentAvailable() && (

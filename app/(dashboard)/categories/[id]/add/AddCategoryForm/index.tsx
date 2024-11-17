@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useParams, useRouter } from "next/navigation";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Button, Flex, Stack, FileInput, TextInput } from "@mantine/core";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
@@ -45,6 +45,16 @@ function CategoryForm() {
       ...form.values?.categories,
       { name: "", image: null },
     ]);
+  };
+
+  const handleRemoveCategory = (indexToRemove: number) => {
+    // Only remove if there's more than one category
+    if (form.values.categories.length > 1) {
+      const updatedCategories = form.values.categories.filter(
+        (_, index) => index !== indexToRemove
+      );
+      form.setFieldValue("categories", updatedCategories);
+    }
   };
 
   const prepareFormData = (values) => {
@@ -117,9 +127,20 @@ function CategoryForm() {
                   multiple
                   accept="image/*"
                 />
+                {form.values.categories.length > 1 && (
+                  <Button
+                    color="red"
+                    leftSection={<IconTrash size={16} />}
+                    mt={24}
+                    onClick={() => handleRemoveCategory(index)}
+                    w={200}
+                  >
+                    Remove
+                  </Button>
+                )}
                 {form.values.categories.length === index + 1 && (
                   <Button
-                    leftSection={<IconPlus />}
+                    leftSection={<IconPlus size={16} />}
                     mt={24}
                     onClick={handleAddCategory}
                     w={200}
