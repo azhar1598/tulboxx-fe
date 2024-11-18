@@ -145,11 +145,10 @@ export const PrintLayout = ({ storeInfo, qrCode }: any) => {
             .logo-container {
               width: ${layoutType === "one" ? "108px" : "54px"};
               height: ${layoutType === "one" ? "108px" : "54px"};
-              background: white;
               display: flex;
               align-items: center;
               justify-content: center;
-              border-radius: ${storeInfo?.qrTheme.radius || "4px"};
+              border-radius: 4px;
             }
 
             .logo-text {
