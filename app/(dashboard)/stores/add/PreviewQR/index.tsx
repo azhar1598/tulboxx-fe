@@ -5,7 +5,12 @@ import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 
-const PreviewQR = ({ storeInfo, qrCode }) => {
+interface PropType {
+  storeInfo: any;
+  qrCode?: any;
+}
+
+const PreviewQR = ({ storeInfo, qrCode }: PropType) => {
   const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
