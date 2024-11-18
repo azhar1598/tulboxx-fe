@@ -91,9 +91,9 @@ function WebPreview({ storeInfo }: any) {
   const [storeLogo, setStoreLogo] = useState("");
 
   useEffect(() => {
-    if (!storeInfo.logo) return;
+    if (!storeInfo.storeLogo) return;
 
-    setStoreLogo(URL.createObjectURL(storeInfo.logo));
+    setStoreLogo(URL.createObjectURL(storeInfo.storeLogo));
   }, [storeInfo]);
 
   return (
