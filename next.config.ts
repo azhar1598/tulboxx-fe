@@ -14,6 +14,7 @@ const nextConfig = {
     BASE_URL: process.env.BASE_URL,
     PEXELS_API_KEY: process.env.PEXELS_API_KEY,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    SITE_URL: process.env.SITE_URL,
   },
 };
 

@@ -1,11 +1,83 @@
-import { useState } from "react";
-import { Modal, Text, NumberInput, Button, Group, Stack } from "@mantine/core";
+import { useEffect, useState } from "react";
+import {
+  Modal,
+  Text,
+  Button,
+  Group,
+  Stack,
+  SegmentedControl,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPrinter } from "@tabler/icons-react";
 
-export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
+export const PrintLayout = ({ storeInfo, qrCode }: any) => {
   const [opened, { open, close }] = useDisclosure(false);
-  const [numStickers, setNumStickers] = useState(4);
+  const [layoutType, setLayoutType] = useState("four");
+  const [logoPreview, setLogoPreview] = useState<any>("");
+
+  useEffect(() => {
+    if (!storeInfo?.logo) return;
+    if (typeof storeInfo?.logo === "string") {
+      setLogoPreview(storeInfo?.logo);
+      return;
+    }
+    const file = storeInfo?.logo;
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result);
+    reader.readAsDataURL(file);
+  }, []);
+
+  const getLayoutStyles = (type: string) => {
+    switch (type) {
+      case "one":
+        return `
+          .print-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 190mm;
+            height: 277mm;
+            padding: 5mm;
+          }
+          .sticker {
+            width: 190mm;
+            height: 277mm;
+          }
+        `;
+      case "two":
+        return `
+          .print-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(2, 1fr);
+            width: 190mm;
+            height: 277mm;
+            gap: 10mm;
+            padding: 5mm;
+          }
+          .sticker {
+            width: 190mm;
+            height: 133.5mm;
+          }
+        `;
+      default: // "four"
+        return `
+          .print-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            width: 190mm;
+            height: 277mm;
+            gap: 10mm;
+            padding: 5mm;
+          }
+          .sticker {
+            width: 94mm;
+            height: 144.5mm;
+          }
+        `;
+    }
+  };
 
   const printQRStickers = () => {
     const printWindow = window.open("", "_blank");
@@ -13,24 +85,22 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
       <html>
         <head>
           <title>Print QR Stickers - ${storeInfo?.name}</title>
-          <!-- Google Fonts Import -->
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
           <style>
             @page {
               size: A4;
-              margin: 10mm; /* Added margin around the page */
+              margin: 10mm;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
               color-adjust: exact !important;
             }
             
-            /* Define font families */
             :root {
-              --primary-font: 'Playfair Display', serif;
-              --secondary-font: 'Inter', sans-serif;
-              --heading-font: 'Poppins', sans-serif;
+              --primary-font: 'Heebo', sans-serif;
+              --secondary-font: 'Heebo', sans-serif;
+              --heading-font: 'Heebo', sans-serif;
             }
             
             body {
@@ -45,19 +115,9 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
               background-color: #fff;
             }
 
-            .print-container {
-              display: grid;
-              grid-template-columns: repeat(2, 1fr);
-              grid-template-rows: repeat(2, 1fr);
-              width: 190mm; /* Adjusted for page margins */
-              height: 277mm; /* Adjusted for page margins */
-              gap: 10mm; /* Added gap between stickers */
-              padding: 5mm; /* Added padding inside container */
-            }
+            ${getLayoutStyles(layoutType)}
 
             .sticker {
-              width: 94mm; /* Adjusted width accounting for gaps */
-              height: 144.5mm; /* Adjusted height accounting for gaps */
               display: flex;
               flex-direction: column;
               align-items: center;
@@ -66,8 +126,8 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
               box-sizing: border-box;
               background-color: ${storeInfo?.qrTheme.primaryColor} !important;
               color: white !important;
-              border-radius: 2mm; /* Added slight rounded corners */
-              box-shadow: 0 0 0 1px #ddd; /* Added subtle border */
+              border-radius: 2mm;
+              box-shadow: 0 0 0 1px #ddd;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
               color-adjust: exact !important;
@@ -83,8 +143,8 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
             }
 
             .logo-container {
-              width: 54px;
-              height: 54px;
+              width: ${layoutType === "one" ? "108px" : "54px"};
+              height: ${layoutType === "one" ? "108px" : "54px"};
               background: white;
               display: flex;
               align-items: center;
@@ -96,11 +156,15 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
               color: cyan !important;
               font-weight: 550;
               font-family: var(--heading-font);
-              font-size: 22px;
+              font-size: ${layoutType === "one" ? "44px" : "22px"};
             }
 
             .store-name {
-              font-size: ${storeInfo?.qrTheme.titleFontSize || "22px"};
+              font-size: ${
+                layoutType === "one"
+                  ? "44px"
+                  : storeInfo?.qrTheme.titleFontSize || "22px"
+              };
               font-weight: 600;
               font-family: var(--heading-font);
               color: white !important;
@@ -112,7 +176,7 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
             }
 
             .primary-text {
-              font-size: 2.25rem;
+              font-size: ${layoutType === "one" ? "4.5rem" : "2.25rem"};
               font-weight: bold;
               font-family: var(--primary-font);
               color: ${storeInfo?.qrTheme.secondaryColor} !important;
@@ -122,30 +186,29 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
 
             .cta-text {
               display: inline-block;
-              padding: 8px 24px;
+              padding: ${layoutType === "one" ? "16px 48px" : "8px 24px"};
               border-radius: 9999px;
               background-color: ${storeInfo?.qrTheme.ctaColor} !important;
               color: white !important;
-              font-size: 1.25rem;
+              font-size: ${layoutType === "one" ? "2.5rem" : "1.25rem"};
               font-family: var(--secondary-font);
             }
 
             .qr-container {
-              background: white;
-              width: 180px;
-              height: 180px;
+           
+              width: ${layoutType === "one" ? "360px" : "180px"};
+              height: ${layoutType === "one" ? "360px" : "180px"};
               margin: 16px auto;
               border-radius: 8px;
               display: flex;
               align-items: center;
               justify-content: center;
-              padding: 8px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              
             }
 
             .footer-text {
-              font-size: 0.95rem;
-              max-width: 75mm;
+              font-size: ${layoutType === "one" ? "1.9rem" : "0.95rem"};
+              max-width: ${layoutType === "one" ? "150mm" : "75mm"};
               margin: 0 auto;
               text-align: center;
               color: white !important;
@@ -154,7 +217,7 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
             }
 
             .powered-by {
-              font-size: 0.875rem;
+              font-size: ${layoutType === "one" ? "1.75rem" : "0.875rem"};
               color: white !important;
               margin-top: 10px;
               font-family: var(--secondary-font);
@@ -179,28 +242,17 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
                 margin: 0;
               }
 
-              /* Ensure fonts are embedded in print */
               @font-face {
-                font-family: 'Playfair Display';
+                font-family: 'Heebo';
                 font-display: swap;
-                src: url(https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtXK-F2qC0s.woff2) format('woff2');
-              }
-              @font-face {
-                font-family: 'Inter';
-                font-display: swap;
-                src: url(https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
-              }
-              @font-face {
-                font-family: 'Poppins';
-                font-display: swap;
-                src: url(https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
+                src: url(https://fonts.gstatic.com/s/heebo/v21/NGSpv5_NC0k9P_v6ZUCbLRAHxK1EiSysdUmj.woff2) format('woff2');
               }
             }
           </style>
         </head>
         <body>
           <div class="print-container">
-            ${Array(4)
+            ${Array(layoutType === "one" ? 1 : layoutType === "two" ? 2 : 4)
               .fill(0)
               .map(
                 () => `
@@ -212,9 +264,12 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
                         ? `<span class="logo-text">${storeInfo?.name
                             ?.slice(0, 2)
                             .toUpperCase()}</span>`
-                        : `<img src="${logoPreview}" width="130" height="130" style="border-radius: ${
-                            storeInfo?.qrTheme.radius || "4px"
-                          }" />`
+                        : `<img src="${logoPreview}" 
+                           width="${layoutType === "one" ? "100" : "60"}" 
+                           height="${layoutType === "one" ? "100" : "60"}" 
+                           style="border-radius: ${
+                             storeInfo?.qrTheme.radius || "4px"
+                           }" />`
                     }
                   </div>
                   <span class="store-name">${
@@ -237,7 +292,7 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
                   For any assistance or special requests, feel free to ask our friendly staff. 
                   Enjoy your dining experience with us!
                 </p>
-                <div class="powered-by">Powered by DigiMenu</div>
+                <div class="powered-by">Powered by Storekode.com</div>
               </div>
             `
               )
@@ -270,9 +325,27 @@ export const PrintLayout = ({ storeInfo, qrCode, logoPreview }: any) => {
         size="md"
       >
         <Stack>
-          <Text size="sm" c="dimmed">
-            This will print 4 QR code stickers on an A4 sheet in a 2x2 grid
-            layout with proper spacing.
+          <Text size="sm" c="dimmed" mb="xs">
+            Choose your preferred layout for printing on an A4 sheet:
+          </Text>
+
+          <SegmentedControl
+            value={layoutType}
+            onChange={setLayoutType}
+            data={[
+              { label: "Single Full Page", value: "one" },
+              { label: "Two Half Pages", value: "two" },
+              { label: "2x2 Grid (4)", value: "four" },
+            ]}
+            fullWidth
+          />
+
+          <Text size="sm" c="dimmed" mt="md">
+            {layoutType === "one"
+              ? "This will print a single full-page QR sticker on an A4 sheet."
+              : layoutType === "two"
+              ? "This will print 2 half-page QR stickers on an A4 sheet."
+              : "This will print 4 QR stickers in a 2x2 grid on an A4 sheet."}
           </Text>
 
           <Group justify="flex-end" mt="md">

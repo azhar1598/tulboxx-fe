@@ -15,6 +15,8 @@ import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
 import { signOut } from "next-auth/react";
+import LogoImage from "../../../public/assets/logo/logo.png";
+import Image from "next/image";
 
 interface NavbarLinkProps {
   icon: any;
@@ -85,9 +87,10 @@ export function Sidebar() {
   return (
     <nav className={classes.navbar}>
       <Center>
-        <Text c={"white"} fw={600} size="22px">
-          Digi Menu
-        </Text>
+        {/* <Text c={"white"} fw={600} size="22px">
+          Storekode.com
+        </Text> */}
+        <Image src={LogoImage} alt="logo" height={300} width={300} />
       </Center>
 
       <div className={classes.navbarMain}>

@@ -41,8 +41,9 @@ function StoresPage() {
   const [storeInfo, setStoreInfo] = useState();
 
   const handleModal = (id, record) => {
+    // console.log("siteurl", process.env.NEXT_PUBLIC_SITE_URL);
     // setStoreId(id);
-    setQrCode(`${process.env.SITE_URL}/stores/${id}`);
+    setQrCode(`${process.env.NEXT_PUBLIC_SITE_URL}/stores/${id}`);
 
     setStoreInfo(record);
   };
@@ -148,7 +149,7 @@ function StoresPage() {
   // Function to download QR code as SVG
   const downloadQRCode = () => {
     const svg = document.getElementById("merchant-qr-code");
-    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgData = new XMLSerializer()?.serializeToString(svg);
     const svgBlob = new Blob([svgData], {
       type: "image/svg+xml;charset=utf-8",
     });
@@ -196,7 +197,7 @@ function StoresPage() {
         centered
       >
         <Stack className="items-center p-4">
-          <PreviewQR storeInfo={storeInfo} />
+          <PreviewQR storeInfo={storeInfo} qrCode={qrCode} />
           <Button
             onClick={downloadQRCode}
             leftSection={<IconDownload size={16} />}

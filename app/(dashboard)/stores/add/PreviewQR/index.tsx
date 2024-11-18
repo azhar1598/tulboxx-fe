@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 
-const PreviewQR = ({ storeInfo }) => {
+const PreviewQR = ({ storeInfo, qrCode }) => {
   const [logoPreview, setLogoPreview] = useState<any>("");
 
   useEffect(() => {
@@ -77,19 +77,21 @@ const PreviewQR = ({ storeInfo }) => {
 
         {/* QR Code Placeholder */}
         <div className="bg-white w-48 h-48 mx-auto rounded-lg flex items-center justify-center">
-          <img
-            src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958"
-            alt="sample qr"
-          />
+          {!qrCode && (
+            <img
+              src="https://img.abyssale.com/574bfa75-c880-46be-97ae-599473818958"
+              alt="sample qr"
+            />
+          )}
 
-          {/* {qrCode && (
+          {qrCode && (
             <QRCode
               id="store-qr-code"
               value={qrCode}
               size={256}
               className="h-64 w-64"
             />
-          )} */}
+          )}
         </div>
 
         {/* Footer Text */}
@@ -97,7 +99,7 @@ const PreviewQR = ({ storeInfo }) => {
           For any assistance or special requests, feel free to ask our friendly
           staff. Enjoy your dining experience with us!
         </p>
-        <Text c={"white"}>Powered by DigiMenu</Text>
+        <Text c={"white"}>Powered by Storekode.com</Text>
       </div>
     </div>
   );
