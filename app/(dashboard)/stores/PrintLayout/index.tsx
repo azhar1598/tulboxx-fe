@@ -138,7 +138,6 @@ export const PrintLayout = ({ storeInfo, qrCode }: any) => {
               align-items: center;
               justify-content: center;
               gap: 8px;
-              margin-bottom: 16px;
               width: 100%;
             }
 
@@ -167,6 +166,10 @@ export const PrintLayout = ({ storeInfo, qrCode }: any) => {
               font-weight: 600;
               font-family: var(--heading-font);
               color: white !important;
+            }
+
+            .store-tagline{
+            font-size:14px;
             }
 
             .main-content {
@@ -206,7 +209,7 @@ export const PrintLayout = ({ storeInfo, qrCode }: any) => {
             }
 
             .footer-text {
-              font-size: ${layoutType === "one" ? "1.9rem" : "0.95rem"};
+              font-size: ${layoutType === "one" ? "14px" : "12px"};
               max-width: ${layoutType === "one" ? "150mm" : "75mm"};
               margin: 0 auto;
               text-align: center;
@@ -271,9 +274,12 @@ export const PrintLayout = ({ storeInfo, qrCode }: any) => {
                            }" />`
                     }
                   </div>
-                  <span class="store-name">${
-                    storeInfo?.name || "Your Store"
+                  <p class="store-name">${storeInfo?.name || "Your Store"}
+                  <br/>
+                  <span class="store-tagline">${
+                    storeInfo?.tagLine || "Your store tagline here"
                   }</span>
+                  </p>
                 </div>
                 
                 <div class="main-content">

@@ -35,7 +35,7 @@ const PreviewQR = ({ storeInfo, qrCode }: PropType) => {
         {/* Logo and Restaurant Name */}
         <div className="flex items-center justify-center gap-2 text-white">
           <div
-            className="w-12 h-12 bg-white flex items-center justify-center"
+            className="w-12 h-12 flex items-center justify-center"
             style={{ borderRadius: storeInfo?.qrTheme.radius }}
           >
             {!logoPreview && (
@@ -56,12 +56,15 @@ const PreviewQR = ({ storeInfo, qrCode }: PropType) => {
 
             {/* </div> */}
           </div>
-          <span
-            className="text-xl font-semibold"
+          <p
+            className="text-xl font-semibold flex flex-col items-start"
             style={{ fontSize: storeInfo?.qrTheme.titleFontSize || "16px" }}
           >
-            {storeInfo?.name || "Your Store"}
-          </span>
+            {storeInfo?.name || "Your Store"} <br />
+            <span className="text-[14px]">
+              {storeInfo?.tagLine || "Your store tagline here"}
+            </span>
+          </p>
         </div>
 
         {/* Main Text */}
