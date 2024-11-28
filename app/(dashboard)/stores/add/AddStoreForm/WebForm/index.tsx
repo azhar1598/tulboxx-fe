@@ -62,12 +62,6 @@ function WebForm({ form, active, prevStep, nextStep }) {
     setPexelsSearchTerm("");
   };
 
-  console.log(
-    "form...val",
-    form.values.websiteTheme.backgroundImage,
-    form.values
-  );
-
   const isFormValid = () => {
     const {
       facebookUrl,
