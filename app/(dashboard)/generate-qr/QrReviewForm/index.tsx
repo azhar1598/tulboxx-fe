@@ -12,12 +12,14 @@ import {
   Text,
   SegmentedControl,
   Flex,
+  Modal,
 } from "@mantine/core";
 import {
   IconUser,
   IconPhone,
   IconMail,
   IconPrinter,
+  IconId,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
@@ -51,6 +53,10 @@ const QrReviewForm = () => {
       phoneNumber: "",
     },
   });
+
+  const [isRidModalOpen, setIsRidModalOpen] = useState(false);
+  const [customRid, setCustomRid] = useState("");
+  const [useAutoRid, setUseAutoRid] = useState(true);
 
   const getLayoutStyles = (type: string) => {
     switch (type) {
@@ -106,18 +112,22 @@ const QrReviewForm = () => {
 
   console.log("layour", layoutType);
 
-  const printQRStickers = () => {
+  const printQRStickers = (rid?: string) => {
     const printWindow = window.open("", "_blank");
 
     // Generate sticker HTML dynamically
     const stickerCount =
       layoutType === "one" ? 1 : layoutType === "two" ? 2 : 4;
 
+    const generateUniqueId = () => {
+      return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    };
+
     // Generate sticker HTML dynamically
     const stickersHTML = Array(stickerCount)
       .fill(null)
       .map(() => {
-        const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`; // Unique ID using timestamp + random number
+        const uniqueId = rid || generateUniqueId();
 
         return `
         <div class="sticker">
@@ -429,6 +439,37 @@ const QrReviewForm = () => {
     }, 500);
   };
 
+  const handlePrint = () => {
+    if (useAutoRid) {
+      // If using auto-generated RID, print directly
+      printQRStickers();
+    } else {
+      // Open RID input modal
+      setIsRidModalOpen(true);
+    }
+  };
+
+  const ridSchema = z.object({
+    rid: z.string().min(3, "RID must be at least 3 characters"),
+  });
+
+  const ridForm = useForm({
+    validate: zodResolver(ridSchema),
+    initialValues: {
+      rid: "",
+    },
+  });
+
+  const handleRidSubmit = () => {
+    ridForm.validate();
+
+    if (ridForm.isValid()) {
+      // Close modal and print with custom RID
+      setIsRidModalOpen(false);
+      printQRStickers(customRid);
+    }
+  };
+
   return (
     <Stack>
       <Text size="sm" c="dimmed" mb="xs">
@@ -489,14 +530,72 @@ const QrReviewForm = () => {
         </Button>
         <Button
           onClick={() => {
-            printQRStickers();
-            close();
+            setIsRidModalOpen(true);
+            // printQRStickers();
+            // close();
           }}
           leftSection={<IconPrinter size={16} />}
         >
           Print
         </Button>
       </Group>
+
+      <Modal
+        opened={isRidModalOpen}
+        onClose={() => setIsRidModalOpen(false)}
+        title="Review ID (RID)"
+      >
+        <Stack>
+          <Text size="sm" c="dimmed">
+            Enter a custom Review ID or use an auto-generated one.
+          </Text>
+          <Group>
+            <Button
+              variant={useAutoRid ? "filled" : "outline"}
+              onClick={() => {
+                setUseAutoRid(true);
+                setIsRidModalOpen(false);
+                printQRStickers();
+              }}
+            >
+              Use Auto-generated RID
+            </Button>
+            <Button
+              variant={!useAutoRid ? "filled" : "outline"}
+              onClick={() => setUseAutoRid(false)}
+            >
+              Use Custom RID
+            </Button>
+          </Group>
+
+          {!useAutoRid && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRidSubmit();
+              }}
+            >
+              <TextInput
+                leftSection={<IconId size={16} />}
+                placeholder="Enter Review ID"
+                label="Custom Review ID"
+                description="Unique identifier for this review sticker"
+                {...ridForm.getInputProps("rid")}
+                value={customRid}
+                onChange={(event) => {
+                  setCustomRid(event.currentTarget.value);
+                  ridForm.setFieldValue("rid", event.currentTarget.value);
+                }}
+              />
+              <Group justify="flex-end" mt="md">
+                <Button type="submit" leftSection={<IconPrinter size={16} />}>
+                  Print with Custom RID
+                </Button>
+              </Group>
+            </form>
+          )}
+        </Stack>
+      </Modal>
     </Stack>
   );
 };
