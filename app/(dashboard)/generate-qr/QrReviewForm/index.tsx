@@ -110,8 +110,6 @@ const QrReviewForm = () => {
     }
   };
 
-  console.log("layour", layoutType);
-
   const printQRStickers = (rid?: string) => {
     const printWindow = window.open("", "_blank");
 
@@ -525,9 +523,7 @@ const QrReviewForm = () => {
       </Text>
 
       <Group justify="flex-end" mt="md">
-        <Button variant="outline" onClick={close}>
-          Cancel
-        </Button>
+        <Button variant="outline">Cancel</Button>
         <Button
           onClick={() => {
             setIsRidModalOpen(true);
