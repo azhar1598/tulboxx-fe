@@ -1,7 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSession } from "next-auth/react";
 
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_API_DEV_URL
+    : process.env.NEXT_PUBLIC_BASE_URL;
 
 export const api = axios.create({
   baseURL: BASE_URL,

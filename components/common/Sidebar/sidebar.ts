@@ -13,6 +13,9 @@ import {
   IconBuildingStore,
   IconCategory2,
   IconCreditCardPay,
+  IconLineScan,
+  IconQrcode,
+  IconCategory,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
@@ -20,7 +23,9 @@ export const sidebarItems = [
   { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
   { label: "Stores", icon: IconBuildingStore, link: "/stores" },
   { label: "Products", icon: IconCategory2, link: "/products" },
-  { label: "Categories", icon: IconCreditCardPay, link: "/categories" },
+  { label: "Categories", icon: IconCategory, link: "/categories" },
   { label: "Payments", icon: IconCreditCardPay, link: "/payments" },
+  { label: "Review Stores", icon: IconLineScan, link: "/review-stores" },
+  { label: "Review QR", icon: IconQrcode, link: "/generate-qr" },
   { label: "Settings", icon: IconSettings, link: "/settings" },
 ];
