@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GLogo from "../../../../public/assets/greview.png";
 import Image from "next/image";
 import ReviewUI from "./ReviewUI";
@@ -57,6 +57,8 @@ const QrReviewForm = () => {
   const [isRidModalOpen, setIsRidModalOpen] = useState(false);
   const [customRid, setCustomRid] = useState("");
   const [useAutoRid, setUseAutoRid] = useState(true);
+
+  const [qrIds, setQrIds] = useState<any>([]);
 
   const getLayoutStyles = (type: string) => {
     switch (type) {
@@ -110,23 +112,30 @@ const QrReviewForm = () => {
     }
   };
 
-  const printQRStickers = (rid?: string) => {
+  const generateUniqueId = () => {
+    return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  };
+
+  const qrIdsChange = (rids) => {
+    console.log("rid---->", rids);
+    setQrIds(rids);
+  };
+
+  console.log("wee", qrIds);
+
+  const printQRStickers = (data?: string) => {
     const printWindow = window.open("", "_blank");
 
     // Generate sticker HTML dynamically
     const stickerCount =
       layoutType === "one" ? 1 : layoutType === "two" ? 2 : 4;
 
-    const generateUniqueId = () => {
-      return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    };
+    console.log("qrIDss---->", qrIds);
 
     // Generate sticker HTML dynamically
     const stickersHTML = Array(stickerCount)
       .fill(null)
-      .map(() => {
-        const uniqueId = rid || generateUniqueId();
-
+      .map((_, index) => {
         return `
         <div class="sticker">
           <div class="header">
@@ -137,10 +146,16 @@ const QrReviewForm = () => {
             <span class="reviews-stars">★★★★★</span>
           </div>
           <div class="qr-container">
-            ${document.getElementById("review-qr-code").outerHTML}
+            ${
+              layoutType === "one"
+                ? document.getElementById("review-qr-code").outerHTML
+                : document.getElementById(`review-qr-code${index + 1}`)
+                    .outerHTML
+            }
+            }
           </div>
           <div class="main-content">
-            <p class="qr-id">RID: ${uniqueId}</p> <!-- Display unique ID -->
+            <p class="qr-id">RID: ${qrIds[index]}</p> <!-- Display unique ID -->
             <div class="emoji-container">
               <span class="emoji">😞</span>
               <span class="emoji">😟</span>
@@ -451,7 +466,7 @@ const QrReviewForm = () => {
     rid: z.string().min(3, "RID must be at least 3 characters"),
   });
 
-  const ridForm = useForm({
+  const ridForm: any = useForm({
     validate: zodResolver(ridSchema),
     initialValues: {
       rid: "",
@@ -464,9 +479,18 @@ const QrReviewForm = () => {
     if (ridForm.isValid()) {
       // Close modal and print with custom RID
       setIsRidModalOpen(false);
-      printQRStickers(customRid);
+      setQrIds([...qrIds, ridForm.values.rid]);
+      // printQRStickers(ridForm.values.rid);
     }
   };
+
+  useEffect(() => {
+    if (qrIds.length === 0) return;
+    printQRStickers(qrIds);
+    setQrIds([]);
+  }, [qrIds]);
+
+  console.log("qrIds", qrIds[0]);
 
   return (
     <Stack>
@@ -494,13 +518,48 @@ const QrReviewForm = () => {
           id="storekode-logo"
         />
 
-        <QRCode
-          id="review-qr-code"
-          value={""}
-          size={256}
-          className="h-64 w-64 "
-          style={{ height: "500px", width: "500px" }}
-        />
+        {layoutType === "one" && (
+          <QRCode
+            id="review-qr-code"
+            value={`https://storekode.com/reviews/${qrIds[0]}`}
+            size={256}
+            className="h-64 w-64 "
+            style={{ height: "500px", width: "500px" }}
+          />
+        )}
+
+        {layoutType != "one" && (
+          <>
+            <QRCode
+              id="review-qr-code1"
+              value={`https://storekode.com/reviews/${qrIds[0]}`}
+              size={256}
+              className="h-64 w-64 "
+              style={{ height: "500px", width: "500px" }}
+            />
+            <QRCode
+              id="review-qr-code2"
+              value={`https://storekode.com/reviews/${qrIds[1]}`}
+              size={256}
+              className="h-64 w-64 "
+              style={{ height: "500px", width: "500px" }}
+            />
+            <QRCode
+              id="review-qr-code3"
+              value={`https://storekode.com/reviews/${qrIds[2]}`}
+              size={256}
+              className="h-64 w-64 "
+              style={{ height: "500px", width: "500px" }}
+            />
+            <QRCode
+              id="review-qr-code4"
+              value={`https://storekode.com/reviews/${qrIds[3]}`}
+              size={256}
+              className="h-64 w-64 "
+              style={{ height: "500px", width: "500px" }}
+            />
+          </>
+        )}
       </div>
 
       <SegmentedControl
@@ -551,7 +610,24 @@ const QrReviewForm = () => {
               onClick={() => {
                 setUseAutoRid(true);
                 setIsRidModalOpen(false);
-                printQRStickers();
+                if (layoutType === "one") return;
+                let data = [];
+                [1, 2, 3, 4].map(() => {
+                  const uniqueId = generateUniqueId();
+                  data.push(uniqueId);
+                });
+                qrIdsChange(data);
+                console.log("qrIdsChange", qrIds);
+                // if (layoutType === "one") {
+                //   qrIdsChange(uniqueId);
+                // } else {
+                //   index === 0 && qrIdsChange(uniqueId);
+                //   index === 1 && qrIdsChange(uniqueId);
+                //   index === 2 && qrIdsChange(uniqueId);
+                //   index === 3 && qrIdsChange(uniqueId);
+                // }
+
+                // printQRStickers(data);
               }}
             >
               Use Auto-generated RID
@@ -579,6 +655,7 @@ const QrReviewForm = () => {
                 {...ridForm.getInputProps("rid")}
                 value={customRid}
                 onChange={(event) => {
+                  // qrIdsChange(event.currentTarget.value);
                   setCustomRid(event.currentTarget.value);
                   ridForm.setFieldValue("rid", event.currentTarget.value);
                 }}
