@@ -130,8 +130,6 @@ const QrReviewForm = () => {
     const stickerCount =
       layoutType === "one" ? 1 : layoutType === "two" ? 2 : 4;
 
-    console.log("qrIDss---->", qrIds);
-
     // Generate sticker HTML dynamically
     const stickersHTML = Array(stickerCount)
       .fill(null)
@@ -156,13 +154,13 @@ const QrReviewForm = () => {
           </div>
           <div class="main-content">
             <p class="qr-id">RID: ${qrIds[index]}</p> <!-- Display unique ID -->
-            <div class="emoji-container">
-              <span class="emoji">😞</span>
-              <span class="emoji">😟</span>
-              <span class="emoji">😐</span>
-              <span class="emoji">🙂</span>
-              <span class="emoji">😊</span>
-            </div>
+           <div class="emoji-container">
+  <span class="emoji" title="Sad">&#128542;</span>
+  <span class="emoji" title="Worried">&#128543;</span>
+  <span class="emoji" title="Neutral">&#128528;</span>
+  <span class="emoji" title="Slightly Smiling">&#128578;</span>
+  <span class="emoji" title="Smiling">&#128522;</span>
+</div>
             <div class="cta-text">HELP US IMPROVE !</div>
               <div class="progress-bar">
                   <div class="progress-bar__segment progress-bar__segment--red" style="width: 20%;"></div>
@@ -325,10 +323,10 @@ const QrReviewForm = () => {
           margin-top: 16px;
         }
   
-        .emoji {
-          font-size: 24px;
-        }
-  
+      .emoji {
+  font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
+  font-size: 24px;
+}
         .qr-container {
           width: ${layoutType === "one" ? "440px" : "180px"};
           height: ${layoutType === "one" ? "440px" : "180px"};;
@@ -489,8 +487,6 @@ const QrReviewForm = () => {
     printQRStickers(qrIds);
     setQrIds([]);
   }, [qrIds]);
-
-  console.log("qrIds", qrIds[0]);
 
   return (
     <Stack>
