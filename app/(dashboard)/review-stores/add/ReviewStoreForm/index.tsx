@@ -37,6 +37,7 @@ const formSchema = z.object({
   storeName: z.string().min(1, "Store Name is required"),
   qrId: z.string(),
   googleReviewPid: z.string(),
+  category: z.string(),
   address: z.string().min(1, "Address is required"),
   state: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
@@ -69,6 +70,7 @@ const ReviewStoreForm = () => {
       pincode: "",
       latitude: "",
       longitude: "",
+      category: "",
     },
   });
 
@@ -196,13 +198,13 @@ const ReviewStoreForm = () => {
           label="Category"
           placeholder="Select store category"
           data={[
-            { value: "1", label: "Restaurant" },
-            { value: "2", label: "Retail" },
-            { value: "3", label: "Grocery" },
-            { value: "4", label: "Electronics" },
-            { value: "5", label: "Fashion" },
+            { value: "Restaurant", label: "Restaurant" },
+            { value: "Retail", label: "Retail" },
+            { value: "Grocery", label: "Grocery" },
+            { value: "Electronics", label: "Electronics" },
+            { value: "Fashion", label: "Fashion" },
           ]}
-          {...form.getInputProps("categoryId")}
+          {...form.getInputProps("category")}
           withAsterisk
         />
         <TextInput
