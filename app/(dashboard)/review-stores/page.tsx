@@ -22,15 +22,38 @@ import React, { useState } from "react";
 function page() {
   let columns = [
     {
-      accessor: "name",
+      accessor: "storeName",
       title: "Store Name",
-      render: ({ name }: any) => name,
+
+      render: ({ storeName }: any) => storeName,
     },
-    { accessor: "email", index: "email", render: ({ email }: any) => email },
+    {
+      accessor: "qrId",
+      title: "RID",
+
+      render: ({ id }: any) => id,
+    },
+    {
+      accessor: "googleReviewPid",
+      title: "Review PID",
+
+      render: ({ googleReviewPid }: any) => googleReviewPid,
+    },
+    {
+      accessor: "ownerName",
+      title: "Owner Name",
+
+      render: ({ ownerName }: any) => ownerName,
+    },
     {
       accessor: "phoneNumber",
       index: "phoneNumber",
       render: ({ phoneNumber }: any) => phoneNumber,
+    },
+    {
+      accessor: "email",
+
+      render: ({ email }: any) => email,
     },
     {
       accessor: "actions",
@@ -40,17 +63,12 @@ function page() {
       render: ({ id }) => (
         <Flex gap={2}>
           <Link href={`/stores/add?merchantId=${id}`}>
-            <Button variant="table-btn-primary">Create store</Button>
-          </Link>
-          <Link href={`/stores/add?merchantId=${id}`}>
             <Button variant="table-btn-danger">Delete</Button>
           </Link>
         </Flex>
       ),
     },
   ];
-
-  const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
   const handleTypeChange = () => {};
   const handleSearch = () => {};
@@ -71,8 +89,8 @@ function page() {
   const pageSize = 10;
 
   const queryFilters = {
-    url: "/v1/merchants",
-    key: "get-merchants",
+    url: "/v1/google/stores",
+    key: "get-review-stores",
     page,
     pageSize,
   };

@@ -80,7 +80,7 @@ const ReviewStoreForm = () => {
       const { data } = res;
 
       router.push(`/stores/add?merchantId=${data?.data?.id}`);
-      notification.success(`Merchant created successfully`);
+      notification.success(`Review Store created successfully`);
     },
     onError: (err: Error) => {
       notification.error(`${err}`);
