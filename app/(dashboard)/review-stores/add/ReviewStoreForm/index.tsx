@@ -31,9 +31,24 @@ import { useState } from "react";
 
 // Define the validation schema using zod
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  ownerName: z.string().min(2, "Owner Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number"),
+  storeName: z.string().min(1, "Store Name is required"),
+  qrId: z.string(),
+  googleReviewPid: z.string(),
+  address: z.string().min(1, "Address is required"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  pincode: z.string(),
+  latitude: z.string().refine((val) => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num >= -90 && num <= 90;
+  }, "Invalid latitude"),
+  longitude: z.string().refine((val) => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num >= -180 && num <= 180;
+  }, "Invalid longitude"),
 });
 
 const ReviewStoreForm = () => {
@@ -42,21 +57,23 @@ const ReviewStoreForm = () => {
   const form = useForm({
     validate: zodResolver(formSchema),
     initialValues: {
-      name: "",
-      category: null,
-      address: "",
-      city: "",
-      pincode: "",
-      state: "",
+      ownerName: "",
       email: "",
       phoneNumber: "",
+      storeName: "",
+      qrId: "",
+      googleReviewPid: "",
+      address: "",
+      state: "",
+      city: "",
+      pincode: "",
       latitude: "",
       longitude: "",
     },
   });
 
-  const createMerchant = useMutation({
-    mutationFn: () => callApi.post(`/v1/merchants`, form.values),
+  const createGoogleStore = useMutation({
+    mutationFn: () => callApi.post(`v1/google/stores`, form.values),
     onSuccess: async (res) => {
       const { data } = res;
 
@@ -127,18 +144,20 @@ const ReviewStoreForm = () => {
     );
   };
 
+  console.log("terminologies", form.errors);
+
   return (
     <form
       onSubmit={form.onSubmit(() => {
-        createMerchant.mutate();
+        createGoogleStore.mutate();
       })}
     >
       <SimpleGrid cols={2} spacing="md">
         <TextInput
-          label="Email"
-          placeholder="your@email.com"
-          //   leftSection={<IconMail size="1rem" />}
-          {...form.getInputProps("email")}
+          label="Owner Name"
+          placeholder="Owner Name"
+          // leftSection={<IconUser size="1rem" />}
+          {...form.getInputProps("ownerName")}
           withAsterisk
         />
 
@@ -149,11 +168,27 @@ const ReviewStoreForm = () => {
           {...form.getInputProps("phoneNumber")}
           withAsterisk
         />
+
+        <TextInput
+          label="Email"
+          placeholder="your@email.com"
+          //   leftSection={<IconMail size="1rem" />}
+          {...form.getInputProps("email")}
+          withAsterisk
+        />
+
+        <TextInput
+          label="QR ID"
+          placeholder="Your QR ID"
+          //   leftSection={<IconMail size="1rem" />}
+          {...form.getInputProps("qrId")}
+          withAsterisk
+        />
         <TextInput
           label="Store Name"
-          placeholder="Enter store name"
-          //   leftSection={<IconUser size="1rem" />}
-          {...form.getInputProps("name")}
+          placeholder="Store Name"
+          // leftSection={<IconUser size="1rem" />}
+          {...form.getInputProps("storeName")}
           withAsterisk
         />
 
@@ -167,7 +202,14 @@ const ReviewStoreForm = () => {
             { value: "4", label: "Electronics" },
             { value: "5", label: "Fashion" },
           ]}
-          // {...form.getInputProps("categoryId")}
+          {...form.getInputProps("categoryId")}
+          withAsterisk
+        />
+        <TextInput
+          label="Google Review PID"
+          placeholder="Your Google Review PID"
+          //   leftSection={<IconMail size="1rem" />}
+          {...form.getInputProps("googleReviewPid")}
           withAsterisk
         />
 
@@ -187,14 +229,12 @@ const ReviewStoreForm = () => {
           {...form.getInputProps("city")}
           withAsterisk
         />
-        <NumberInput
+        <TextInput
           label="Pincode"
           placeholder="Enter pincode"
           //   leftSection={<IconMapPin2 size="1rem" />}
           {...form.getInputProps("pincode")}
           withAsterisk
-          allowDecimal={false}
-          hideControls
         />
 
         <Select
@@ -239,7 +279,7 @@ const ReviewStoreForm = () => {
       </SimpleGrid>
 
       <Group mt="md">
-        <Button type="submit" w={200} loading={createMerchant.isPending}>
+        <Button type="submit" w={200} loading={createGoogleStore.isPending}>
           Create
         </Button>
       </Group>
