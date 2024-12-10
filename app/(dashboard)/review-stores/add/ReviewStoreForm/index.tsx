@@ -203,6 +203,8 @@ const ReviewStoreForm = () => {
             { value: "Grocery", label: "Grocery" },
             { value: "Electronics", label: "Electronics" },
             { value: "Fashion", label: "Fashion" },
+            { value: "Medical", label: "Medical" },
+            { value: "Gym", label: "Gym" },
           ]}
           {...form.getInputProps("category")}
           withAsterisk
