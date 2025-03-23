@@ -8,6 +8,7 @@ export const FilterLayout = ({
   onSearch,
   recordsPerPageOptions = ["10", "25", "50", "100"],
   defaultRecordsPerPage = "10",
+  searchable,
 }) => {
   return (
     <Flex justify="space-between" align={"flex-start"} gap={10} px={20} pt={10}>
@@ -25,7 +26,7 @@ export const FilterLayout = ({
               filter.form?.getInputProps(`${filter.fieldName}`).value.value
             }
             className={classes.filter_input}
-            searchable
+            searchable={searchable}
             allowDeselect={false}
           />
         ))}

@@ -21,7 +21,7 @@ export const PageHeader = ({ title, rightSection, leftSection }: PropType) => {
           leftSection={<IconChevronLeft size={36} stroke={3} />}
           px={0}
           onClick={() => router.back()}
-          bg={"#1e476b"}
+          bg={"#f36726"}
           color="white"
         />
 

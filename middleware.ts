@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
   });
 
   // Define paths that don't require authentication
-  const unprotectedPaths = ["/login", "/signup"];
+  const unprotectedPaths = ["/login", "/signup", "/"];
 
   // Get the current pathname
   const { pathname } = req.nextUrl;

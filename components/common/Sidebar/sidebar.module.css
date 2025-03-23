@@ -6,7 +6,7 @@
   /* padding: var(--mantine-spacing-md); */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  background-color: #182a4d !important;
+  background-color: #2b3033 !important;
   flex-direction: column;
   position: fixed;
   /* border-right: 1px solid
@@ -30,18 +30,18 @@
   color: white;
 
   &:hover {
-    background-color: #ffffff;
-    color: black;
+    background-color: #ffffff08;
+    /* color: black; */
   }
 
   &[data-active] {
     &,
     &:hover {
-      background-color: white;
+      /* background-color: white; */
 
       transition: 0.5s;
       /* background-size: 200% auto; */
-      color: black;
+      color: #f36726;
 
       /* display: block; */
     }

@@ -10,7 +10,11 @@ import {
   rem,
   Text,
 } from "@mantine/core";
-import { IconSwitchHorizontal, IconLogout } from "@tabler/icons-react";
+import {
+  IconSwitchHorizontal,
+  IconLogout,
+  IconTool,
+} from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
@@ -52,6 +56,7 @@ function NavbarLink({
       onClick={handleClick}
       className={classes.link}
       data-active={active || undefined}
+      style={{ borderBottom: "0.5px solid gray" }}
     >
       <Icon style={{ width: "", height: "100px" }} stroke={1.5} />
       <Text size="14px" ml={10}>
@@ -87,10 +92,11 @@ export function Sidebar() {
   return (
     <nav className={classes.navbar}>
       <Center>
-        {/* <Text c={"white"} fw={600} size="22px">
-          Storekode.com
-        </Text> */}
-        <Image src={LogoImage} alt="logo" height={300} width={300} />
+        <IconTool color="white" />
+        <Text c={"white"} fw={600} size="22px">
+          Tulboxx
+        </Text>
+        {/* <Image src={LogoImage} alt="logo" height={300} width={300} /> */}
       </Center>
 
       <div className={classes.navbarMain}>

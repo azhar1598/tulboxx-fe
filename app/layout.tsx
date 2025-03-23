@@ -17,6 +17,7 @@ import Header from "@/components/common/Header";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/carousel/styles.css";
+import "@mantine/dates/styles.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

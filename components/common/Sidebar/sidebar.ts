@@ -16,16 +16,26 @@ import {
   IconLineScan,
   IconQrcode,
   IconCategory,
+  IconMath,
+  IconInvoice,
+  IconNews,
+  IconFileTime,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
   // { label: "Generate", icon: IconWandOff, link: "/" },
-  { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
-  { label: "Stores", icon: IconBuildingStore, link: "/stores" },
-  { label: "Products", icon: IconCategory2, link: "/products" },
-  { label: "Categories", icon: IconCategory, link: "/categories" },
-  { label: "Payments", icon: IconCreditCardPay, link: "/payments" },
-  { label: "Review Stores", icon: IconLineScan, link: "/review-stores" },
-  { label: "Review QR", icon: IconQrcode, link: "/generate-qr" },
-  { label: "Settings", icon: IconSettings, link: "/settings" },
+
+  { label: "Estimates", icon: IconFileTime, link: "/estimates" },
+  { label: "Invoices", icon: IconInvoice, link: "/invoices" },
+  { label: "Content", icon: IconNews, link: "/content" },
+  // { label: "Clients", icon: IconUser, link: "/clients" },
+
+  // { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },
+  // { label: "Stores", icon: IconBuildingStore, link: "/stores" },
+  // { label: "Products", icon: IconCategory2, link: "/products" },
+  // { label: "Categories", icon: IconCategory, link: "/categories" },
+  // { label: "Payments", icon: IconCreditCardPay, link: "/payments" },
+  // { label: "Review Stores", icon: IconLineScan, link: "/review-stores" },
+  // { label: "Review QR", icon: IconQrcode, link: "/generate-qr" },
+  // { label: "Settings", icon: IconSettings, link: "/settings" },
 ];
