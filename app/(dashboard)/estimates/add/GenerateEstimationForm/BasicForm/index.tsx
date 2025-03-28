@@ -4,6 +4,7 @@ import {
   Divider,
   Grid,
   Group,
+  NumberInput,
   Radio,
   Text,
   TextInput,
@@ -14,12 +15,14 @@ import React from "react";
 function BasicForm({ form, active, nextStep, prevStep }) {
   // Check if required fields are filled
   const isFormValid = () => {
+    console.log(form.values);
     return (
       form.values.projectName?.trim() &&
       form.values.customerName?.trim() &&
-      form.values.customerEmail?.trim() &&
-      form.values.customerPhone?.trim() &&
-      form.values.customerAddress?.trim()
+      form.values.email?.trim() &&
+      form.values.phone &&
+      form.values.address?.trim() &&
+      form.values.type?.trim()
     );
   };
 
@@ -40,7 +43,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
           <TextInput
             label="Lookup Customer (optional)"
             placeholder="Search Customers..."
-            {...form.getInputProps("customerLookup")}
+            // {...form.getInputProps("customerLookup")}s
           />
         </Grid.Col>
 
@@ -56,15 +59,18 @@ function BasicForm({ form, active, nextStep, prevStep }) {
           <TextInput
             label="Customer Email"
             placeholder="customer@email.com"
-            {...form.getInputProps("customerEmail")}
+            {...form.getInputProps("email")}
           />
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <TextInput
+          <NumberInput
             label="Customer Phone"
+            allowDecimal={false}
+            hideControls
+            allowNegative={false}
             placeholder="(555) 555-5555"
-            {...form.getInputProps("customerPhone")}
+            {...form.getInputProps("phone")}
           />
         </Grid.Col>
 
@@ -73,7 +79,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
             Customer Type
           </Text>
           <Radio.Group
-            {...form.getInputProps("customerType")}
+            {...form.getInputProps("type")}
             defaultValue="residential"
             mt={12}
           >
@@ -88,7 +94,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
           <Textarea
             label="Customer Address"
             placeholder="Start typing..."
-            {...form.getInputProps("customerAddress")}
+            {...form.getInputProps("address")}
           />
         </Grid.Col>
       </Grid>

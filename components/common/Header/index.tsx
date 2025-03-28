@@ -13,7 +13,7 @@ import {
 function Header() {
   // Mock user data - replace with your actual auth implementation
   const user = {
-    name: "John Doe",
+    name: "Jimmy Williams",
     email: "john.doe@example.com",
     image:
       "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff",

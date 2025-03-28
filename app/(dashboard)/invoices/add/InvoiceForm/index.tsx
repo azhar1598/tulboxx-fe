@@ -121,7 +121,8 @@ function InvoiceForm({ form, active, nextStep, prevStep }) {
             allowDecimal={false}
             allowNegative={false}
             disabled
-            {...form.getInputProps("projectEstimate")}
+            value="72645"
+            // {...form.getInputProps("projectEstimate")}
             hideControls
           />
         </Grid.Col>
@@ -232,15 +233,17 @@ function InvoiceForm({ form, active, nextStep, prevStep }) {
             <TextInput
               label="Account Name"
               placeholder="Type here..."
-              {...form.getInputProps("projectName")}
+              value="Jimmy Williams"
+              // {...form.getInputProps("projectName")}
               disabled
             />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput
               label="Account Number"
+              value="736492648"
               placeholder="Type here..."
-              {...form.getInputProps("projectName")}
+              // {...form.getInputProps("projectName")}
               disabled
             />
           </Grid.Col>
@@ -248,8 +251,9 @@ function InvoiceForm({ form, active, nextStep, prevStep }) {
           <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput
               label="Routing Number"
+              value="525478"
               placeholder="Type here..."
-              {...form.getInputProps("projectName")}
+              // {...form.getInputProps("projectName")}
               disabled
             />
           </Grid.Col>
@@ -257,8 +261,9 @@ function InvoiceForm({ form, active, nextStep, prevStep }) {
           <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput
               label="Tax Id No."
+              value="GSY763N"
               placeholder="Type here..."
-              {...form.getInputProps("projectName")}
+              // {...form.getInputProps("projectName")}
               disabled
             />
           </Grid.Col>

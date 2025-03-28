@@ -9,6 +9,7 @@ import {
   Stack,
   rem,
   Text,
+  Title,
 } from "@mantine/core";
 import {
   IconSwitchHorizontal,
@@ -56,10 +57,10 @@ function NavbarLink({
       onClick={handleClick}
       className={classes.link}
       data-active={active || undefined}
-      style={{ borderBottom: "0.5px solid gray" }}
+      // style={{ borderBottom: "0.5px solid gray" }}
     >
       <Icon style={{ width: "", height: "100px" }} stroke={1.5} />
-      <Text size="14px" ml={10}>
+      <Text size="15px" ml={10}>
         {label}
       </Text>
     </UnstyledButton>
@@ -92,10 +93,17 @@ export function Sidebar() {
   return (
     <nav className={classes.navbar}>
       <Center>
-        <IconTool color="white" />
-        <Text c={"white"} fw={600} size="22px">
+        {/* <IconTool color="white" /> */}
+
+        <Title
+          order={1}
+          c={"white"}
+          fw={600}
+          size="28px"
+          style={{ fontWeight: 600 }}
+        >
           Tulboxx
-        </Text>
+        </Title>
         {/* <Image src={LogoImage} alt="logo" height={300} width={300} /> */}
       </Center>
 

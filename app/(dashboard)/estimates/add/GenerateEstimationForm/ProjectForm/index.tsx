@@ -11,66 +11,104 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { IconPlus, IconMinus, IconCalendar } from "@tabler/icons-react";
-import React, { useState } from "react";
+import {
+  IconPlus,
+  IconMinus,
+  IconCalendar,
+  IconCurrencyDollar,
+} from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
 
 function ProjectForm({ form, active, nextStep, prevStep }) {
-  const [lineItems, setLineItems] = useState([
-    { id: 1, description: "", rate: "", qty: 1, total: 0 },
-  ]);
-
   const addLineItem = () => {
     const newId =
-      lineItems.length > 0
-        ? Math.max(...lineItems.map((item) => item.id)) + 1
+      form.values.lineItems.length > 0
+        ? Math.max(...form.values.lineItems.map((item) => item.id)) + 1
         : 1;
-    setLineItems([
-      ...lineItems,
-      { id: newId, description: "", rate: "", qty: 1, total: 0 },
+    form.setFieldValue(`lineItems`, [
+      ...form.values.lineItems,
+      { id: newId, unitPrice: 0, description: "", quantity: 1, totalPrice: 0 },
     ]);
   };
 
   const removeLineItem = (id) => {
-    if (lineItems.length > 1) {
-      setLineItems(lineItems.filter((item) => item.id !== id));
+    if (form.values.lineItems.length > 1) {
+      form.setFieldValue(
+        `lineItems`,
+        form.values.lineItems.filter((item) => item.id !== id)
+      );
     }
   };
 
-  const updateLineItem = (id, field, value) => {
-    const updatedItems = lineItems.map((item) => {
-      if (item.id === id) {
-        const updatedItem = { ...item, [field]: value };
+  // const updateLineItem = (id, field, value) => {
+  // useEffect(() => {
+  //   const updatedItems = lineItems.map((item) => {
+  //     if (item.id === id) {
+  //       const updatedItem = { ...item, [field]: value };
 
-        // Calculate total whenever rate or qty changes
-        if (field === "rate" || field === "qty") {
-          const rate = field === "rate" ? value : item.rate;
-          const qty = field === "qty" ? value : item.qty;
-          updatedItem.total = (parseFloat(rate) || 0) * (parseInt(qty) || 0);
-        }
+  //       // Calculate total whenever rate or qty changes
+  //       if (field === "rate" || field === "qty") {
+  //         const rate = field === "rate" ? value : item.rate;
+  //         const qty = field === "qty" ? value : item.qty;
+  //         updatedItem.total = (parseFloat(rate) || 0) * (parseInt(qty) || 0);
+  //       }
 
-        return updatedItem;
-      }
-      return item;
-    });
+  //       return updatedItem;
+  //     }
+  //     return item;
+  //   });
 
-    setLineItems(updatedItems);
-  };
+  //   // setLineItems(updatedItems);
+  // }, [form.values.lineItems]);
+  // };
 
   const calculateGrandTotal = () => {
-    return lineItems.reduce((sum, item) => sum + (item.total || 0), 0);
+    return form.values.lineItems.reduce(
+      (sum, item) => sum + (item.totalPrice || 0),
+      0
+    );
   };
 
   // Check if required fields are filled
   const isFormValid = () => {
+    console.log(
+      "form.values.projectEstimate",
+      form.values.projectEstimate,
+      form.values.serviceType,
+      form.values.problemDescription,
+      form.values.solutionDescription,
+      form.values.projectStartDate,
+      form.values.projectEndDate,
+      form.values.lineItems,
+      form.errors.length === 0,
+      form
+    );
+
     return (
       form.values.serviceType?.trim() &&
       form.values.problemDescription?.trim() &&
       form.values.solutionDescription?.trim() &&
       form.values.projectStartDate &&
       form.values.projectEndDate &&
-      form.values.projectEstimate?.trim()
+      form.values.projectEstimate != 0 &&
+      Object.keys(form.errors).length === 0 &&
+      form.values.lineItems.every((item) => item.totalPrice > 0)
     );
   };
+
+  console.log("form.errors", form.errors);
+
+  useEffect(() => {
+    if (form.values.projectEstimate >= calculateGrandTotal()) {
+      form.clearFieldError("projectEstimate");
+      return;
+    }
+
+    form.setFieldError(
+      "projectEstimate",
+      "Project estimate is less than the grand total"
+    );
+  }, [form.values.lineItems]);
 
   return (
     <Box p={10}>
@@ -109,7 +147,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
             placeholder="$5,000"
             allowDecimal={false}
             allowNegative={false}
-            prefix="$"
+            leftSection={<IconCurrencyDollar stroke={2} size={15} />}
             {...form.getInputProps("projectEstimate")}
             hideControls
           />
@@ -120,6 +158,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
             label="Project Start Date"
             valueFormat="YYYY MMM DD"
             placeholder="Date input"
+            {...form.getInputProps("projectStartDate")}
           />
         </Grid.Col>
 
@@ -163,44 +202,85 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
             <Grid.Col span={1}></Grid.Col>
           </Grid>
 
-          {lineItems.map((item) => (
+          {form.values.lineItems.map((item, index) => (
             <Grid key={item.id} mb={10} gutter="xs" align="center">
               <Grid.Col span={5}>
                 <TextInput
                   placeholder="Description"
-                  value={item.description}
-                  onChange={(e) =>
-                    updateLineItem(item.id, "description", e.target.value)
-                  }
+                  // value={item.description}
+                  {...form.getInputProps(`lineItems.${index}.description`)}
+                  // onChange={(e) =>
+                  //   updateLineItem(item.id, "description", e.target.value)
+                  // }
                 />
               </Grid.Col>
               <Grid.Col span={2}>
-                <TextInput
+                <NumberInput
                   placeholder="$50.00"
-                  value={item.rate}
-                  onChange={(e) =>
-                    updateLineItem(item.id, "rate", e.target.value)
-                  }
+                  allowDecimal={true}
+                  allowNegative={true}
+                  hideControls
+                  leftSection={<IconCurrencyDollar stroke={2} size={15} />}
+                  {...form.getInputProps(`lineItems.${index}.unitPrice`)}
+                  onChange={(e) => {
+                    form
+                      .getInputProps(`lineItems.${index}.unitPrice`)
+                      .onChange(e);
+                    const unitPrice: number = e || 0;
+                    const quantity =
+                      parseInt(form.values.lineItems[index].quantity) || 0;
+                    console.log("unit price", unitPrice);
+                    form.setFieldValue(
+                      `lineItems.${index}.totalPrice`,
+                      unitPrice * quantity
+                    );
+                  }}
+                  // onChange={
+                  //   (e) =>
+                  //     form.setFieldValue(
+                  //       `lineItems.${item.id}.totalPrice`,
+                  //       e.target.value  form.values
+                  //     )
+                  //   // updateLineItem(item.id, "rate", e.target.value)
+                  // }
+                />
+              </Grid.Col>
+              <Grid.Col span={2}>
+                <NumberInput
+                  placeholder="1"
+                  allowDecimal={false}
+                  allowNegative={false}
+                  // value={item.qty}
+                  {...form.getInputProps(`lineItems.${index}.quantity`)}
+                  onChange={(e) => {
+                    form
+                      .getInputProps(`lineItems.${index}.quantity`)
+                      .onChange(e);
+                    const quantity: number = e || 0;
+
+                    const unitPrice =
+                      parseFloat(form.values.lineItems[index]?.unitPrice) || 0;
+                    console.log("unit price", unitPrice);
+
+                    form.setFieldValue(
+                      `lineItems.${index}.totalPrice`,
+                      unitPrice * quantity
+                    );
+                  }}
                 />
               </Grid.Col>
               <Grid.Col span={2}>
                 <TextInput
-                  placeholder="1"
-                  value={item.qty}
-                  onChange={(e) =>
-                    updateLineItem(item.id, "qty", e.target.value)
-                  }
+                  disabled
+                  {...form.getInputProps(`lineItems.${index}.totalPrice`)}
                 />
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <TextInput disabled value={`$${item.total.toFixed(2)}`} />
               </Grid.Col>
               <Grid.Col span={1}>
                 <ActionIcon
                   color="red"
                   variant="filled"
                   onClick={() => removeLineItem(item.id)}
-                  disabled={lineItems.length <= 1}
+                  disabled={form.values.lineItems.length <= 1}
                 >
                   <IconMinus size="1rem" />
                 </ActionIcon>
@@ -210,7 +290,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
 
           <Button
             fullWidth
-            leftIcon={<IconPlus size="1rem" />}
+            leftSection={<IconPlus size="1rem" />}
             variant="outline"
             onClick={addLineItem}
             mb={15}
@@ -228,10 +308,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
 
       <Group justify="flex-start" mt="xl">
         <Button onClick={prevStep}>Back</Button>
-        <Button
-          onClick={nextStep}
-          // disabled={!isFormValid()}
-        >
+        <Button onClick={nextStep} disabled={!isFormValid()}>
           Next step
         </Button>
       </Group>

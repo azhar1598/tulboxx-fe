@@ -35,6 +35,7 @@ import { checkStatus } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import PreviewQR from "../stores/add/PreviewQR";
 import { PrintLayout } from "../stores/PrintLayout";
+import { esimatesData } from "@/apiData";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -74,41 +75,59 @@ function Estimates() {
     {
       accessor: "estimate",
       title: "Project Estimate",
-      render: ({ licenseId }: any) => licenseId || "N/A",
+      render: ({ estimate }: any) => estimate || "N/A",
     },
     {
       accessor: "customerName",
       title: "Customer Name",
-      render: ({ city }: any) => city || "N/A",
+      render: ({ customerName }: any) => customerName || "N/A",
     },
     {
       accessor: "customerEmail",
       title: "Customer Email",
-      render: ({ state }: any) => state || "N/A",
+      render: ({ customerEmail }: any) => customerEmail || "N/A",
     },
     {
       accessor: "customerPhone",
       title: "Customer Phone",
-      render: ({ status }: any) => (
-        <Badge color={checkStatus(status)}>{status}</Badge>
-      ),
+      render: ({ customerPhone }: any) => customerPhone || "N/A",
     },
-
+    // {
+    //   accessor: "description",
+    //   title: "Project Description",
+    //   render: ({ description }: any) => description || "N/A",
+    // },
     {
       accessor: "actions",
-      title: <Box mr={6}>Row actions</Box>,
-      textAlign: "right",
-      render: (record) => (
-        <Button
-          style={{ fontSize: "12px" }}
-          variant="table"
-          onClick={() => {
-            handleModal(record.id, record);
-          }}
-          leftSection={<IconQrcode size={16} />}
-        >
-          Generate QR
-        </Button>
+      title: <Box mr={6}>Actions</Box>,
+      textAlign: "left",
+      render: (record: any) => (
+        <Group>
+          <Button
+            style={{ fontSize: "12px" }}
+            variant="table-btn-primary"
+            // onClick={() => router.push(`/patients/edit/${record.id}`)}
+            leftSection={<IconEdit size={16} />}
+          >
+            Edit
+          </Button>
+          <Button
+            style={{ fontSize: "12px" }}
+            variant="table-btn-danger"
+            // onClick={() => router.push(`/patients/customize/${record.id}`)}
+            leftSection={<IconTrash size={16} />}
+          >
+            Delete
+          </Button>
+          {/* <Button
+            style={{ fontSize: "12px" }}
+            variant="table"
+            onClick={() => router.push(`/patients/customize/${record.id}`)}
+            leftSection={<IconQrcode size={16} />}
+          >
+            App Settings
+          </Button> */}
+        </Group>
       ),
     },
   ];
@@ -123,8 +142,8 @@ function Estimates() {
   const filters = [
     {
       id: "type",
-      label: "Merchants",
-      options: [{ value: "1", label: "Type 1" }],
+      label: "Project Name",
+      options: [{ value: "all", label: "All" }],
       // onChange: (value) => handleTypeChange(value),
     },
     // ... more filters
@@ -192,11 +211,12 @@ function Estimates() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
+          searchable={false}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-          records={[]}
+          records={esimatesData}
           columns={columns}
           totalRecords={getStoresQuery?.totalResults || 0}
           currentPage={getStoresQuery?.currentPage || 0}

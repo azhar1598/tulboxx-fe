@@ -19,6 +19,7 @@ export const FilterLayout = ({
             key={index}
             label={filter.label}
             data={filter.options}
+            defaultValue={filter.options[0].value}
             onChange={(e, option) => {
               filter.onChange(option);
             }}

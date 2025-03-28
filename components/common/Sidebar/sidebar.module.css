@@ -37,7 +37,8 @@
   &[data-active] {
     &,
     &:hover {
-      /* background-color: white; */
+      background-color: white;
+      border-right: 4px solid #f36726;
 
       transition: 0.5s;
       /* background-size: 200% auto; */

@@ -52,82 +52,67 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import GenerateEstimationForm from "./GenerateEstimationForm";
 
-const storeSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.number(),
-  tagLine: z.string(),
-  description: z.string(),
-  storeLogo: z.any(),
-  licenseId: z.string(),
-  address: z.string(),
-  state: z.string(),
-  pincode: z.number(),
-  city: z.string(),
-  latitude: z.string(),
-  longitude: z.string(),
-  qrTheme: z.object({
-    titleFontSize: z.number(),
-    primaryColor: z.string(),
-    secondaryColor: z.string(),
-    primaryText: z.string(),
-    ctaText: z.string(),
-    ctaColor: z.string(),
-    radius: z.number(),
-  }),
-  websiteTheme: z.object({
-    primaryColor: z.string(),
-    secondaryColor: z.string(),
-  }),
-  businessHours: z.array(
+const esimationSchema = z.object({
+  // general form
+  projectName: z.string().min(1, "Project name is required"),
+  // name: z.string().min(1, "Name is required"),
+  customerName: z.string().min(1, "Customer name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(1, "Phone number is required"),
+  address: z.string().min(1, "Address is required"),
+
+  // project form
+  serviceType: z.string().min(1, "Service type is required"),
+  problemDescription: z.string().min(1, "Problem description is required"),
+  solutionDescription: z.string().min(1, "Solution description is required"),
+  projectEstimate: z.number().min(1, "Project estimate is required"),
+  projectStartDate: z.date(),
+  projectEndDate: z.date(),
+  lineItems: z.array(
     z.object({
-      openTime: z.string(),
-      closeTime: z.string(),
-      day: z.string(),
+      description: z.string().min(1, "Description is required"),
+      quantity: z.number().min(1, "Quantity is required"),
+      unitPrice: z.number().min(1, "Unit price is required"),
+      totalPrice: z.number().min(1, "Total price is required"),
     })
   ),
+
+  // additional fields
+  equipmentMaterials: z.string().optional(),
+  additionalNotes: z.string().optional(),
 });
 
 const StoreRegistrationContent = () => {
   const form = useForm({
-    validate: zodResolver(storeSchema),
+    validate: zodResolver(esimationSchema),
     initialValues: {
-      name: "",
-      categoryId: 1,
-      tagLine: "",
-      description:
-        "We are dedicated to providing the best services to our customers. Your satisfaction is our priority.",
-      storeLogo: "",
-      licenseId: "",
+      // general form
+      projectName: "",
+      // name: "",
+      customerName: "",
+      email: "",
+      phone: "",
       address: "",
-      state: "",
-      pincode: "",
-      city: "",
-      latitude: "",
-      longitude: "",
-      qrTheme: {
-        titleFontSize: "24px",
-        primaryColor: "#228be6",
-        secondaryColor: "#ffffff",
-        primaryText: "Scan Here",
-        ctaText: "To View Our Menu",
-        ctaColor: "#fab005",
-        radius: 5,
-      },
-      websiteTheme: {
-        primaryColor: "#fab005",
-        secondaryColor: "#091151",
-        backgroundImage: "",
-        titleColor: "",
-        taglineColor: "",
-        socialLinks: {
-          facebookUrl: "",
-          instagramUrl: "",
-          twitterUrl: "",
-          reviewUrl: "",
-          youtubeUrl: "",
+      type: "residential",
+      // project form
+      serviceType: "",
+      problemDescription: "",
+      solutionDescription: "",
+      projectEstimate: "",
+      projectStartDate: "",
+      projectEndDate: "",
+      lineItems: [
+        {
+          id: 1,
+          description: "",
+          quantity: 0,
+          unitPrice: 0,
+          totalPrice: 0,
         },
-      },
-      businessHours: [],
+      ],
+      // additional fields
+      equipmentMaterials: "",
+      additionalNotes: "",
     },
   });
 
