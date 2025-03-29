@@ -1,10 +1,9 @@
 "use client";
 import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
-import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
 import callApi from "@/services/apiService";
-import QRCode from "react-qr-code";
+import dayjs from "dayjs";
 
 import {
   ActionIcon,
@@ -33,9 +32,10 @@ import React, { useEffect, useState } from "react";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
-import PreviewQR from "../stores/add/PreviewQR";
-import { PrintLayout } from "../stores/PrintLayout";
+
 import { esimatesData } from "@/apiData";
+import { createClient } from "@/utils/supabase/client";
+import AuthProvider from "@/components/auth/AuthProvider";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -58,24 +58,21 @@ function Estimates() {
 
   let columns = [
     {
-      accessor: "name",
+      accessor: "projectName",
       title: "Project Name",
-      render: ({ name, tagLine, id }: any) => (
+      render: ({ projectName, id }: any) => (
         <Link
-          href={`/stores/${id}`}
+          href={`/estimates/${id}`}
           style={{ color: "blue", textDecoration: "underline" }}
         >
-          {name}{" "}
-          <small>
-            <i className="text-gray-500">({tagLine})</i>
-          </small>
+          {projectName || "N/A"}
         </Link>
       ),
     },
     {
-      accessor: "estimate",
+      accessor: "projectEstimate",
       title: "Project Estimate",
-      render: ({ estimate }: any) => estimate || "N/A",
+      render: ({ projectEstimate }: any) => projectEstimate || "N/A",
     },
     {
       accessor: "customerName",
@@ -83,20 +80,26 @@ function Estimates() {
       render: ({ customerName }: any) => customerName || "N/A",
     },
     {
-      accessor: "customerEmail",
+      accessor: "email",
+      textAlign: "left",
       title: "Customer Email",
-      render: ({ customerEmail }: any) => customerEmail || "N/A",
+      render: ({ email }: any) => email || "N/A",
     },
+
     {
-      accessor: "customerPhone",
-      title: "Customer Phone",
-      render: ({ customerPhone }: any) => customerPhone || "N/A",
+      accessor: "type",
+
+      textAlign: "center",
+      title: "Project Type",
+      render: ({ type }: any) => type || "N/A",
     },
-    // {
-    //   accessor: "description",
-    //   title: "Project Description",
-    //   render: ({ description }: any) => description || "N/A",
-    // },
+
+    {
+      accessor: "total_amount",
+      title: "Total Amount",
+      render: ({ total_amount }: any) => `$${total_amount}` || "N/A",
+    },
+
     {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
@@ -106,7 +109,6 @@ function Estimates() {
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-primary"
-            // onClick={() => router.push(`/patients/edit/${record.id}`)}
             leftSection={<IconEdit size={16} />}
           >
             Edit
@@ -114,19 +116,10 @@ function Estimates() {
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
-            // onClick={() => router.push(`/patients/customize/${record.id}`)}
             leftSection={<IconTrash size={16} />}
           >
             Delete
           </Button>
-          {/* <Button
-            style={{ fontSize: "12px" }}
-            variant="table"
-            onClick={() => router.push(`/patients/customize/${record.id}`)}
-            leftSection={<IconQrcode size={16} />}
-          >
-            App Settings
-          </Button> */}
         </Group>
       ),
     },
@@ -149,6 +142,25 @@ function Estimates() {
     // ... more filters
   ];
 
+  const getEstimatesQuery = useQuery({
+    queryKey: ["get-estimates"],
+    queryFn: () => {
+      const response = callApi.get("/estimates");
+      console.log("response", response);
+      return response;
+    },
+    select: (data) => {
+      console.log("data", data);
+
+      return {
+        data: data?.data?.data,
+        metadata: data?.data?.metadata,
+      };
+    },
+  });
+
+  console.log("getEstimatesQuery---->", getEstimatesQuery?.data?.data);
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -157,14 +169,6 @@ function Estimates() {
     key: "get-stores",
     page,
     pageSize,
-  };
-
-  //   const getStoresQuery = useTableQuery(queryFilters);
-  const getStoresQuery = {
-    totalResults: [],
-    currentPage: 1,
-    pageSize: 1,
-    isLoading: false,
   };
 
   const handlePageChange = (newPage) => {
@@ -216,38 +220,15 @@ function Estimates() {
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-          records={esimatesData}
+          records={getEstimatesQuery?.data?.data || []}
           columns={columns}
-          totalRecords={getStoresQuery?.totalResults || 0}
-          currentPage={getStoresQuery?.currentPage || 0}
-          pageSize={getStoresQuery?.pageSize || 0}
+          totalRecords={getEstimatesQuery?.data?.metadata?.totalRecords || 0}
+          currentPage={getEstimatesQuery?.data?.metadata?.currentPage || 0}
+          pageSize={getEstimatesQuery?.data?.metadata?.pageSize || 0}
           onPageChange={handlePageChange}
-          isLoading={getStoresQuery.isLoading}
+          isLoading={getEstimatesQuery.isLoading}
         />
       </Stack>
-
-      <Modal
-        opened={opened}
-        onClose={() => {
-          setQrCode("");
-          close();
-        }}
-        title="Store QR Code"
-        size="md"
-        centered
-      >
-        <Stack className="items-center p-4">
-          <PreviewQR storeInfo={storeInfo} qrCode={qrCode} />
-          <Button
-            onClick={downloadQRCode}
-            leftSection={<IconDownload size={16} />}
-            className="mt-4"
-          >
-            Download QR Code
-          </Button>
-          <PrintLayout qrCode={qrCode} storeInfo={storeInfo} />
-        </Stack>
-      </Modal>
     </>
   );
 }

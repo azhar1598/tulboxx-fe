@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import api from '../../services/apiService';
 // import { setToken, removeToken } from '../../services/tokenService';
 
@@ -18,14 +18,17 @@ const initialState: AuthState = {
   isAuthenticated: false,
 };
 
-export const login = createAsyncThunk('auth/login', async (credentials: { email: string; password: string }) => {
-  // const response = await api.post('/login', credentials);
-  // setToken(response.data.accessToken, response.data.refreshToken);
-  // return response.data.user;
-});
+export const login = createAsyncThunk(
+  "auth/login",
+  async (credentials: { email: string; password: string }) => {
+    // const response = await api.post('/login', credentials);
+    // setToken(response.data.accessToken, response.data.refreshToken);
+    // return response.data.user;
+  }
+);
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logout(state) {
@@ -35,7 +38,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(login.fulfilled, (state:any, action) => {
+    builder.addCase(login.fulfilled, (state: any, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
     });
@@ -43,5 +46,6 @@ const authSlice = createSlice({
 });
 
 export const { logout } = authSlice.actions;
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectIsAuthenticated = (state: { auth: AuthState }) =>
+  state.auth.isAuthenticated;
 export default authSlice.reducer;

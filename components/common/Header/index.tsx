@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Group, Avatar, Text, Menu, UnstyledButton, Box } from "@mantine/core";
 import {
   IconSettings,
@@ -9,20 +9,41 @@ import {
   IconInfoOctagonFilled,
   IconBell,
 } from "@tabler/icons-react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+
+import Image from "next/image";
+import { UserContext } from "@/app/layout";
 
 function Header() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const user = useContext(UserContext);
+
   // Mock user data - replace with your actual auth implementation
-  const user = {
-    name: "Jimmy Williams",
-    email: "john.doe@example.com",
-    image:
-      "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff",
+  // const user = {
+  //   name: "Jimmy Williams",
+  //   email: "john.doe@example.com",
+  //   image:
+  //     "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff",
+  // };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.refresh();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logging out...");
-  };
+  const [avatar, setAvatar] = useState<string>("");
+
+  useEffect(() => {
+    setAvatar(user?.user_metadata?.avatar_url);
+  }, [user?.user_metadata?.avatar_url]);
 
   return (
     <div className="h-16 header  bg-white shadow-sm px-6">
@@ -42,11 +63,21 @@ function Header() {
         <Menu position="bottom-end" shadow="md" width={200} withinPortal>
           <Menu.Target>
             <UnstyledButton>
-              <Group spacing="xs">
-                <Avatar src={user.image} radius="xl" size="md" />
-                <Box sx={{ flex: 1 }}>
-                  <Text size="sm" weight={500}>
-                    {user.name}
+              <Group gap="xs">
+                {avatar ? (
+                  <Image
+                    src={avatar}
+                    width={32}
+                    height={32}
+                    style={{ borderRadius: "50%" }}
+                    alt={user?.user_metadata?.name || "User avatar"}
+                  />
+                ) : (
+                  <Avatar size="md" radius="xl" />
+                )}
+                <Box style={{ flex: 1 }}>
+                  <Text size="sm" fw={500}>
+                    {user?.user_metadata?.name}
                   </Text>
                 </Box>
                 <IconChevronDown size={16} />
@@ -55,16 +86,18 @@ function Header() {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Label>User: {user.email}</Menu.Label>
+            <Menu.Label style={{ textWrap: "wrap" }}>
+              User: {user?.email}
+            </Menu.Label>
             <Menu.Item
-              icon={<IconSettings size={14} />}
+              leftSection={<IconSettings size={14} />}
               component="a"
               href="/account"
             >
               Account settings
             </Menu.Item>
             <Menu.Item
-              icon={<IconLock size={14} />}
+              leftSection={<IconLock size={14} />}
               component="a"
               href="/change-password"
             >
@@ -73,7 +106,7 @@ function Header() {
             <Menu.Divider />
             <Menu.Item
               color="red"
-              icon={<IconLogout size={14} />}
+              leftSection={<IconLogout size={14} />}
               onClick={handleLogout}
             >
               Logout

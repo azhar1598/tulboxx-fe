@@ -1,37 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/utils/supabase/middleware";
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({
-    req,
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
-  });
-
-  // Define paths that don't require authentication
-  const unprotectedPaths = ["/login", "/signup", "/"];
-
-  // Get the current pathname
-  const { pathname } = req.nextUrl;
-
-  if (token) {
-    // User is signed in
-    if (unprotectedPaths.includes(pathname)) {
-      // Redirect signed-in user away from login or signup page
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  } else {
-    // User is not signed in
-    if (!unprotectedPaths.some((path) => pathname.startsWith(path))) {
-      // Redirect non-signed-in user to login page for protected routes
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-  }
-
-  // Allow the request to continue
-  return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 
-// Define the paths where the middleware should apply
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)"], // Ensure these paths are correct
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

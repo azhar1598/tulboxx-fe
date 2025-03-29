@@ -19,7 +19,7 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
-import { signOut } from "next-auth/react";
+
 import LogoImage from "../../../public/assets/logo/logo.png";
 import Image from "next/image";
 

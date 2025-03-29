@@ -27,7 +27,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
         : 1;
     form.setFieldValue(`lineItems`, [
       ...form.values.lineItems,
-      { id: newId, unitPrice: 0, description: "", quantity: 1, totalPrice: 0 },
+      { id: newId, unitPrice: 1, description: "", quantity: 1, totalPrice: 0 },
     ]);
   };
 
@@ -39,28 +39,6 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
       );
     }
   };
-
-  // const updateLineItem = (id, field, value) => {
-  // useEffect(() => {
-  //   const updatedItems = lineItems.map((item) => {
-  //     if (item.id === id) {
-  //       const updatedItem = { ...item, [field]: value };
-
-  //       // Calculate total whenever rate or qty changes
-  //       if (field === "rate" || field === "qty") {
-  //         const rate = field === "rate" ? value : item.rate;
-  //         const qty = field === "qty" ? value : item.qty;
-  //         updatedItem.total = (parseFloat(rate) || 0) * (parseInt(qty) || 0);
-  //       }
-
-  //       return updatedItem;
-  //     }
-  //     return item;
-  //   });
-
-  //   // setLineItems(updatedItems);
-  // }, [form.values.lineItems]);
-  // };
 
   const calculateGrandTotal = () => {
     return form.values.lineItems.reduce(
@@ -95,8 +73,6 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
       form.values.lineItems.every((item) => item.totalPrice > 0)
     );
   };
-
-  console.log("form.errors", form.errors);
 
   useEffect(() => {
     if (form.values.projectEstimate >= calculateGrandTotal()) {
@@ -156,7 +132,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <DateInput
             label="Project Start Date"
-            valueFormat="YYYY MMM DD"
+            valueFormat="DD MMM YYYY"
             placeholder="Date input"
             {...form.getInputProps("projectStartDate")}
           />
@@ -217,16 +193,16 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
               <Grid.Col span={2}>
                 <NumberInput
                   placeholder="$50.00"
-                  allowDecimal={true}
-                  allowNegative={true}
+                  allowDecimal={false}
+                  allowNegative={false}
                   hideControls
                   leftSection={<IconCurrencyDollar stroke={2} size={15} />}
                   {...form.getInputProps(`lineItems.${index}.unitPrice`)}
                   onChange={(e) => {
                     form
                       .getInputProps(`lineItems.${index}.unitPrice`)
-                      .onChange(e);
-                    const unitPrice: number = e || 0;
+                      .onChange(Number(e));
+                    const unitPrice: number = Number(e) || 0;
                     const quantity =
                       parseInt(form.values.lineItems[index].quantity) || 0;
                     console.log("unit price", unitPrice);
@@ -255,8 +231,8 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
                   onChange={(e) => {
                     form
                       .getInputProps(`lineItems.${index}.quantity`)
-                      .onChange(e);
-                    const quantity: number = e || 0;
+                      .onChange(Number(e));
+                    const quantity: number = Number(e) || 0;
 
                     const unitPrice =
                       parseFloat(form.values.lineItems[index]?.unitPrice) || 0;
@@ -291,7 +267,7 @@ function ProjectForm({ form, active, nextStep, prevStep }) {
           <Button
             fullWidth
             leftSection={<IconPlus size="1rem" />}
-            variant="outline"
+            variant=""
             onClick={addLineItem}
             mb={15}
           >

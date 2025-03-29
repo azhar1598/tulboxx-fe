@@ -44,7 +44,7 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
+
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 // import ContactForm from "./BusinessForm";
 // import QRForm from "./QRForm";
@@ -56,6 +56,7 @@ import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import ProjectForm from "./ProjectForm";
 import AdditionalForm from "./AdditionalForm";
+import axios from "axios";
 
 const GenerateEstimationForm = ({ form, id }) => {
   const router = useRouter();
@@ -94,20 +95,51 @@ const GenerateEstimationForm = ({ form, id }) => {
     return formData;
   };
 
-  const createStore = useMutation({
-    mutationFn: (formData: any) =>
-      callApi.post(`/v1/merchants/${id}/stores`, formData),
+  const generateEstimation = useMutation({
+    mutationFn: () => callApi.post(`/estimates`, form.values),
     onSuccess: async (res: any) => {
       const { data } = res;
 
-      router.push(`/stores/${data.data.id}`);
-      notification.success(`Store created successfully`);
+      router.push(`/estimates`);
+      notification.success(`Estimate created successfully`);
     },
     onError: (err: Error) => {
       // notification.error(err);
+
       console.log(err.message);
     },
   });
+
+  const payload = {
+    projectName: "Missouri Drainage System",
+    customerName: "Azhar Mohammed",
+    email: "mohammedazhar.1598@gmail.com",
+    phone: 9182289773,
+    address: "Astalaxmi Nilayam, Flat No.G1, Kaviraj Nagar Street No.6",
+    type: "residential",
+    serviceType: "Drainage",
+    problemDescription: "Installing a drainage system to prevent yard flooding",
+    solutionDescription: "Drainage ",
+    projectEstimate: 2000,
+    projectStartDate: "2025-03-11T18:30:00.000Z",
+    projectEndDate: "2025-03-27T18:30:00.000Z",
+    lineItems: [
+      {
+        id: 1,
+        description: "Shoes and Gloves, Gravel",
+        quantity: 1,
+        unitPrice: 2000,
+        totalPrice: 2000,
+      },
+    ],
+    equipmentMaterials: "",
+    additionalNotes: "",
+  };
+
+  const callGemini = async () => {
+    const response = await axios.post(`/api/gemini-ai`, payload);
+    console.log("response---->", response);
+  };
 
   return (
     <>
@@ -119,7 +151,7 @@ const GenerateEstimationForm = ({ form, id }) => {
                 const newFormValues = structuredClone(form.values);
                 const formData = objectToFormData(newFormValues);
 
-                createStore.mutate(formData);
+                generateEstimation.mutate(formData);
               })}
             >
               <Stepper
@@ -170,6 +202,7 @@ const GenerateEstimationForm = ({ form, id }) => {
                   Completed, click back buttons to get to previous step
                 </Stepper.Completed>
               </Stepper>
+              <Button onClick={callGemini}>Call Gemini</Button>
             </form>
           </Stack>
         </Paper>

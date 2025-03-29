@@ -33,8 +33,6 @@ import React, { useEffect, useState } from "react";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
-import PreviewQR from "../stores/add/PreviewQR";
-import { PrintLayout } from "../stores/PrintLayout";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -121,12 +119,12 @@ function Estimates() {
   const handleRecordsPerPage = () => {};
 
   const filters = [
-    {
-      id: "type",
-      label: "Merchants",
-      options: [{ value: "1", label: "Type 1" }],
-      // onChange: (value) => handleTypeChange(value),
-    },
+    // {
+    //   id: "type",
+    //   label: "Merchants",
+    //   options: [{ value: "1", label: "Type 1" }],
+    //   // onChange: (value) => handleTypeChange(value),
+    // },
     // ... more filters
   ];
 
@@ -150,26 +148,6 @@ function Estimates() {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-  };
-
-  // Generate QR data based on merchant info
-
-  // Function to download QR code as SVG
-  const downloadQRCode = () => {
-    const svg = document.getElementById("merchant-qr-code");
-    const svgData = new XMLSerializer()?.serializeToString(svg);
-    const svgBlob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    // downloadLink.download = `store-${storeId}-qr.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    URL.revokeObjectURL(svgUrl);
   };
 
   return (
@@ -206,29 +184,6 @@ function Estimates() {
           isLoading={getStoresQuery.isLoading}
         />
       </Stack>
-
-      <Modal
-        opened={opened}
-        onClose={() => {
-          setQrCode("");
-          close();
-        }}
-        title="Store QR Code"
-        size="md"
-        centered
-      >
-        <Stack className="items-center p-4">
-          <PreviewQR storeInfo={storeInfo} qrCode={qrCode} />
-          <Button
-            onClick={downloadQRCode}
-            leftSection={<IconDownload size={16} />}
-            className="mt-4"
-          >
-            Download QR Code
-          </Button>
-          <PrintLayout qrCode={qrCode} storeInfo={storeInfo} />
-        </Stack>
-      </Modal>
     </>
   );
 }

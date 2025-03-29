@@ -50,7 +50,8 @@ function CustomTable({
           titleStyle: (theme) => ({
             color: "#8898a9",
             fontSize: "13px",
-            padding: "20px",
+            paddingTop: "20px",
+            paddingBottom: "20px",
           }),
         }}
         rowStyle={({ state }) =>

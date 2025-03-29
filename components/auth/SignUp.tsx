@@ -14,7 +14,7 @@ import {
   Text,
   Textarea,
 } from "@mantine/core";
-import { signIn } from "next-auth/react";
+
 import { hasLength, isEmail, useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
@@ -28,7 +28,7 @@ interface PropTypes {
   signup: any;
 }
 
-const SignUp = ({ isMobile, signup }: PropTypes) => {
+const SignUp = ({ isMobile }: PropTypes) => {
   const router = useRouter();
 
   const form = useForm({
@@ -68,7 +68,7 @@ const SignUp = ({ isMobile, signup }: PropTypes) => {
         </Stack>
         <Button
           type="button"
-          onClick={() => signIn("google")}
+          // onClick={() => signIn("google")}
           className="w-full mt-2 bg-white text-black rounded-md flex items-center justify-center"
           style={{ border: "1px solid #ccc" }}
         >
@@ -87,7 +87,7 @@ const SignUp = ({ isMobile, signup }: PropTypes) => {
         </Text>
         <form
           onSubmit={form.onSubmit(() => {
-            signup.mutate(form);
+            // signup.mutate(form);
           })}
         >
           <Stack gap={20} justify="center">

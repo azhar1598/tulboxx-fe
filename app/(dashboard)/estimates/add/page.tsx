@@ -40,16 +40,11 @@ import {
 } from "@tabler/icons-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { indianStates, swatches } from "@/lib/constants";
+
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
-import AddStoreForm from "./AddStoreForm";
-import PreviewQR from "./PreviewQR";
+
 import { PageHeader } from "@/components/common/PageHeader";
-import WebPreview from "./AddStoreForm/WebForm/WebPreview";
-import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
+
 import GenerateEstimationForm from "./GenerateEstimationForm";
 
 const esimationSchema = z.object({
@@ -58,7 +53,7 @@ const esimationSchema = z.object({
   // name: z.string().min(1, "Name is required"),
   customerName: z.string().min(1, "Customer name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
+  phone: z.number().min(10, "Phone number is required"),
   address: z.string().min(1, "Address is required"),
 
   // project form
@@ -114,6 +109,7 @@ const StoreRegistrationContent = () => {
       equipmentMaterials: "",
       additionalNotes: "",
     },
+    validateInputOnChange: true,
   });
 
   const searchParams = useSearchParams();

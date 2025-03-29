@@ -578,7 +578,7 @@ const QrReviewForm = () => {
       </Text>
 
       <Group justify="flex-end" mt="md">
-        <Button variant="outline">Cancel</Button>
+        <Button variant="">Cancel</Button>
         <Button
           onClick={() => {
             setIsRidModalOpen(true);

@@ -102,3 +102,94 @@ export const checkPaymentStatusBadge = (status) => {
 };
 
 export const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
+
+interface ProjectEstimate {
+  client: string;
+  objective: string;
+  problemStatement: string;
+  scope: string[];
+  timeline: {
+    duration: string;
+    contingencies: string;
+  };
+  pricing: {
+    total: number;
+    currency: string;
+    inclusions: string[];
+    guarantee: string;
+  };
+}
+
+export function parseEstimate(data: any): ProjectEstimate {
+  // Extract client name from project overview
+  const clientMatch = data.projectOverview?.match(/,\s+([A-Za-z ]+)\./);
+
+  // Extract core problem statement
+  const problemMatch = data.projectOverview?.match(/issue of (.*?) by/);
+
+  // Process scope of work
+  const scope = data?.scopeOfWork
+    ?.split("\n")
+    .map((line: string) => line.replace(/^- /, "").trim())
+    .filter((line: string) => line);
+
+  // Parse timeline details
+  const timelineMatch = data.timeline?.match(
+    /(\d+ weeks.*?) for completion, (.*?)\./
+  );
+
+  // Extract pricing details
+  const priceMatch = data.pricing?.match(/\$(\d+)/);
+  const inclusionsMatch = data.pricing?.match(/covers (.*?)\./);
+
+  return {
+    client: clientMatch ? clientMatch[1] : "Unknown Client",
+    objective: "Prevent yard flooding and protect property foundation",
+    problemStatement: problemMatch ? problemMatch[1] : "yard flooding",
+    scope: scope,
+    timeline: {
+      duration: timelineMatch ? timelineMatch[1] : "N/A",
+      contingencies: timelineMatch ? timelineMatch[2] : "None specified",
+    },
+    pricing: {
+      total: priceMatch ? parseInt(priceMatch[1]) : 0,
+      currency: "USD",
+      inclusions: inclusionsMatch
+        ? inclusionsMatch[1]
+            .split(", ")
+            .map((item) => item.replace(/ etc\.?/, ""))
+        : [],
+      guarantee: "No hidden fees",
+    },
+  };
+}
+export function newParse(rawText: string) {
+  try {
+    // Remove "json" prefix and trim whitespace
+    const jsonMatch = rawText.match(/^json\s*(\{.*\})/s);
+
+    if (!jsonMatch) {
+      throw new Error("Invalid format - missing JSON data");
+    }
+
+    // Parse the actual JSON part
+    const jsonData = JSON.parse(jsonMatch[1]);
+
+    return {
+      projectOverview: jsonData.projectOverview || "",
+      scopeOfWork: (jsonData.scopeOfWork || "")
+        .split("\n")
+        .map((item: string) => item.replace(/^- /, "").trim()),
+      timeline: jsonData.timeline || "",
+      pricing: jsonData.pricing || "",
+    };
+  } catch (error) {
+    console.error("Parsing failed:", error);
+    return {
+      projectOverview: "",
+      scopeOfWork: [],
+      timeline: "",
+      pricing: "",
+    };
+  }
+}

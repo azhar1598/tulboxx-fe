@@ -46,7 +46,7 @@ function AdditionalForm({ form, active, nextStep, prevStep }) {
 
       <Group justify="flex-start" mt="xl">
         <Button onClick={prevStep}>Back</Button>
-        <Button onClick={nextStep} disabled={!form.isValid()}>
+        <Button type="submit" disabled={!form.isValid()}>
           Generate Esitmate
         </Button>
       </Group>

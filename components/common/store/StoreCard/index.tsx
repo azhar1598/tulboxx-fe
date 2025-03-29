@@ -28,7 +28,7 @@ export const StoreCard = ({ storeName, location, imageUrl }) => {
         </div>
       </Card.Section>
 
-      <Button className="w-full p-4 pt-0" variant="outline">
+      <Button className="w-full p-4 pt-0" variant="">
         View Details
       </Button>
     </Card>

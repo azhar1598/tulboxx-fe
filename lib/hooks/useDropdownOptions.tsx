@@ -12,20 +12,17 @@ export const useDropdownOptions = ({ url, key, page, pageSize }: PropTypes) => {
   const getDropdownOptions = useQuery({
     queryKey: [key, page],
     queryFn: async () => {
-      const response = await callApi.get(`${url}`, {
-        params: {
-          page: page,
-          pageSize: pageSize,
-        },
-      });
+      const response = await callApi.get(`${url}`);
 
       return response.data;
     },
     select(data) {
-      const options = data.data?.result.map((option) => ({
-        label: option.name,
+      console.log("data", data);
+      const options = data.data?.map((option) => ({
+        label: option.projectName,
         value: option.id.toString(),
       }));
+      console.log("options", options);
       return options;
     },
   });

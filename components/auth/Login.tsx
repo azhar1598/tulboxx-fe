@@ -1,33 +1,28 @@
-import Image from "next/image";
 import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   Button,
-  Card,
-  Checkbox,
-  Divider,
-  Flex,
-  Group,
-  PasswordInput,
-  rem,
-  Stack,
-  Text,
   TextInput,
+  PasswordInput,
+  Stack,
   Title,
+  Text,
+  Divider,
+  Card,
+  rem,
+  Center,
+  Loader,
 } from "@mantine/core";
-import { signIn } from "next-auth/react";
-import { hasLength, isEmail, useForm } from "@mantine/form";
+import LoginCover from "../../public/assets/auth/logincover.jpg";
+import { isEmail } from "@mantine/form";
+import { useForm } from "@mantine/form";
+import GoogleLogo from "../../public/assets/auth/google.webp";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Google from "../../public/assets/auth/google.webp";
+import { createClient } from "@/utils/supabase/client";
 
-interface PropTypes {
-  login: any;
-  isMobile: boolean;
-}
-
-const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
+const LoginForm = () => {
+  const supabase = createClient();
   const form = useForm({
     initialValues: {
       email: "admin@gmail.com",
@@ -40,83 +35,157 @@ const EnhancedLogin = ({ isMobile, login }: PropTypes) => {
     },
   });
 
+  const googleLoginMutation = useMutation({
+    mutationFn: async () =>
+      supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      }),
+
+    onSuccess: async (res) => {
+      const { data } = res;
+
+      console.log("data", data);
+    },
+    onError: (err: Error) => {
+      console.log("err", err.message);
+    },
+  });
+
+  if (googleLoginMutation.isPending) {
+    return (
+      <Center h={"100vh"}>
+        <Loader color="white" />
+      </Center>
+    );
+  }
+
   return (
-    <Card
-      shadow="xl"
-      radius="md"
-      p="xl"
-      withBorder
-      style={{
-        backgroundColor: "#1e1e1e",
-        color: "white",
-        maxWidth: 400,
-        width: "100%",
-      }}
-    >
-      <Stack align="center" gap="md">
-        <Title order={2}>Welcome Back</Title>
-        <Text color="dimmed" size="sm">
-          Enter your credentials to access your account
-        </Text>
+    <div className="flex h-screen w-full">
+      <div className="hidden md:block w-1/2 bg-gray-100 relative">
+        <Image
+          src={LoginCover}
+          alt="Construction tools"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-        <Button
-          color="gray"
-          leftSection={
-            <Image
-              src={Google}
-              alt="Google logo"
-              width={20}
-              height={20}
-              style={{ marginRight: rem(10) }}
-            />
-          }
-          onClick={() => signIn("google")}
-          w={300}
-        >
-          Sign in with Google
-        </Button>
-
-        <Divider label="Or continue with email" labelPosition="center" />
-
-        <form
-          onSubmit={form.onSubmit(() => {
-            login.mutate(form);
-          })}
-        >
-          <Stack gap="xs">
-            <TextInput
-              label="Email"
-              placeholder="your@email.com"
-              {...form.getInputProps("email")}
-              w={300}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Password"
-              {...form.getInputProps("password")}
-            />
-
-            <Button
-              type="submit"
-              variant="gradient"
-              gradient={{ from: "indigo", to: "cyan" }}
-              loading={login.isPending}
-              fullWidth
+      {/* Right side - Login form */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center  bg-]">
+        <div className=" ">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Title
+              order={2}
+              size={40}
+              // variant="gradient"
+              // gradient={{ from: "red", to: "orange" }}
             >
-              Sign in
-            </Button>
-          </Stack>
-        </form>
+              Tulboxx
+            </Title>
+            <Text color="dimmed" size="sm">
+              Enter your credentials to access your account
+            </Text>
+          </div>
 
-        {/* <Text color="dimmed" size="sm">
+          <Card
+            shadow="xl"
+            radius="md"
+            p="xl"
+            withBorder
+            style={{
+              backgroundColor: "#1e1se1e",
+              color: "white",
+              maxWidth: 400,
+              width: "100%",
+            }}
+          >
+            <Stack align="center" gap="md">
+              <form
+                onSubmit={form.onSubmit(() => {
+                  // login.mutate(form);
+                })}
+              >
+                <Stack gap="xs">
+                  <TextInput
+                    label="Email"
+                    placeholder="your@email.com"
+                    {...form.getInputProps("email")}
+                    w={300}
+                  />
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Password"
+                    {...form.getInputProps("password")}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="gradient"
+                    gradient={{ from: "red", to: "orange" }}
+                    // loading={login.isPending}
+                    fullWidth
+                  >
+                    Sign in
+                  </Button>
+                </Stack>
+              </form>
+
+              <Divider label="Or continue with email" labelPosition="center" />
+              {/* <Button
+                variant="gradient"
+                gradient={{ from: "red", to: "orange" }}
+                // leftSection={
+                //   <Image
+                //     src={Google}
+                //     alt="Google logo"
+                //     width={20}
+                //     height={20}
+                //     style={{ marginRight: rem(10) }}
+                //   />
+                // }
+                onClick={() => signIn("google")}
+                w={300}
+              >
+                Sign in with Google
+              </Button> */}
+              <Image
+                src={GoogleLogo}
+                alt="Google logo"
+                width={40}
+                height={20}
+                onClick={() => {
+                  googleLoginMutation.mutate();
+                }}
+              />
+
+              {/* <Text color="dimmed" size="sm">
           Don't have an account?{" "}
           <Link href="/signup" className="link-global-style">
             Sign up
           </Link>
         </Text> */}
-      </Stack>
-    </Card>
+            </Stack>
+          </Card>
+
+          {/* Create account */}
+          {/* <div className="text-center mt-8">
+            <p className="text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                href="/create-account"
+                className="text-green-500 hover:underline"
+              >
+                Create Account
+              </Link>
+            </p>
+          </div> */}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default EnhancedLogin;
+export default LoginForm;

@@ -15,6 +15,7 @@ import {
   Modal,
   Stack,
   Text,
+  Select,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -33,15 +34,33 @@ import React, { useEffect, useState } from "react";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
-import PreviewQR from "../stores/add/PreviewQR";
-import { PrintLayout } from "../stores/PrintLayout";
-import { invoiceData } from "@/apiData";
 
+import { invoiceData } from "@/apiData";
+import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
+import { useRouter } from "next/navigation";
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
-  // const [storeId, setStoreId] = useState();
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [
+    projectModalOpened,
+    { open: openProjectModal, close: closeProjectModal },
+  ] = useDisclosure(false);
   const [qrCode, setQrCode] = useState("");
   const [storeInfo, setStoreInfo] = useState();
+  const router = useRouter();
+
+  // Add this query to fetch projects
+  const { data: projects = [], isLoading: projectsLoading } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => callApi("/api/projects"), // Adjust the API endpoint as needed
+  });
+
+  const handleProjectSelect = (project) => {
+    setSelectedProject(project);
+    // closeProjectModal();
+    // Navigate to the add invoice page with project ID
+    // window.location.href = `/invoices/add/${project.id}`;
+  };
 
   const handleModal = (id, record) => {
     // console.log("siteurl", process.env.NEXT_PUBLIC_SITE_URL);
@@ -190,13 +209,6 @@ function Estimates() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const queryFilters = {
-    url: "/v1/stores",
-    key: "get-stores",
-    page,
-    pageSize,
-  };
-
   //   const getStoresQuery = useTableQuery(queryFilters);
   const getStoresQuery = {
     totalResults: [],
@@ -229,6 +241,17 @@ function Estimates() {
     URL.revokeObjectURL(svgUrl);
   };
 
+  const queryFilters = {
+    url: "/estimates",
+    key: "get-estimates",
+    page,
+    pageSize,
+  };
+
+  const getEstimatesQuery = useDropdownOptions(queryFilters);
+
+  console.log("getEstimatesQuery", getEstimatesQuery);
+
   return (
     <>
       <div className="mb-4">
@@ -236,15 +259,62 @@ function Estimates() {
           title={"Invoices"}
           rightSection={
             <Group>
-              <Link href={"/estimates/add"}>
-                <Button leftSection={<IconPlus size={16} />}>
-                  New Invoice
-                </Button>
-              </Link>
+              <Button
+                leftSection={<IconPlus size={16} />}
+                onClick={openProjectModal}
+              >
+                New Invoice
+              </Button>
             </Group>
           }
         />
       </div>
+
+      {/* Add the Project Selection Modal */}
+      <Modal
+        opened={projectModalOpened}
+        onClose={closeProjectModal}
+        title="Select Project"
+        size="md"
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed">
+            Please select a project from the dropdown below to create a new
+            invoice. You can search for projects by name.
+          </Text>
+          <Select
+            label="Search and select project"
+            placeholder="Type to search projects..."
+            data={getEstimatesQuery}
+            // searchable
+            onChange={(value) => {
+              const project = getEstimatesQuery?.find((p) => p.value === value);
+              console.log("project", project);
+              if (project) {
+                setSelectedProject(project);
+              } else {
+                setSelectedProject(null);
+              }
+            }}
+            allowDeselect={false}
+          />
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={() => {
+              if (selectedProject) {
+                // window.location.href = `/invoices/add/${selectedProject.value}`;
+                router.push(`/invoices/add/${selectedProject.value}`);
+                closeProjectModal();
+              }
+            }}
+            disabled={!selectedProject}
+            fullWidth
+          >
+            Create Invoice for Selected Project
+          </Button>
+        </Stack>
+      </Modal>
+
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
           filters={filters}
@@ -263,29 +333,6 @@ function Estimates() {
           isLoading={getStoresQuery.isLoading}
         />
       </Stack>
-
-      <Modal
-        opened={opened}
-        onClose={() => {
-          setQrCode("");
-          close();
-        }}
-        title="Store QR Code"
-        size="md"
-        centered
-      >
-        <Stack className="items-center p-4">
-          <PreviewQR storeInfo={storeInfo} qrCode={qrCode} />
-          <Button
-            onClick={downloadQRCode}
-            leftSection={<IconDownload size={16} />}
-            className="mt-4"
-          >
-            Download QR Code
-          </Button>
-          <PrintLayout qrCode={qrCode} storeInfo={storeInfo} />
-        </Stack>
-      </Modal>
     </>
   );
 }
