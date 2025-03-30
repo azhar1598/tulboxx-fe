@@ -22,6 +22,7 @@ import { sidebarItems } from "./sidebar";
 
 import LogoImage from "../../../public/assets/logo/logo.png";
 import Image from "next/image";
+import { createClient } from "@/utils/supabase/client";
 
 interface NavbarLinkProps {
   icon: any;
@@ -72,6 +73,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const supabase = createClient();
+
   const activeIndex = sidebarItems.findIndex((item) =>
     pathname.includes(item.link)
   );
@@ -88,6 +91,16 @@ export function Sidebar() {
   const handleAccountSwitch = () => {
     // Handle account switching logic
     console.log("Switching account");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.refresh();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
@@ -112,7 +125,7 @@ export function Sidebar() {
           {links}
           <UnstyledButton
             onClick={() => {
-              signOut({ callbackUrl: "/login" });
+              handleLogout();
             }}
             className={classes.link}
             // data-active={}

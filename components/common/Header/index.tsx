@@ -55,7 +55,6 @@ function Header() {
       console.error("Error logging out:", error);
     }
   };
-
   const [avatar, setAvatar] = useState<string>("");
 
   console.log("user", user);

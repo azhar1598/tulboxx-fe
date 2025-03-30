@@ -15,6 +15,7 @@ function index({
 }) {
   const [opened, { toggle, close }] = useDisclosure(false);
   const router = useRouter();
+
   return (
     <>
       <div className="flex items-center justify-between w-full p-2">
