@@ -193,3 +193,23 @@ export function newParse(rawText: string) {
     };
   }
 }
+
+export function extractAndParseJson(text: string): any {
+  const jsonMatch = text?.match(/\{[\s\S]*\}/); // Extract the JSON part
+  console.log("jsonMatch", text, jsonMatch);
+  // if (!jsonMatch) {
+  //   throw new Error("No valid JSON found in the input.");
+  // }
+
+  try {
+    let parsedJson = JSON.parse(jsonMatch[0]);
+    console.log("parsedJson", parsedJson);
+    return {
+      title: parsedJson.title,
+      content: parsedJson.content,
+      visual_content_idea: parsedJson.visual_content_idea,
+    };
+  } catch (error) {
+    // throw new Error("Invalid JSON format.");
+  }
+}

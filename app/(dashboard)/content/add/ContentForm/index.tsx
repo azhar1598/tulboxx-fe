@@ -25,10 +25,11 @@ import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
+import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 
 // Define the validation schema using zod
 const formSchema = z.object({
-  projectName: z.string().min(2, "Project name must be at least 2 characters"),
+  projectId: z.string().min(1, "Project name must be at least 1 characters"),
   postType: z.string().min(1, "Please select a post type"),
   advice: z.string().min(10, "Advice must be at least 10 characters"),
   benefit: z.string().min(10, "Benefit must be at least 10 characters"),
@@ -45,7 +46,7 @@ const ContentForm = () => {
   const form = useForm({
     validate: zodResolver(formSchema),
     initialValues: {
-      projectName: "",
+      projectId: "",
       postType: "Tips & Advice",
       advice: "",
       benefit: "",
@@ -58,11 +59,12 @@ const ContentForm = () => {
   });
 
   const createPost = useMutation({
-    mutationFn: () => callApi.post(`/v1/social-posts`, form.values),
+    mutationFn: () => callApi.post(`/content`, form.values),
     onSuccess: async (res) => {
       const { data } = res;
-      router.push(`/content/view?postId=${data?.data?.id}`);
-      notification.success(`Social media post created successfully`);
+      console.log("data", data);
+      router.push(`/content/view/${data?.content?.id}`);
+      notification.success(`Content created successfully`);
     },
     onError: (err: Error) => {
       notification.error(`${err}`);
@@ -70,19 +72,35 @@ const ContentForm = () => {
     },
   });
 
+  const queryFilters = {
+    url: "/estimates",
+    key: "get-estimates",
+    page: 1,
+    pageSize: 10,
+  };
+
+  const getEstimatesQuery = useDropdownOptions(queryFilters);
+
+  console.log("getEstimatesQuery", getEstimatesQuery);
+
   return (
     <form
       onSubmit={form.onSubmit(() => {
+        console.log("form.values", form.values);
+        const values = form.values;
         createPost.mutate();
       })}
     >
       <Stack gap="xl">
         <Group grow>
-          <TextInput
+          <Select
             label="Project Name"
-            placeholder="new era"
-            {...form.getInputProps("projectName")}
+            placeholder="Select Project"
+            {...form.getInputProps("projectId")}
+            searchable
+            data={getEstimatesQuery}
             withAsterisk
+            allowDeselect={false}
           />
 
           <Select
@@ -126,19 +144,19 @@ const ContentForm = () => {
               <Radio
                 value="Facebook"
                 label="Facebook"
-                icon={IconBrandFacebook}
+                leftSection={<IconBrandFacebook size="1rem" />}
               />
-              <Radio
-                value="Instagram"
-                label="Instagram"
-                icon={IconBrandInstagram}
-              />
+              <Radio value="Instagram" label="Instagram" />
               <Radio
                 value="LinkedIn"
                 label="LinkedIn"
-                icon={IconBrandLinkedin}
+                leftSection={<IconBrandLinkedin size="1rem" />}
               />
-              <Radio value="X" label="X" icon={IconBrandX} />
+              <Radio
+                value="X"
+                label="X"
+                leftSection={<IconBrandX size="1rem" />}
+              />
             </Group>
           </Radio.Group>
 
@@ -170,7 +188,7 @@ const ContentForm = () => {
 
         <Switch
           label="Do you want to see emojis in this post?"
-          checked={form.values.useEmojis}
+          {...form.getInputProps("useEmojis")}
           onChange={(event) =>
             form.setFieldValue("useEmojis", event.currentTarget.checked)
           }
@@ -178,7 +196,7 @@ const ContentForm = () => {
 
         <Switch
           label="Do you want hashtags in this post?"
-          checked={form.values.useHashtags}
+          {...form.getInputProps("useHashtags")}
           onChange={(event) =>
             form.setFieldValue("useHashtags", event.currentTarget.checked)
           }

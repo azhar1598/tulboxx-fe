@@ -11,6 +11,7 @@ import {
   Badge,
   Box,
   Button,
+  Flex,
   Group,
   Modal,
   Stack,
@@ -18,6 +19,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
+  IconBrandFacebook,
+  IconBrandLinkedin,
+  IconBrandInstagram,
   IconDownload,
   IconEdit,
   IconEye,
@@ -31,82 +35,89 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
-import { checkStatus } from "@/lib/constants";
+import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
-function Estimates() {
-  const [opened, { open, close }] = useDisclosure(false);
-  // const [storeId, setStoreId] = useState();
-  const [qrCode, setQrCode] = useState("");
-  const [storeInfo, setStoreInfo] = useState();
+function Content() {
+  const getContentQuery: any = useQuery({
+    queryKey: ["get-content"],
+    queryFn: () => {
+      const response = callApi.get("/content");
+      console.log("response", response);
+      return response;
+    },
+    select: (data) => {
+      console.log("data", data);
 
-  const handleModal = (id, record) => {
-    // console.log("siteurl", process.env.NEXT_PUBLIC_SITE_URL);
-    // setStoreId(id);
-    setQrCode(`${process.env.NEXT_PUBLIC_SITE_URL}/stores/${id}`);
+      return {
+        data: data?.data?.data,
+        metadata: data?.data?.metadata,
+      };
+    },
+  });
 
-    setStoreInfo(record);
-  };
-
-  useEffect(() => {
-    if (!qrCode) return;
-    open();
-  }, [qrCode]);
+  console.log("getContentQuery---->", getContentQuery?.data?.data);
 
   let columns = [
     {
+      accessor: "title",
+      title: "Title",
+      textAlign: "left",
+      render: ({ content }: any) =>
+        extractAndParseJson(content)?.title || "N/A",
+    },
+    {
       accessor: "name",
       title: "Project Name",
-      render: ({ name, tagLine, id }: any) => (
-        <Link
-          href={`/stores/${id}`}
-          style={{ color: "blue", textDecoration: "underline" }}
-        >
-          {name}{" "}
-          <small>
-            <i className="text-gray-500">({tagLine})</i>
-          </small>
+      textAlign: "left",
+      render: ({ estimates, project_id }: any) => (
+        <Link href={``} style={{ color: "blue", textDecoration: "underline" }}>
+          {estimates?.projectName} asca
         </Link>
       ),
     },
+
     {
-      accessor: "estimate",
-      title: "Project Estimate",
-      render: ({ licenseId }: any) => licenseId || "N/A",
-    },
-    {
-      accessor: "customerName",
-      title: "Customer Name",
-      render: ({ city }: any) => city || "N/A",
-    },
-    {
-      accessor: "customerEmail",
-      title: "Customer Email",
-      render: ({ state }: any) => state || "N/A",
-    },
-    {
-      accessor: "customerPhone",
-      title: "Customer Phone",
-      render: ({ status }: any) => (
-        <Badge color={checkStatus(status)}>{status}</Badge>
+      accessor: "platform",
+      title: "Platform",
+      render: ({ platform }: any) => (
+        <Flex gap={4} align="center">
+          {platform === "Facebook" && (
+            <>
+              <IconBrandFacebook size={16} color="blue" />
+              {platform}
+            </>
+          )}
+          {platform === "Instagram" && (
+            <>
+              <IconBrandInstagram size={16} color="red" />
+              {platform}
+            </>
+          )}
+          {platform === "LinkedIn" && (
+            <>
+              <IconBrandLinkedin size={16} />
+              {platform}
+            </>
+          )}
+        </Flex>
       ),
     },
 
     {
       accessor: "actions",
       title: <Box mr={6}>Row actions</Box>,
-      textAlign: "right",
+      textAlign: "left",
       render: (record) => (
-        <Button
-          style={{ fontSize: "12px" }}
-          variant="table"
-          onClick={() => {
-            handleModal(record.id, record);
-          }}
-          leftSection={<IconQrcode size={16} />}
-        >
-          Generate QR
-        </Button>
+        <Link href={`/content/view/${record.id}`}>
+          <Button
+            style={{ fontSize: "12px" }}
+            variant="table-btn-primary"
+            leftSection={<IconEye size={16} />}
+          >
+            View
+          </Button>
+        </Link>
       ),
     },
   ];
@@ -175,17 +186,18 @@ function Estimates() {
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-          records={[]}
+
+          records={getContentQuery?.data?.data || []}
           columns={columns}
-          totalRecords={getStoresQuery?.totalResults || 0}
-          currentPage={getStoresQuery?.currentPage || 0}
-          pageSize={getStoresQuery?.pageSize || 0}
+          totalRecords={getContentQuery?.metadata?.totalRecords || 0}
+          currentPage={getContentQuery?.metadata?.currentPage || 0}
+          pageSize={getContentQuery?.metadata?.pageSize || 0}
           onPageChange={handlePageChange}
-          isLoading={getStoresQuery.isLoading}
+          isLoading={getContentQuery.isLoading}
         />
       </Stack>
     </>
   );
 }
 
-export default Estimates;
+export default Content;

@@ -9,7 +9,7 @@ function page() {
   return (
     <>
       <PageHeader title={"Create Content"} />
-      <PageMainWrapper>
+      <PageMainWrapper w="full">
         <ContentForm />
       </PageMainWrapper>
     </>
