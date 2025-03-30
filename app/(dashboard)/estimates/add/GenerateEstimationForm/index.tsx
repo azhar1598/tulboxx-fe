@@ -58,7 +58,7 @@ import ProjectForm from "./ProjectForm";
 import AdditionalForm from "./AdditionalForm";
 import axios from "axios";
 
-const GenerateEstimationForm = ({ form, id }) => {
+const GenerateEstimationForm = ({ form }) => {
   const router = useRouter();
 
   const [active, setActive] = useState(0);
@@ -99,8 +99,8 @@ const GenerateEstimationForm = ({ form, id }) => {
     mutationFn: () => callApi.post(`/estimates`, form.values),
     onSuccess: async (res: any) => {
       const { data } = res;
-
-      router.push(`/estimates`);
+      console.log("data", data);
+      router.push(`/estimates/preview/${data.estimate.id}`);
       notification.success(`Estimate created successfully`);
     },
     onError: (err: Error) => {
@@ -134,11 +134,6 @@ const GenerateEstimationForm = ({ form, id }) => {
     ],
     equipmentMaterials: "",
     additionalNotes: "",
-  };
-
-  const callGemini = async () => {
-    const response = await axios.post(`/api/gemini-ai`, payload);
-    console.log("response---->", response);
   };
 
   return (
@@ -202,7 +197,6 @@ const GenerateEstimationForm = ({ form, id }) => {
                   Completed, click back buttons to get to previous step
                 </Stepper.Completed>
               </Stepper>
-              <Button onClick={callGemini}>Call Gemini</Button>
             </form>
           </Stack>
         </Paper>

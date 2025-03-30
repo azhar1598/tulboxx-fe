@@ -163,7 +163,8 @@ export function parseEstimate(data: any): ProjectEstimate {
     },
   };
 }
-export function newParse(rawText: string) {
+export function extractEstimateJson(rawText: string) {
+  console.log("rawText", rawText);
   try {
     // Remove "json" prefix and trim whitespace
     const jsonMatch = rawText.match(/^json\s*(\{.*\})/s);
@@ -174,6 +175,36 @@ export function newParse(rawText: string) {
 
     // Parse the actual JSON part
     const jsonData = JSON.parse(jsonMatch[1]);
+
+    return {
+      projectOverview: jsonData.projectOverview || "",
+      scopeOfWork: (jsonData.scopeOfWork || "")
+        .split("\n")
+        .map((item: string) => item.replace(/^- /, "").trim()),
+      timeline: jsonData.timeline || "",
+      pricing: jsonData.pricing || "",
+    };
+  } catch (error) {
+    console.error("Parsing failed:", error);
+    return {
+      projectOverview: "",
+      scopeOfWork: [],
+      timeline: "",
+      pricing: "",
+    };
+  }
+}
+
+export function extractEstimateJson1(rawText: string) {
+  console.log("Raw JSON before parsing:", rawText);
+  try {
+    // Extract only the first valid JSON object
+    const jsonString = rawText
+      .substring(rawText.indexOf("{"), rawText.lastIndexOf("}") + 1)
+      .trim();
+
+    // Parse the JSON
+    const jsonData = JSON.parse(jsonString);
 
     return {
       projectOverview: jsonData.projectOverview || "",

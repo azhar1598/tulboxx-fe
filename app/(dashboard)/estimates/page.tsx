@@ -10,6 +10,7 @@ import {
   Badge,
   Box,
   Button,
+  Flex,
   Group,
   Modal,
   Stack,
@@ -17,9 +18,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
+  IconBuilding,
   IconDownload,
   IconEdit,
   IconEye,
+  IconHome,
   IconPlus,
   IconQrcode,
   IconTrash,
@@ -62,7 +65,7 @@ function Estimates() {
       title: "Project Name",
       render: ({ projectName, id }: any) => (
         <Link
-          href={`/estimates/${id}`}
+          href={`/estimates/preview/${id}`}
           style={{ color: "blue", textDecoration: "underline" }}
         >
           {projectName || "N/A"}
@@ -91,13 +94,28 @@ function Estimates() {
 
       textAlign: "center",
       title: "Project Type",
-      render: ({ type }: any) => type || "N/A",
+      render: ({ type }: any) => (
+        <Flex gap={4} align="center">
+          {type === "home" ? (
+            <IconHome size={16} />
+          ) : type === "commercial" ? (
+            <IconBuilding size={16} />
+          ) : (
+            <IconHome size={16} />
+          )}
+          <Text size="14px">{type || "N/A"}</Text>
+        </Flex>
+      ),
     },
 
     {
       accessor: "total_amount",
       title: "Total Amount",
-      render: ({ total_amount }: any) => `$${total_amount}` || "N/A",
+      render: ({ total_amount }: any) => (
+        <Text size="14px" fw={600}>
+          {total_amount ? `$${total_amount}` : "N/A"}
+        </Text>
+      ),
     },
 
     {

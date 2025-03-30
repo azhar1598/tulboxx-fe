@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button, Group, Stack, Textarea, Switch, Tabs } from "@mantine/core";
 import { useReactToPrint } from "react-to-print";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { newParse } from "@/lib/constants";
 import { PageHeader } from "@/components/common/PageHeader";
 import {
   EditIcon,
@@ -21,6 +20,7 @@ import {
   EditorContent,
   BubbleMenu,
   FloatingMenu,
+  Editor,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -33,6 +33,10 @@ import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import TextStyle from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useQuery } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
+import { useParams } from "next/navigation";
+import { extractEstimateJson, extractEstimateJson1 } from "@/lib/constants";
 
 interface GeneratedDescription {
   projectOverview: string;
@@ -65,345 +69,6 @@ interface EstimateData {
   additionalNotes: string;
 }
 
-// Enhanced toolbar for the full text editor
-const FullEditorToolbar = ({ editor }) => {
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div className="border p-2 mb-2 flex gap-2 flex-wrap bg-gray-50 sticky top-0 z-10">
-      <Group>
-        <Button
-          size="xs"
-          variant={editor.isActive("bold") ? "filled" : "outline"}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          title="Bold"
-        >
-          B
-        </Button>
-        <Button
-          size="xs"
-          variant={editor.isActive("italic") ? "filled" : "outline"}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          title="Italic"
-        >
-          I
-        </Button>
-        <Button
-          size="xs"
-          variant={editor.isActive("underline") ? "filled" : "outline"}
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          title="Underline"
-        >
-          U
-        </Button>
-      </Group>
-
-      <div className="h-6 border-l mx-1"></div>
-
-      <Group>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive("heading", { level: 1 }) ? "filled" : "outline"
-          }
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run()
-          }
-          title="Heading 1"
-        >
-          H1
-        </Button>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive("heading", { level: 2 }) ? "filled" : "outline"
-          }
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
-          }
-          title="Heading 2"
-        >
-          H2
-        </Button>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive("heading", { level: 3 }) ? "filled" : "outline"
-          }
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 3 }).run()
-          }
-          title="Heading 3"
-        >
-          H3
-        </Button>
-      </Group>
-
-      <div className="h-6 border-l mx-1"></div>
-
-      <Group>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive({ textAlign: "left" }) ? "filled" : "outline"
-          }
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          title="Align Left"
-        >
-          Left
-        </Button>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive({ textAlign: "center" }) ? "filled" : "outline"
-          }
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          title="Align Center"
-        >
-          Center
-        </Button>
-        <Button
-          size="xs"
-          variant={
-            editor.isActive({ textAlign: "right" }) ? "filled" : "outline"
-          }
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          title="Align Right"
-        >
-          Right
-        </Button>
-      </Group>
-
-      <div className="h-6 border-l mx-1"></div>
-
-      <Group>
-        <Button
-          size="xs"
-          variant={editor.isActive("bulletList") ? "filled" : "outline"}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          title="Bullet List"
-        >
-          • List
-        </Button>
-        <Button
-          size="xs"
-          variant={editor.isActive("orderedList") ? "filled" : "outline"}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          title="Numbered List"
-        >
-          1. List
-        </Button>
-      </Group>
-
-      <div className="h-6 border-l mx-1"></div>
-
-      <Group>
-        <Button
-          size="xs"
-          variant=""
-          onClick={() => {
-            const url = window.prompt("URL");
-            if (url) {
-              editor.chain().focus().setLink({ href: url }).run();
-            }
-          }}
-          title="Insert Link"
-        >
-          Link
-        </Button>
-        <Button
-          size="xs"
-          variant=""
-          onClick={() => {
-            // Simple table insertion
-            editor
-              .chain()
-              .focus()
-              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-              .run();
-          }}
-          title="Insert Table"
-        >
-          Table
-        </Button>
-      </Group>
-    </div>
-  );
-};
-
-// Full featured document editor
-const FullDocumentEditor = ({ initialContent, onSave }) => {
-  const [currentContent, setCurrentContent] = useState(initialContent);
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-      }),
-      Image,
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
-      Underline,
-      TextStyle,
-      Placeholder.configure({
-        placeholder: "Write your estimate here...",
-      }),
-    ],
-    content: initialContent,
-    onUpdate: ({ editor }) => {
-      setCurrentContent(editor.getHTML());
-    },
-  });
-
-  return (
-    <div className="w-full border rounded">
-      {editor && <FullEditorToolbar editor={editor} />}
-
-      <EditorContent editor={editor} className="p-4 min-h-96 bg-white" />
-
-      <div className="p-3 border-t flex justify-end bg-gray-50">
-        <Button
-          onClick={() => onSave(currentContent)}
-          color="green"
-          leftSection={<SaveIcon size={16} />}
-        >
-          Save Document
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-// Original simple editor components
-const MenuBar = ({ editor }) => {
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div className="border p-2 mb-2 flex gap-2 flex-wrap">
-      <Button
-        size="xs"
-        variant={editor.isActive("bold") ? "filled" : "outline"}
-        onClick={() => editor.chain().focus().toggleBold().run()}
-      >
-        Bold
-      </Button>
-      <Button
-        size="xs"
-        variant={editor.isActive("italic") ? "filled" : "outline"}
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-      >
-        Italic
-      </Button>
-      <Button
-        size="xs"
-        variant={editor.isActive("bulletList") ? "filled" : "outline"}
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-      >
-        Bullet List
-      </Button>
-      <Button
-        size="xs"
-        variant={editor.isActive("orderedList") ? "filled" : "outline"}
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-      >
-        Ordered List
-      </Button>
-    </div>
-  );
-};
-
-// Original TipTap editor component
-const RichTextEditor = ({ content, onChange }) => {
-  const editor = useEditor({
-    extensions: [StarterKit, Link],
-    content,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-  });
-
-  return (
-    <div className="border rounded">
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} className="p-3 min-h-32" />
-    </div>
-  );
-};
-
-// Fallback to a simple text area if the component is rendered on the server
-const SimpleEditor = ({ content, onChange }) => {
-  return (
-    <Textarea
-      value={content}
-      onChange={(e) => onChange(e.target.value)}
-      minRows={4}
-      className="w-full"
-    />
-  );
-};
-
-// Dynamic import for the editor to avoid SSR issues
-const Editor = ({ content, onChange }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return <SimpleEditor content={content} onChange={onChange} />;
-  }
-
-  return <RichTextEditor content={content} onChange={onChange} />;
-};
-
-// Helper to convert the document from sections to a full HTML document
-const sectionsToFullDocument = (description) => {
-  // Convert scope of work from array to HTML list if needed
-  let scopeOfWorkHtml = "";
-  if (Array.isArray(description.scopeOfWork)) {
-    scopeOfWorkHtml = `<ul>${description.scopeOfWork
-      .map((item) => `<li>${item}</li>`)
-      .join("")}</ul>`;
-  } else {
-    scopeOfWorkHtml = description.scopeOfWork;
-  }
-
-  return `
-    <h1>Project Estimate</h1>
-    
-    <h2>Project Overview</h2>
-    ${description.projectOverview || "<p>No project overview provided.</p>"}
-    
-    <h2>Scope of Work</h2>
-    ${scopeOfWorkHtml || "<p>No scope of work defined.</p>"}
-    
-    <h2>Timeline</h2>
-    ${description.timeline || "<p>No timeline specified.</p>"}
-    
-    <h2>Pricing</h2>
-    ${description.pricing || "<p>No pricing information available.</p>"}
-    
-    <h2>Terms and Conditions</h2>
-    <p>We ensure that all aspects of the project will comply with relevant regulations and standards. 
-    Should any unforeseen complications arise during the project, we will notify you immediately and discuss 
-    any necessary adjustments. We value your trust and look forward to helping you enhance your home. 
-    Please feel free to contact us with any questions or concerns you may have.</p>
-  `;
-};
-
 // Display component for estimate sections
 export const EstimateDescription = ({
   descriptionJson,
@@ -411,80 +76,86 @@ export const EstimateDescription = ({
   isFullEditor,
   onUpdate,
 }) => {
-  // If scopeOfWork is a string, split it into an array
+  // console.log("descriptionJson", descriptionJson);
+
   const processedDescription = {
     ...descriptionJson,
     scopeOfWork:
-      typeof descriptionJson.scopeOfWork === "string"
-        ? descriptionJson.scopeOfWork
+      typeof descriptionJson?.scopeOfWork === "string"
+        ? descriptionJson?.scopeOfWork
             .split(/\\n|\\r|\n/)
             .filter((item) => item.trim())
             .map((item) => item.replace(/^- /, ""))
-        : descriptionJson.scopeOfWork,
+        : descriptionJson?.scopeOfWork,
   };
 
-  const [description, setDescription] =
-    useState<GeneratedDescription>(processedDescription);
+  const [description, setDescription] = useState<GeneratedDescription>();
+
+  useEffect(() => {
+    setDescription(processedDescription);
+  }, [descriptionJson]);
+
+  console.log("description", description);
 
   // Handler for editing text fields
-  const handleTextChange = (field, value) => {
-    setDescription({
-      ...description,
-      [field]: value,
-    });
-    onUpdate({
-      ...description,
-      [field]: value,
-    });
-  };
+  // const handleTextChange = (field, value) => {
+  //   setDescription({
+  //     ...description,
+  //     [field]: value,
+  //   });
+  //   onUpdate({
+  //     ...description,
+  //     [field]: value,
+  //   });
+  // };
 
-  const handleScopeItemChange = (index, value) => {
-    if (!Array.isArray(description.scopeOfWork)) return;
+  // const handleScopeItemChange = (index, value) => {
+  //   if (!Array.isArray(description.scopeOfWork)) return;
 
-    const newScopeOfWork = [...description.scopeOfWork];
-    newScopeOfWork[index] = value;
-    setDescription({
-      ...description,
-      scopeOfWork: newScopeOfWork,
-    });
-    onUpdate({
-      ...description,
-      scopeOfWork: newScopeOfWork,
-    });
-  };
+  //   const newScopeOfWork = [...description.scopeOfWork];
+  //   newScopeOfWork[index] = value;
+  //   setDescription({
+  //     ...description,
+  //     scopeOfWork: newScopeOfWork,
+  //   });
+  //   onUpdate({
+  //     ...description,
+  //     scopeOfWork: newScopeOfWork,
+  //   });
+  // };
 
-  const addScopeItem = () => {
-    const newScopeOfWork = Array.isArray(description.scopeOfWork)
-      ? [...description.scopeOfWork, "New task item"]
-      : [description.scopeOfWork, "New task item"];
+  // const addScopeItem = () => {
+  //   const newScopeOfWork = Array.isArray(description.scopeOfWork)
+  //     ? [...description.scopeOfWork, "New task item"]
+  //     : [description.scopeOfWork, "New task item"];
 
-    setDescription({
-      ...description,
-      scopeOfWork: newScopeOfWork,
-    });
-    onUpdate({
-      ...description,
-      scopeOfWork: newScopeOfWork,
-    });
-  };
+  //   setDescription({
+  //     ...description,
+  //     scopeOfWork: newScopeOfWork,
+  //   });
+  //   onUpdate({
+  //     ...description,
+  //     scopeOfWork: newScopeOfWork,
+  //   });
+  // };
 
-  const removeScopeItem = (index) => {
-    if (
-      Array.isArray(description.scopeOfWork) &&
-      description.scopeOfWork.length > 1
-    ) {
-      const newScopeOfWork = [...description.scopeOfWork];
-      newScopeOfWork.splice(index, 1);
-      setDescription({
-        ...description,
-        scopeOfWork: newScopeOfWork,
-      });
-      onUpdate({
-        ...description,
-        scopeOfWork: newScopeOfWork,
-      });
-    }
-  };
+  // const removeScopeItem = (index) => {
+  //   if (
+  //     Array.isArray(description.scopeOfWork) &&
+  //     description.scopeOfWork.length > 1
+  //   ) {
+  //     const newScopeOfWork = [...description.scopeOfWork];
+  //     newScopeOfWork.splice(index, 1);
+  //     setDescription({
+  //       ...description,
+  //       scopeOfWork: newScopeOfWork,
+  //     });
+  //     onUpdate({
+  //       ...description,
+  //       scopeOfWork: newScopeOfWork,
+  //     });
+  //   }
+  // };
 
   // If in full editor mode, just return nothing as the editor is handled at the parent level
   if (isFullEditor) {
@@ -505,7 +176,7 @@ export const EstimateDescription = ({
           </div>
         ) : (
           <div
-            dangerouslySetInnerHTML={{ __html: description.projectOverview }}
+            dangerouslySetInnerHTML={{ __html: description?.projectOverview }}
           />
         )}
       </Stack>
@@ -515,7 +186,7 @@ export const EstimateDescription = ({
         {isEditing ? (
           <>
             <ul className="list-none pl-0">
-              {Array.isArray(description.scopeOfWork) ? (
+              {Array.isArray(description?.scopeOfWork) ? (
                 description.scopeOfWork.map((item, index) => (
                   <li key={index} className="mb-4">
                     <div className="flex items-start gap-2">
@@ -562,12 +233,12 @@ export const EstimateDescription = ({
           </>
         ) : (
           <ul className="list-disc pl-6">
-            {Array.isArray(description.scopeOfWork) ? (
-              description.scopeOfWork.map((item, index) => (
+            {Array.isArray(description?.scopeOfWork) ? (
+              description?.scopeOfWork.map((item, index) => (
                 <li key={index} dangerouslySetInnerHTML={{ __html: item }} />
               ))
-            ) : typeof description.scopeOfWork === "string" ? (
-              description.scopeOfWork
+            ) : typeof description?.scopeOfWork === "string" ? (
+              description?.scopeOfWork
                 .split(/\\n|\\r|\n/)
                 .filter((item) => item.trim())
                 .map((item, index) => (
@@ -590,7 +261,7 @@ export const EstimateDescription = ({
             />
           </div>
         ) : (
-          <div dangerouslySetInnerHTML={{ __html: description.timeline }} />
+          <div dangerouslySetInnerHTML={{ __html: description?.timeline }} />
         )}
       </Stack>
 
@@ -604,7 +275,7 @@ export const EstimateDescription = ({
             />
           </div>
         ) : (
-          <div dangerouslySetInnerHTML={{ __html: description.pricing }} />
+          <div dangerouslySetInnerHTML={{ __html: description?.pricing }} />
         )}
       </Stack>
 
@@ -649,16 +320,40 @@ export const EstimateDescription = ({
 const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   estimateData,
 }) => {
+  const { estimateid } = useParams();
   // Sample JSON data for testing
   const sampleJsonData = `json\n{\n  "projectOverview": "We are pleased to present this project estimate for the installation of a comprehensive drainage system at your residence, Mr. Mohammed. This system is specifically designed to address the current yard flooding issues, protecting your property from water damage and enhancing its overall usability and value.",\n  "scopeOfWork": "- Conduct a thorough site assessment to determine optimal drainage system placement and design.\\n- Excavate trenches and prepare the ground for drainage pipe installation.\\n- Install high-quality drainage pipes and gravel bedding to facilitate efficient water runoff.\\n- Connect the drainage system to a designated outflow point, ensuring proper water disposal.\\n- Backfill trenches and restore the landscape to its original condition, including reseeding or resodding as needed.\\n- Conduct a final inspection and testing to verify the system\'s functionality and effectiveness.",\n  "timeline": "The project is expected to take 3 weeks (approximately 16 days) for completion, contingent upon weather conditions and site accessibility.",\n  "pricing": "The total cost for the project is $2000. This pricing is all-inclusive and covers all labor, materials, equipment, and disposal fees associated with the drainage system installation. There are no hidden costs or additional charges beyond this quoted amount."\n}\n`;
+
+  const getEstimateQuery = useQuery({
+    queryKey: ["estimate", estimateid],
+    queryFn: () => callApi.get(`/estimates/${estimateid}`),
+    select: (data) => data.data,
+  });
+
+  console.log("getEstimateQuery");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isFullEditor, setIsFullEditor] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
-  const [descriptionData, setDescriptionData] = useState(
-    newParse(sampleJsonData) || {}
-  );
+  const [aiContent, setAiContent] = useState();
   const [fullDocumentHtml, setFullDocumentHtml] = useState("");
+
+  useEffect(() => {
+    if (getEstimateQuery?.data) {
+      console.log(
+        "compare",
+        getEstimateQuery?.data?.ai_generated_estimate,
+        sampleJsonData
+      );
+      const parsedContent = extractEstimateJson1(
+        getEstimateQuery?.data?.ai_generated_estimate
+      );
+      console.log("parsedContent", parsedContent);
+      setAiContent(parsedContent);
+    }
+  }, [getEstimateQuery?.data]);
+
+  console.log("aiContent", aiContent);
 
   // Reference for the printable content
   const componentRef = useRef(null);
@@ -682,7 +377,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
 
   // Update description data
   const handleUpdateDescription = (newData) => {
-    setDescriptionData(newData);
+    setAiContent(newData);
   };
 
   // Toggle edit mode
@@ -703,7 +398,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   const switchToFullEditor = () => {
     if (!isFullEditor) {
       // Converting from sections to full document
-      const fullDoc = sectionsToFullDocument(descriptionData);
+      const fullDoc = sectionsToFullDocument(aiContent);
       setFullDocumentHtml(fullDoc);
       setIsFullEditor(true);
       setActiveTab("fullEditor");
@@ -896,7 +591,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
               </div>
 
               <EstimateDescription
-                descriptionJson={descriptionData}
+                descriptionJson={aiContent}
                 isEditing={false}
                 isFullEditor={false}
                 onUpdate={handleUpdateDescription}

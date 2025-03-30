@@ -49,12 +49,6 @@ function Estimates() {
   const [storeInfo, setStoreInfo] = useState();
   const router = useRouter();
 
-  // Add this query to fetch projects
-  const { data: projects = [], isLoading: projectsLoading } = useQuery({
-    queryKey: ["projects"],
-    queryFn: () => callApi("/api/projects"), // Adjust the API endpoint as needed
-  });
-
   const handleProjectSelect = (project) => {
     setSelectedProject(project);
     // closeProjectModal();
@@ -93,7 +87,7 @@ function Estimates() {
       accessor: "number",
       title: "Invoice #",
       align: "left",
-      render: ({ number }: any) => number || "N/A",
+      render: ({ invoice_number }: any) => invoice_number || "N/A",
     },
     {
       accessor: "name",
@@ -109,27 +103,26 @@ function Estimates() {
       ),
     },
     {
-      accessor: "estimate",
-      title: "Project Estimate",
+      accessor: "invoice_total_amount",
+      title: "Invoice Total Amount",
       align: "left",
-      render: ({ estimate }: any) => estimate || "N/A",
+      render: ({ invoice_total_amount }: any) =>
+        `$${invoice_total_amount}` || "N/A",
     },
     {
       accessor: "customerName",
       title: "Customer Name",
       align: "left",
-      render: ({ customerName }: any) => customerName || "N/A",
+      render: ({ customer_name }: any) => customer_name || "N/A",
     },
     {
-      accessor: "customerEmail",
-      title: "Customer Email",
+      accessor: "due_date",
+      title: "Due Date",
       align: "left",
-      render: ({ customerEmail }: any) => customerEmail || "N/A",
+      render: ({ due_date }: any) =>
+        due_date ? new Date(due_date).toLocaleDateString() : "N/A",
     },
-    // {
-    //   accessor: "customerPhone",
-    //   title: "Customer Phone",
-    //   align: "left",
+
     //   render: ({ customerPhone }: any) => customerPhone || "N/A",
     // },
     {
@@ -152,16 +145,16 @@ function Estimates() {
             // onClick={() => router.push(`/patients/edit/${record.id}`)}
             leftSection={<IconEdit size={16} />}
           >
-            Edit
+            View
           </Button>
-          <Button
+          {/* <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
             // onClick={() => router.push(`/patients/customize/${record.id}`)}
             leftSection={<IconTrash size={16} />}
           >
             Delete
-          </Button>
+          </Button> */}
           {/* <Button
         style={{ fontSize: "12px" }}
         variant="table"
@@ -205,6 +198,25 @@ function Estimates() {
     },
     // ... more filters
   ];
+
+  const getInvoicesQuery = useQuery({
+    queryKey: ["get-invoices"],
+    queryFn: () => {
+      const response = callApi.get("/invoices");
+      console.log("response", response);
+      return response;
+    },
+    select: (data) => {
+      console.log("data", data);
+
+      return {
+        data: data?.data?.data,
+        metadata: data?.data?.metadata,
+      };
+    },
+  });
+
+  console.log("getInvoicesQuery", getInvoicesQuery?.data?.data);
 
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -324,13 +336,13 @@ function Estimates() {
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-          records={invoiceData}
+          records={getInvoicesQuery?.data?.data || []}
           columns={columns}
-          totalRecords={getStoresQuery?.totalResults || 0}
-          currentPage={getStoresQuery?.currentPage || 0}
-          pageSize={getStoresQuery?.pageSize || 0}
+          totalRecords={getInvoicesQuery?.data?.metadata?.totalRecords || 0}
+          currentPage={getInvoicesQuery?.data?.metadata?.currentPage || 0}
+          pageSize={getInvoicesQuery?.data?.metadata?.pageSize || 0}
           onPageChange={handlePageChange}
-          isLoading={getStoresQuery.isLoading}
+          isLoading={getInvoicesQuery.isLoading}
         />
       </Stack>
     </>
