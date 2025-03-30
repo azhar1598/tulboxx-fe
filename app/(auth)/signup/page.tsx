@@ -15,6 +15,7 @@ import DisplayImage from "../../../public/assets/auth/zazu.webp";
 import { useMutation } from "@tanstack/react-query";
 // import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import callApi from "@/services/apiService";
 
 interface FormTypes {
   name: string;
@@ -26,25 +27,20 @@ function signup() {
   const isMobile = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
-  // const signup = useMutation({
-  //   mutationFn: async (form: { values: FormTypes }) => {
-  //     const response: any = await signIn("signup", {
-  //       redirect: false,
-  //       name: form.values.name,
-  //       email: form.values.email,
-  //       password: form.values.password,
-  //     });
-  //     if (response.error) throw new Error(response.error);
-  //     return response;
-  //   },
-  //   onSuccess: async (res: any) => {
-  //     router.push("/");
-  //   },
-  //   onError: (err: Error) => {
-  //     // notification.error(err.message);
-  //     console.error("Signup Error:", err.message);
-  //   },
-  // });
+  const signup = useMutation({
+    mutationFn: async (form: { values: FormTypes }) => {
+      const response = await callApi.post("/auth/signup", form.values);
+      console.log("response", response);
+      return response;
+    },
+    onSuccess: async () => {
+      router.push("/");
+    },
+    onError: (err: Error) => {
+      // notification.error(err.message);
+      console.log(err.message);
+    },
+  });
 
   // if (isMobile === undefined || signup.isSuccess) {
   //   return (
@@ -54,7 +50,7 @@ function signup() {
   //   );
   // }
 
-  return <SignUp isMobile={isMobile} />;
+  return <SignUp signup={signup} />;
 }
 
 export default signup;

@@ -21,7 +21,7 @@ import GoogleLogo from "../../public/assets/auth/google.webp";
 import { useMutation } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 
-const LoginForm = () => {
+const LoginForm = ({ login }: { login: any }) => {
   const supabase = createClient();
   const form = useForm({
     initialValues: {
@@ -105,7 +105,7 @@ const LoginForm = () => {
             <Stack align="center" gap="md">
               <form
                 onSubmit={form.onSubmit(() => {
-                  // login.mutate(form);
+                  login.mutate(form);
                 })}
               >
                 <Stack gap="xs">
@@ -125,7 +125,7 @@ const LoginForm = () => {
                     type="submit"
                     variant="gradient"
                     gradient={{ from: "red", to: "orange" }}
-                    // loading={login.isPending}
+                    loading={login.isPending}
                     fullWidth
                   >
                     Sign in
@@ -146,7 +146,7 @@ const LoginForm = () => {
                 //     style={{ marginRight: rem(10) }}
                 //   />
                 // }
-                onClick={() => signIn("google")}
+
                 w={300}
               >
                 Sign in with Google
@@ -161,27 +161,14 @@ const LoginForm = () => {
                 }}
               />
 
-              {/* <Text color="dimmed" size="sm">
-          Don't have an account?{" "}
-          <Link href="/signup" className="link-global-style">
-            Sign up
-          </Link>
-        </Text> */}
+              <Text color="dimmed" size="sm">
+                Don't have an account?{" "}
+                <Link href="/signup" className="link-global-style">
+                  Sign up
+                </Link>
+              </Text>
             </Stack>
           </Card>
-
-          {/* Create account */}
-          {/* <div className="text-center mt-8">
-            <p className="text-gray-600">
-              Don't have an account?{" "}
-              <Link
-                href="/create-account"
-                className="text-green-500 hover:underline"
-              >
-                Create Account
-              </Link>
-            </p>
-          </div> */}
         </div>
       </div>
     </div>

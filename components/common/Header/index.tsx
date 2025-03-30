@@ -1,5 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Group, Avatar, Text, Menu, UnstyledButton, Box } from "@mantine/core";
+import {
+  Group,
+  Avatar,
+  Text,
+  Menu,
+  UnstyledButton,
+  Box,
+  Burger,
+  Drawer,
+  Title,
+} from "@mantine/core";
 import {
   IconSettings,
   IconLogout,
@@ -8,12 +18,19 @@ import {
   IconQuestionMark,
   IconInfoOctagonFilled,
   IconBell,
+  IconFileText,
+  IconDashboard,
+  IconHome,
+  IconUser,
 } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import { UserContext } from "@/app/layout";
+import { useDisclosure } from "@mantine/hooks";
+import { sidebarItems } from "../Sidebar/sidebar";
+import MobileHeader from "./MobileHeader";
 
 function Header() {
   const router = useRouter();
@@ -41,12 +58,32 @@ function Header() {
 
   const [avatar, setAvatar] = useState<string>("");
 
+  console.log("user", user);
+
   useEffect(() => {
     setAvatar(user?.user_metadata?.avatar_url);
   }, [user?.user_metadata?.avatar_url]);
 
+  console.log("usermetadata", user?.user_metadata);
+
+  const menuItems = [
+    { icon: <IconHome size={20} />, label: "Home", link: "/" },
+    {
+      icon: <IconDashboard size={20} />,
+      label: "Dashboard",
+      link: "/dashboard",
+    },
+    { icon: <IconUser size={20} />, label: "Profile", link: "/profile" },
+    {
+      icon: <IconFileText size={20} />,
+      label: "Documents",
+      link: "/documents",
+    },
+    { icon: <IconSettings size={20} />, label: "Settings", link: "/settings" },
+  ];
+
   return (
-    <div className="h-16 header  bg-white shadow-sm px-6">
+    <div className="h-16 header  bg-white shadow-sm md:px-6">
       <div
         style={{
           display: "flex",
@@ -60,65 +97,78 @@ function Header() {
           gap: 20,
         }}
       >
-        <Menu position="bottom-end" shadow="md" width={200} withinPortal>
-          <Menu.Target>
-            <UnstyledButton>
-              <Group gap="xs">
-                {avatar ? (
-                  <Image
-                    src={avatar}
-                    width={32}
-                    height={32}
-                    style={{ borderRadius: "50%" }}
-                    alt={user?.user_metadata?.name || "User avatar"}
-                  />
-                ) : (
-                  <Avatar size="md" radius="xl" />
-                )}
-                <Box style={{ flex: 1 }}>
-                  <Text size="sm" fw={500}>
-                    {user?.user_metadata?.name}
-                  </Text>
-                </Box>
-                <IconChevronDown size={16} />
-              </Group>
-            </UnstyledButton>
-          </Menu.Target>
+        <div className="hidden md:flex ">
+          <div className=" hover:bg-gray-200 cursor-pointer p-2">
+            <IconBell stroke={2} />
+          </div>
+          {/* <div className=" hover:bg-gray-200 cursor-pointer p-2">
+            <IconInfoOctagonFilled stroke={2} />
+          </div> */}
+          <Menu position="bottom-end" shadow="md" width={200} withinPortal>
+            <Menu.Target>
+              <UnstyledButton>
+                <Group gap="xs">
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      width={32}
+                      height={32}
+                      style={{ borderRadius: "50%" }}
+                      alt={user?.user_metadata?.name || "User avatar"}
+                    />
+                  ) : (
+                    <Avatar size="md" radius="xl" />
+                  )}
+                  <Box style={{ flex: 1 }}>
+                    {user?.user_metadata?.firstName && (
+                      <Text size="sm" fw={500}>
+                        {user?.user_metadata?.firstName}{" "}
+                        {user?.user_metadata?.lastName}
+                      </Text>
+                    )}
+                    {user?.user_metadata?.name && (
+                      <Text size="sm" fw={500}>
+                        {user?.user_metadata?.name}
+                      </Text>
+                    )}
+                  </Box>
+                  <IconChevronDown size={16} />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Label style={{ textWrap: "wrap" }}>
-              User: {user?.email}
-            </Menu.Label>
-            <Menu.Item
-              leftSection={<IconSettings size={14} />}
-              component="a"
-              href="/account"
-            >
-              Account settings
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconLock size={14} />}
-              component="a"
-              href="/change-password"
-            >
-              Change password
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item
-              color="red"
-              leftSection={<IconLogout size={14} />}
-              onClick={handleLogout}
-            >
-              Logout
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-        <div className=" hover:bg-gray-200 cursor-pointer p-2">
-          <IconBell stroke={2} />
+            <Menu.Dropdown>
+              <Menu.Label style={{ textWrap: "wrap" }}>
+                User: {user?.email}
+              </Menu.Label>
+              <Menu.Item
+                leftSection={<IconSettings size={14} />}
+                component="a"
+                href="/account"
+              >
+                Account settings
+              </Menu.Item>
+              <Menu.Item
+                leftSection={<IconLock size={14} />}
+                component="a"
+                href="/change-password"
+              >
+                Change password
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                color="red"
+                leftSection={<IconLogout size={14} />}
+                onClick={handleLogout}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </div>
-        <div className=" hover:bg-gray-200 cursor-pointer p-2">
-          <IconInfoOctagonFilled stroke={2} />
-        </div>
+      </div>
+      <div className="md:hidden">
+        <MobileHeader handleLogout={handleLogout} user={user} />
       </div>
     </div>
   );

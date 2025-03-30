@@ -86,9 +86,9 @@ const callApi = {
       return { data: response.data, status: response.status };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.log("API Error:", error.message);
+        console.log("API Error:", error, error.message);
         const apiError: ApiError = {
-          message: error.message,
+          message: error.response?.data?.error || error.message,
           status: error.response?.status,
           data: error.response?.data,
         };

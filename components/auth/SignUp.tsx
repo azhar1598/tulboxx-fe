@@ -1,137 +1,196 @@
-"use client";
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   Button,
-  Center,
-  Flex,
-  Group,
-  rem,
-  Select,
-  Slider,
-  Stack,
   TextInput,
+  PasswordInput,
+  Stack,
+  Title,
   Text,
-  Textarea,
+  Divider,
+  Card,
+  rem,
+  Center,
+  Loader,
+  Checkbox,
 } from "@mantine/core";
-
-import { hasLength, isEmail, useForm } from "@mantine/form";
+import SignupCover from "../../public/assets/auth/signupcover.jpg";
+import { isEmail, hasLength, matches } from "@mantine/form";
+import { useForm } from "@mantine/form";
+import GoogleLogo from "../../public/assets/auth/google.webp";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
-import Google from "../../public/assets/auth/google.webp";
-
-interface PropTypes {
-  isMobile: boolean;
-  signup: any;
-}
-
-const SignUp = ({ isMobile }: PropTypes) => {
-  const router = useRouter();
-
+const SignupForm = ({ signup }: { signup: any }) => {
+  const supabase = createClient();
   const form = useForm({
     initialValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
     validate: {
-      name: hasLength({ min: 2, max: 10 }, "Name must be 2-10 characters long"),
-      email: isEmail("Invalid email"),
-      password: (value: string) =>
-        value.length < 8 ? "Password must be at least 8 characters long" : null,
-      confirmPassword: (value: string, values: { password: string }) =>
+      firstName: hasLength(
+        { min: 2 },
+        "First name must be at least 2 characters"
+      ),
+      lastName: hasLength(
+        { min: 2 },
+        "Last name must be at least 2 characters"
+      ),
+      email: isEmail("Please enter a valid email address"),
+      password: hasLength(
+        { min: 8 },
+        "Password must be at least 8 characters long"
+      ),
+      confirmPassword: (value, values) =>
         value !== values.password ? "Passwords do not match" : null,
     },
   });
 
-  return (
-    <Stack
-      w={400}
-      className={`relative items-center p-1  shadow-xl  bg-[#1e1e1ed4] rounded-md h-[100vh] md:h-auto`}
-    >
-      <Stack className={`text-white p-6 rounded-lg`}>
-        <Stack h={150} align="center" justify="center">
-          <Group className=" relative w-full h-12">
-            {/* <Image
-              src={WoxaLogo}
-              alt="Logo"
-              layout="fill"
-              objectFit="contain"
-              unoptimized
-            /> */}
-          </Group>
-          {/* <Text>Video creation at its Best</Text> */}
-        </Stack>
-        <Button
-          type="button"
-          // onClick={() => signIn("google")}
-          className="w-full mt-2 bg-white text-black rounded-md flex items-center justify-center"
-          style={{ border: "1px solid #ccc" }}
-        >
-          <Image
-            src={Google}
-            alt="Google logo"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          Sign up with Google
-        </Button>
+  const googleSignupMutation = useMutation({
+    mutationFn: async () =>
+      supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      }),
 
-        <Text className="text-center font-montMedium" style={{ color: "gray" }}>
-          or
-        </Text>
-        <form
-          onSubmit={form.onSubmit(() => {
-            // signup.mutate(form);
-          })}
-        >
-          <Stack gap={20} justify="center">
-            <TextInput
-              type="text"
-              placeholder="Name"
-              className=""
-              key={form.key("name")}
-              {...form.getInputProps("name")}
-            />
-            <TextInput
-              type="email"
-              placeholder="Email Address"
-              {...form.getInputProps("email")}
-            />
-            <TextInput
-              type="password"
-              placeholder="Password"
-              {...form.getInputProps("password")}
-            />
-            <TextInput
-              type="password"
-              placeholder="Confirm Password"
-              {...form.getInputProps("confirmPassword")}
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              loading={signup.isPending}
-              // disabled={true}
-            >
-              Sign up →
-            </Button>
-            <Text className="text-center" size="14px">
-              Already have an account?
-              <Link href="/login" className="link-global-style">
-                Login
-              </Link>
+    onSuccess: async (res) => {
+      const { data } = res;
+      console.log("data", data);
+    },
+    onError: (err: Error) => {
+      console.log("err", err.message);
+    },
+  });
+
+  if (googleSignupMutation.isPending) {
+    return (
+      <Center h={"100vh"}>
+        <Loader color="white" />
+      </Center>
+    );
+  }
+
+  return (
+    <div className="flex h-screen w-full">
+      <div className="hidden md:block w-1/2 bg-gray-100 relative">
+        <Image
+          src={SignupCover}
+          alt="Construction professionals"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Right side - Signup form */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center">
+        <div>
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <Title order={2} size={40}>
+              Tulboxx
+            </Title>
+            <Text color="dimmed" size="sm">
+              Create your account to get started
             </Text>
-          </Stack>
-        </form>
-      </Stack>
-    </Stack>
+          </div>
+
+          <Card
+            shadow="xl"
+            radius="md"
+            p="xl"
+            withBorder
+            style={{
+              backgroundColor: "#1e1se1e",
+              color: "white",
+              maxWidth: 400,
+              width: "100%",
+            }}
+          >
+            <Stack align="center" gap="md">
+              <form
+                onSubmit={form.onSubmit(() => {
+                  signup.mutate(form);
+                })}
+              >
+                <Stack gap="xs">
+                  <div className="flex gap-2">
+                    <TextInput
+                      label="First Name"
+                      placeholder="John"
+                      {...form.getInputProps("firstName")}
+                      w={145}
+                    />
+                    <TextInput
+                      label="Last Name"
+                      placeholder="Doe"
+                      {...form.getInputProps("lastName")}
+                      w={145}
+                    />
+                  </div>
+
+                  <TextInput
+                    label="Email"
+                    placeholder="your@email.com"
+                    {...form.getInputProps("email")}
+                  />
+
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Minimum 8 characters"
+                    {...form.getInputProps("password")}
+                  />
+
+                  <PasswordInput
+                    label="Confirm Password"
+                    placeholder="Re-enter password"
+                    {...form.getInputProps("confirmPassword")}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="gradient"
+                    gradient={{ from: "red", to: "orange" }}
+                    fullWidth
+                    mt="md"
+                    loading={signup.isPending}
+                  >
+                    Create Account
+                  </Button>
+                </Stack>
+              </form>
+
+              <Divider label="Or sign up with" labelPosition="center" />
+
+              <Image
+                src={GoogleLogo}
+                alt="Google logo"
+                width={40}
+                height={20}
+                onClick={() => {
+                  googleSignupMutation.mutate();
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            </Stack>
+            <div className="text-center mt-6">
+              <Text color="dimmed" size="sm">
+                Already have an account?{" "}
+                <Link href="/login" className="text-orange-500 hover:underline">
+                  Sign in
+                </Link>
+              </Text>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default SignUp;
+export default SignupForm;
