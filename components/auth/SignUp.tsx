@@ -16,9 +16,10 @@ import {
   Checkbox,
 } from "@mantine/core";
 import SignupCover from "../../public/assets/auth/signupcover.jpg";
+import GoogleLogo from "../../public/assets/auth/google.png";
 import { isEmail, hasLength, matches } from "@mantine/form";
 import { useForm } from "@mantine/form";
-import GoogleLogo from "../../public/assets/auth/google.webp";
+// import GoogleLogo from "../../public/assets/auth/google.webp";
 import { useMutation } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 
@@ -179,7 +180,7 @@ const SignupForm = ({ signup }: { signup: any }) => {
               />
             </Stack>
             <div className="text-center mt-6">
-              <Text color="dimmed" size="sm">
+              <Text color="dimmed" size="sm" fw={500}>
                 Already have an account?{" "}
                 <Link href="/login" className="text-orange-500 hover:underline">
                   Sign in

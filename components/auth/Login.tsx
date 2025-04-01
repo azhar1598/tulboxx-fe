@@ -17,7 +17,7 @@ import {
 import LoginCover from "../../public/assets/auth/logincover.jpg";
 import { isEmail } from "@mantine/form";
 import { useForm } from "@mantine/form";
-import GoogleLogo from "../../public/assets/auth/google.webp";
+import GoogleLogo from "../../public/assets/auth/google.png";
 import { useMutation } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 
@@ -161,9 +161,12 @@ const LoginForm = ({ login }: { login: any }) => {
                 }}
               />
 
-              <Text color="dimmed" size="sm">
+              <Text color="dimmed" size="sm" fw={500}>
                 Don't have an account?{" "}
-                <Link href="/signup" className="link-global-style">
+                <Link
+                  href="/signup"
+                  className="link-global-style hover:underline text-orange-500"
+                >
                   Sign up
                 </Link>
               </Text>

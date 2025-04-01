@@ -40,7 +40,7 @@ import {
   IconCircleCheck,
   IconPlus,
 } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { indianStates } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -57,6 +57,7 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import ProjectForm from "./ProjectForm";
 import AdditionalForm from "./AdditionalForm";
 import axios from "axios";
+import { UserContext } from "@/app/layout";
 
 const GenerateEstimationForm = ({ form }) => {
   const router = useRouter();
@@ -94,6 +95,14 @@ const GenerateEstimationForm = ({ form }) => {
     }
     return formData;
   };
+
+  const user = useContext(UserContext);
+
+  useEffect(() => {
+    form.setFieldValue("user_id", user?.id);
+  }, [user]);
+
+  console.log("formuser", user, form.values.userId);
 
   const generateEstimation = useMutation({
     mutationFn: () => callApi.post(`/estimates`, form.values),
@@ -190,6 +199,7 @@ const GenerateEstimationForm = ({ form }) => {
                     activeStep={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
+                    generateEstimation={generateEstimation}
                   />
                 </Stepper.Step>
 

@@ -39,10 +39,16 @@ import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
 function Content() {
+  const [search, setSearch] = useState("");
   const getContentQuery: any = useQuery({
-    queryKey: ["get-content"],
+    queryKey: ["get-content", search],
     queryFn: () => {
-      const response = callApi.get("/content");
+      const response = callApi.get("/content", {
+        params: {
+          search,
+        },
+      });
+
       console.log("response", response);
       return response;
     },
@@ -71,8 +77,8 @@ function Content() {
       title: "Project Name",
       textAlign: "left",
       render: ({ estimates, project_id }: any) => (
-        <Link href={``} style={{ color: "blue", textDecoration: "underline" }}>
-          {estimates?.projectName} asca
+        <Link href={`#`} style={{ color: "blue", textDecoration: "underline" }}>
+          {estimates?.projectName || "N/A"}
         </Link>
       ),
     },
@@ -125,7 +131,9 @@ function Content() {
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
   const handleTypeChange = () => {};
-  const handleSearch = () => {};
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
 
   const handleRecordsPerPage = () => {};
 

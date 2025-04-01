@@ -75,6 +75,7 @@ export const EstimateDescription = ({
   isEditing,
   isFullEditor,
   onUpdate,
+  lineItems,
 }) => {
   // console.log("descriptionJson", descriptionJson);
 
@@ -292,15 +293,34 @@ export const EstimateDescription = ({
           </thead>
           <tbody>
             {/* Line items would be rendered here */}
-            <tr className="text-center">
+
+            {lineItems?.map((item) => (
+              <tr key={item.id}>
+                <td className="border p-2 text-left">{item.description}</td>
+                <td className="border p-2 text-right"> ${item.unitPrice}</td>
+                <td className="border p-2 text-right"> x{item.quantity}</td>
+                <td className="border p-2 text-right"> ${item.totalPrice}</td>
+              </tr>
+            ))}
+
+            {/* <tr className="text-center">
               <td colSpan={4} className="py-4 italic text-gray-500">
                 {isEditing
                   ? "Line items can be added here"
                   : "No line items available"}
               </td>
-            </tr>
+            </tr> */}
           </tbody>
         </table>
+        <div className="flex justify-end mt-4">
+          <p className="text-right">
+            <span className="font-bold">Grand Total</span>
+            <span className="font-bold">
+              {" "}
+              ${lineItems?.reduce((acc, item) => acc + item.totalPrice, 0)}
+            </span>
+          </p>
+        </div>
       </div>
 
       <Stack className="w-full">
@@ -342,6 +362,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
     if (getEstimateQuery?.data) {
       console.log(
         "compare",
+        getEstimateQuery?.data,
         getEstimateQuery?.data?.ai_generated_estimate,
         sampleJsonData
       );
@@ -587,7 +608,9 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
               {/* Company header/logo */}
               <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold">Project Estimate</h1>
-                <p className="text-gray-600">Your Company Name</p>
+                <p className="text-gray-600">
+                  {getEstimateQuery?.data?.projectName}
+                </p>
               </div>
 
               <EstimateDescription
@@ -595,6 +618,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                 isEditing={false}
                 isFullEditor={false}
                 onUpdate={handleUpdateDescription}
+                lineItems={getEstimateQuery?.data?.lineItems}
               />
 
               {/* Company footer with signature area */}

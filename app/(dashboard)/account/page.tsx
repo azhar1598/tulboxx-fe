@@ -1,4 +1,5 @@
 "use client";
+import callApi from "@/services/apiService";
 import {
   Box,
   Button,
@@ -15,9 +16,11 @@ import {
   Paper,
   Badge,
 } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
 import { useForm, zodResolver } from "@mantine/form";
-import React from "react";
+import React, { useContext } from "react";
 import { z } from "zod";
+import { UserContext } from "@/app/layout";
 
 const accountSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -67,6 +70,20 @@ function AccountForm() {
   const subscriptionPlan = "Standard Plan";
 
   const isButtonEnabled = form.isDirty();
+  const user = useContext(UserContext);
+
+  console.log("user", user);
+
+  const getUserQuery = useQuery({
+    queryKey: ["get-user"],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      //   params.append("id", user?.id);
+      const response = callApi.get(`/user-profile/${user?.id}`);
+      console.log("response", response);
+      return response;
+    },
+  });
 
   return (
     <div className="bg-white w-full mt-5 page-main-wrapper p-[20px] mb-20">

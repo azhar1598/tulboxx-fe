@@ -58,10 +58,10 @@ const InvoiceFormPage = () => {
       ],
       invoiceSummary: "",
       remitPayment: {
-        accountName: "",
-        accountNumber: "",
-        routingNumber: "",
-        taxId: "",
+        accountName: "tarun",
+        accountNumber: "274HGE73WUI",
+        routingNumber: "123456789",
+        taxId: "TXN274GH",
       },
       customerName: "",
       email: "",
@@ -115,6 +115,7 @@ const InvoiceFormPage = () => {
         email: getSingleProject.data?.email,
         phone: getSingleProject.data?.phone,
         projectId: getSingleProject.data?.id,
+        projectName: getSingleProject.data?.projectName,
       });
     }
   }, [getSingleProject.data]);

@@ -26,6 +26,8 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
+import { useContext, useEffect } from "react";
+import { UserContext } from "@/app/layout";
 
 // Define the validation schema using zod
 const formSchema = z.object({
@@ -38,6 +40,7 @@ const formSchema = z.object({
   length: z.string().min(1, "Please select a length"),
   useEmojis: z.boolean(),
   useHashtags: z.boolean(),
+  user_id: z.string().min(1, "User id is required"),
 });
 
 const ContentForm = () => {
@@ -55,8 +58,18 @@ const ContentForm = () => {
       length: "",
       useEmojis: true,
       useHashtags: false,
+      projectName: "",
+      user_id: "",
     },
+    validateInputOnChange: true,
   });
+
+  const user = useContext(UserContext);
+
+  useEffect(() => {
+    if (!user) return;
+    form.setFieldValue("user_id", user?.id);
+  }, [user]);
 
   const createPost = useMutation({
     mutationFn: () => callApi.post(`/content`, form.values),
@@ -101,6 +114,11 @@ const ContentForm = () => {
             data={getEstimatesQuery}
             withAsterisk
             allowDeselect={false}
+            onChange={(options: any) => {
+              console.log("options", options);
+              form.getInputProps("projectId").onChange(options.value);
+              form.setFieldValue("projectName", options.label);
+            }}
           />
 
           <Select
@@ -144,18 +162,18 @@ const ContentForm = () => {
               <Radio
                 value="Facebook"
                 label="Facebook"
-                leftSection={<IconBrandFacebook size="1rem" />}
+                // leftSection={<IconBrandFacebook size="1rem" />}
               />
               <Radio value="Instagram" label="Instagram" />
               <Radio
                 value="LinkedIn"
                 label="LinkedIn"
-                leftSection={<IconBrandLinkedin size="1rem" />}
+                // leftSection={<IconBrandLinkedin size="1rem" />}
               />
               <Radio
                 value="X"
                 label="X"
-                leftSection={<IconBrandX size="1rem" />}
+                // leftSection={<IconBrandX size="1rem" />}
               />
             </Group>
           </Radio.Group>
@@ -208,6 +226,7 @@ const ContentForm = () => {
             w={200}
             loading={createPost.isPending}
             leftSection={<IconSend size="1rem" />}
+            disabled={!form.isValid()}
           >
             Generate Post
           </Button>

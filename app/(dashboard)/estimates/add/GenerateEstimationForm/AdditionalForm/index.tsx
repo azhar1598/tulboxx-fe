@@ -11,7 +11,13 @@ import {
 } from "@mantine/core";
 import React from "react";
 
-function AdditionalForm({ form, active, nextStep, prevStep }) {
+function AdditionalForm({
+  form,
+  active,
+  nextStep,
+  prevStep,
+  generateEstimation,
+}) {
   console.log(
     "form.values.equipmentMaterials",
     form.values.equipmentMaterials,
@@ -46,7 +52,11 @@ function AdditionalForm({ form, active, nextStep, prevStep }) {
 
       <Group justify="flex-start" mt="xl">
         <Button onClick={prevStep}>Back</Button>
-        <Button type="submit" disabled={!form.isValid()}>
+        <Button
+          type="submit"
+          disabled={!form.isValid()}
+          loading={generateEstimation.isPending}
+        >
           Generate Esitmate
         </Button>
       </Group>

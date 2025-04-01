@@ -16,7 +16,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import {
   IconBuilding,
   IconDownload,
@@ -27,10 +27,10 @@ import {
   IconQrcode,
   IconTrash,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
@@ -39,25 +39,41 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import { esimatesData } from "@/apiData";
 import { createClient } from "@/utils/supabase/client";
 import AuthProvider from "@/components/auth/AuthProvider";
+import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
+import { queryClient } from "@/lib/queryClient";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { UserContext } from "@/app/layout";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
   // const [storeId, setStoreId] = useState();
   const [qrCode, setQrCode] = useState("");
   const [storeInfo, setStoreInfo] = useState();
-
-  const handleModal = (id, record) => {
-    // console.log("siteurl", process.env.NEXT_PUBLIC_SITE_URL);
-    // setStoreId(id);
-    setQrCode(`${process.env.NEXT_PUBLIC_SITE_URL}/stores/${id}`);
-
-    setStoreInfo(record);
-  };
+  const [search, setSearch] = useDebouncedState("", 500);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const notification = usePageNotifications();
+  const [deletEstimateId, setDeletEstimateId] = useState();
 
   useEffect(() => {
     if (!qrCode) return;
     open();
   }, [qrCode]);
+
+  const deletEstimateMutation = useMutation({
+    mutationFn: (id) => {
+      console.log("id", id);
+      setDeletEstimateId(id);
+      return callApi.delete(`/estimates/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-estimates"] });
+      notification.success("Estimate deleted successfully");
+    },
+    onError: () => {
+      notification.error("Failed to delete estimate");
+    },
+  });
 
   let columns = [
     {
@@ -124,17 +140,22 @@ function Estimates() {
       textAlign: "left",
       render: (record: any) => (
         <Group>
-          <Button
+          {/* <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-primary"
             leftSection={<IconEdit size={16} />}
           >
             Edit
-          </Button>
+          </Button> */}
+
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
             leftSection={<IconTrash size={16} />}
+            onClick={() => deletEstimateMutation.mutate(record.id)}
+            loading={
+              record.id === deletEstimateId && deletEstimateMutation.isPending
+            }
           >
             Delete
           </Button>
@@ -145,8 +166,31 @@ function Estimates() {
 
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
-  const handleTypeChange = () => {};
-  const handleSearch = () => {};
+  const queryFilters = {
+    url: "/estimates",
+    key: "get-estimates",
+    page: 1,
+    pageSize: 10,
+  };
+
+  const getEstimatesQueryOptions = useDropdownOptions(queryFilters);
+
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    if (!getEstimatesQueryOptions) return;
+    console.log("getEstimatesQueryOptions", getEstimatesQueryOptions);
+    setOptions([{ value: "", label: "All" }, ...getEstimatesQueryOptions]);
+  }, [getEstimatesQueryOptions]);
+
+  const [projectId, setProjectId] = useState();
+
+  const handleTypeChange = (value) => {
+    setProjectId(value.value);
+  };
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
 
   const handleRecordsPerPage = () => {};
 
@@ -154,16 +198,27 @@ function Estimates() {
     {
       id: "type",
       label: "Project Name",
-      options: [{ value: "all", label: "All" }],
-      // onChange: (value) => handleTypeChange(value),
+      options: options,
+      onChange: (value) => handleTypeChange(value),
     },
     // ... more filters
   ];
 
+  const user = useContext(UserContext);
+
+  console.log("user", user);
+
   const getEstimatesQuery = useQuery({
-    queryKey: ["get-estimates"],
+    queryKey: ["get-estimates", search, page, projectId, user],
     queryFn: () => {
-      const response = callApi.get("/estimates");
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("pageSize", pageSize.toString());
+      params.append("search", search);
+      if (projectId) {
+        params.append("filter.id", projectId);
+      }
+      const response = callApi.get("/estimates", { params });
       console.log("response", response);
       return response;
     },
@@ -178,16 +233,6 @@ function Estimates() {
   });
 
   console.log("getEstimatesQuery---->", getEstimatesQuery?.data?.data);
-
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const queryFilters = {
-    url: "/v1/stores",
-    key: "get-stores",
-    page,
-    pageSize,
-  };
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -233,7 +278,7 @@ function Estimates() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
-          searchable={false}
+          searchable={true}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
@@ -242,7 +287,7 @@ function Estimates() {
           columns={columns}
           totalRecords={getEstimatesQuery?.data?.metadata?.totalRecords || 0}
           currentPage={getEstimatesQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getEstimatesQuery?.data?.metadata?.pageSize || 0}
+          pageSize={getEstimatesQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
           isLoading={getEstimatesQuery.isLoading}
         />

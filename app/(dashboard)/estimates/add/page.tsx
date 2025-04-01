@@ -63,18 +63,25 @@ const esimationSchema = z.object({
   projectEstimate: z.number().min(1, "Project estimate is required"),
   projectStartDate: z.date(),
   projectEndDate: z.date(),
-  lineItems: z.array(
-    z.object({
-      description: z.string().min(1, "Description is required"),
-      quantity: z.number().min(1, "Quantity is required"),
-      unitPrice: z.number().min(1, "Unit price is required"),
-      totalPrice: z.number().min(1, "Total price is required"),
-    })
-  ),
+  lineItems: z
+    .array(
+      z.object({
+        id: z.number().min(1, "Id is required"),
+        description: z.string().optional(),
+        quantity: z.number().min(1, "Quantity is required"),
+        unitPrice: z.number().min(1, "Unit price is required"),
+        totalPrice: z.number().optional(),
+        // .min(1, "Total price is required"),
+      })
+    )
+    .min(1, "Line items are required"),
 
   // additional fields
   equipmentMaterials: z.string().optional(),
   additionalNotes: z.string().optional(),
+
+  // user id
+  user_id: z.string().min(1, "User id is required"),
 });
 
 const StoreRegistrationContent = () => {
@@ -108,9 +115,13 @@ const StoreRegistrationContent = () => {
       // additional fields
       equipmentMaterials: "",
       additionalNotes: "",
+      // user id
+      user_id: "",
     },
     validateInputOnChange: true,
   });
+
+  console.log("form.erros", form.errors);
 
   const searchParams = useSearchParams();
   // const id = searchParams.get("merchantId");
