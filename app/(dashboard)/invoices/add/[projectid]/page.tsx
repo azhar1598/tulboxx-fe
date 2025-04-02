@@ -130,7 +130,7 @@ const InvoiceFormPage = () => {
       />
       <PageMainWrapper w="100%">
         <form onSubmit={form.onSubmit(() => generateInvoice.mutate())}>
-          <InvoiceForm form={form} />
+          <InvoiceForm form={form} generateInvoice={generateInvoice} />
         </form>
       </PageMainWrapper>
     </Stack>

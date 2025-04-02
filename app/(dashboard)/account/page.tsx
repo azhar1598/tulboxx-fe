@@ -18,7 +18,7 @@ import {
 } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { useForm, zodResolver } from "@mantine/form";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { z } from "zod";
 import { UserContext } from "@/app/layout";
 
@@ -74,16 +74,26 @@ function AccountForm() {
 
   console.log("user", user);
 
-  const getUserQuery = useQuery({
-    queryKey: ["get-user"],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      //   params.append("id", user?.id);
-      const response = callApi.get(`/user-profile/${user?.id}`);
-      console.log("response", response);
-      return response;
-    },
-  });
+  //   const getUserQuery = useQuery({
+  //     queryKey: ["get-user"],
+  //     queryFn: () => {
+  //       const params = new URLSearchParams();
+  //       //   params.append("id", user?.id);
+  //       const response = callApi.get(`/user-profile/${user?.id}`);
+  //       console.log("response", response);
+  //       return response;
+  //     },
+  //   });
+
+  //   useEffect(() => {
+  //     if (user) {
+  //       form.setValues({
+  //         ...getUserQuery.data,
+  //       });
+  //     }
+  //   }, [user]);
+
+  //   console.log("form--->", getUserQuery.data);
 
   return (
     <div className="bg-white w-full mt-5 page-main-wrapper p-[20px] mb-20">
@@ -91,7 +101,7 @@ function AccountForm() {
         <Stack gap="xl">
           <Group mb="md" align="flex-start">
             <Avatar size="xl" radius="xl" color="blue">
-              {form.values.fullName?.slice(0, 2).toUpperCase() || "U"}
+              {user?.user_metadata?.name?.slice(0, 2).toUpperCase() || "U"}
             </Avatar>
             <Box>
               <Group>
@@ -127,7 +137,9 @@ function AccountForm() {
                 <TextInput
                   label="Full Name"
                   placeholder="Your name"
-                  {...form.getInputProps("fullName")}
+                  disabled
+                  value={user?.user_metadata?.name}
+                  //   {...form.getInputProps("fullName")}
                 />
               </Grid.Col>
 
@@ -135,7 +147,9 @@ function AccountForm() {
                 <TextInput
                   label="Email Address"
                   placeholder="your.email@example.com"
-                  {...form.getInputProps("email")}
+                  //   {...form.getInputProps("email")}
+                  value={user?.email}
+                  disabled
                 />
               </Grid.Col>
 
@@ -143,7 +157,9 @@ function AccountForm() {
                 <TextInput
                   label="Phone Number"
                   placeholder="(555) 555-5555"
-                  {...form.getInputProps("phone")}
+                  value={user?.phone}
+                  disabled
+                  //   {...form.getInputProps("phone")}
                 />
               </Grid.Col>
 
@@ -194,7 +210,7 @@ function AccountForm() {
                 />
               </Grid.Col>
 
-              <Grid.Col span={12} mt="lg">
+              {/* <Grid.Col span={12} mt="lg">
                 <Divider mb="md" />
                 <Text fw={600} mb="md">
                   Account Security
@@ -215,7 +231,7 @@ function AccountForm() {
                   placeholder="Enter new password"
                   {...form.getInputProps("newPassword")}
                 />
-              </Grid.Col>
+              </Grid.Col> */}
 
               {/* <Grid.Col span={12} mt="lg">
                 <Divider mb="md" />

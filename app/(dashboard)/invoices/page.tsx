@@ -176,15 +176,15 @@ function Estimates() {
   const handleRecordsPerPage = () => {};
 
   const filters = [
-    {
-      id: "type",
-      label: "Choose Project",
-      options: [
-        { value: "1", label: "All" },
-        { value: "2", label: "Type 1" },
-      ],
-      // onChange: (value) => handleTypeChange(value),
-    },
+    // {
+    //   id: "type",
+    //   label: "Choose Project",
+    //   options: [
+    //     { value: "1", label: "All" },
+    //     { value: "2", label: "Type 1" },
+    //   ],
+    //   // onChange: (value) => handleTypeChange(value),
+    // },
     {
       id: "invoice_status",
       label: "Invoice Status",

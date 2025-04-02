@@ -58,7 +58,6 @@ const ContentForm = () => {
       length: "",
       useEmojis: true,
       useHashtags: false,
-      projectName: "",
       user_id: "",
     },
     validateInputOnChange: true,
@@ -114,11 +113,6 @@ const ContentForm = () => {
             data={getEstimatesQuery}
             withAsterisk
             allowDeselect={false}
-            onChange={(options: any) => {
-              console.log("options", options);
-              form.getInputProps("projectId").onChange(options.value);
-              form.setFieldValue("projectName", options.label);
-            }}
           />
 
           <Select

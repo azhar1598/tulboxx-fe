@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-function InvoiceForm({ form }) {
+function InvoiceForm({ form, generateInvoice }) {
   const [lineItems, setLineItems] = useState([
     { id: 1, description: "", rate: "", qty: 1, total: 0 },
   ]);
@@ -312,6 +312,7 @@ function InvoiceForm({ form }) {
         <Button
           //  disabled={!form.isValid()}
           type="submit"
+          loading={generateInvoice.isLoading}
         >
           Generate Invoice
         </Button>
