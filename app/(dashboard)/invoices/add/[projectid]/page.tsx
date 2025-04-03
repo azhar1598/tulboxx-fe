@@ -38,6 +38,7 @@ const invoiceSchema = z.object({
   email: z.string().min(1, "Customer email is required"),
   phone: z.string().min(1, "Customer phone is required"),
   projectId: z.string(),
+  user_id: z.string().min(1, "User id is required"),
 });
 
 const InvoiceFormPage = () => {
@@ -66,6 +67,8 @@ const InvoiceFormPage = () => {
       customerName: "",
       email: "",
       phone: "",
+      projectName: "",
+      user_id: "",
     },
     validateInputOnChange: true,
   });
@@ -119,6 +122,10 @@ const InvoiceFormPage = () => {
       });
     }
   }, [getSingleProject.data]);
+
+  useEffect(() => {
+    form.setFieldValue("user_id", user?.id);
+  }, [user]);
 
   console.log(form.values, "parsed.values", form.isValid);
 

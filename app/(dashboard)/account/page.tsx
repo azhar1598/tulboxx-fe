@@ -72,6 +72,17 @@ function AccountForm() {
   const isButtonEnabled = form.isDirty();
   const user = useContext(UserContext);
 
+  useEffect(() => {
+    if (user) {
+      form.setValues({
+        fullName: user?.user_metadata?.name || user?.user_metadata?.full_name,
+        email: user?.email,
+        phone: user?.phone,
+        address: user?.address,
+      });
+    }
+  }, [user]);
+
   console.log("user", user);
 
   //   const getUserQuery = useQuery({
@@ -138,7 +149,7 @@ function AccountForm() {
                   label="Full Name"
                   placeholder="Your name"
                   disabled
-                  value={user?.user_metadata?.name}
+                  {...form.getInputProps("fullName")}
                   //   {...form.getInputProps("fullName")}
                 />
               </Grid.Col>
@@ -148,7 +159,7 @@ function AccountForm() {
                   label="Email Address"
                   placeholder="your.email@example.com"
                   //   {...form.getInputProps("email")}
-                  value={user?.email}
+                  {...form.getInputProps("email")}
                   disabled
                 />
               </Grid.Col>
@@ -157,7 +168,7 @@ function AccountForm() {
                 <TextInput
                   label="Phone Number"
                   placeholder="(555) 555-5555"
-                  value={user?.phone}
+                  {...form.getInputProps("phone")}
                   disabled
                   //   {...form.getInputProps("phone")}
                 />
@@ -167,7 +178,7 @@ function AccountForm() {
                 <Textarea
                   label="Address"
                   placeholder="Your address"
-                  {...form.getInputProps("address")}
+                  // {...form.getInputProps("address")}
                 />
               </Grid.Col>
 

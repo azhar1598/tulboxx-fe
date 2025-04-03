@@ -17,7 +17,7 @@ import {
   Text,
   Select,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import {
   IconDownload,
   IconEdit,
@@ -47,6 +47,10 @@ function Estimates() {
   ] = useDisclosure(false);
   const [qrCode, setQrCode] = useState("");
   const [storeInfo, setStoreInfo] = useState();
+  const [search, setSearch] = useDebouncedState("", 500);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const router = useRouter();
 
   const handleProjectSelect = (project) => {
@@ -55,19 +59,6 @@ function Estimates() {
     // Navigate to the add invoice page with project ID
     // window.location.href = `/invoices/add/${project.id}`;
   };
-
-  const handleModal = (id, record) => {
-    // console.log("siteurl", process.env.NEXT_PUBLIC_SITE_URL);
-    // setStoreId(id);
-    setQrCode(`${process.env.NEXT_PUBLIC_SITE_URL}/stores/${id}`);
-
-    setStoreInfo(record);
-  };
-
-  useEffect(() => {
-    if (!qrCode) return;
-    open();
-  }, [qrCode]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -89,19 +80,19 @@ function Estimates() {
       align: "left",
       render: ({ invoice_number }: any) => invoice_number || "N/A",
     },
-    {
-      accessor: "name",
-      title: "Project Name",
-      align: "left",
-      render: ({ name, id }: any) => (
-        <Link
-          href={`/stores/${id}`}
-          style={{ color: "blue", textDecoration: "underline" }}
-        >
-          {name}
-        </Link>
-      ),
-    },
+    // {
+    //   accessor: "name",
+    //   title: "Project Name",
+    //   align: "left",
+    //   render: ({ name, id }: any) => (
+    //     <Link
+    //       href={`/stores/${id}`}
+    //       style={{ color: "blue", textDecoration: "underline" }}
+    //     >
+    //       {name}
+    //     </Link>
+    //   ),
+    // },
     {
       accessor: "invoice_total_amount",
       title: "Invoice Total Amount",
@@ -171,7 +162,9 @@ function Estimates() {
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
   const handleTypeChange = () => {};
-  const handleSearch = () => {};
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
 
   const handleRecordsPerPage = () => {};
 
@@ -200,9 +193,14 @@ function Estimates() {
   ];
 
   const getInvoicesQuery = useQuery({
-    queryKey: ["get-invoices"],
+    queryKey: ["get-invoices", search, page],
     queryFn: () => {
-      const response = callApi.get("/invoices");
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("pageSize", pageSize.toString());
+      params.append("search", search);
+
+      const response = callApi.get("/invoices", { params });
       console.log("response", response);
       return response;
     },
@@ -218,39 +216,8 @@ function Estimates() {
 
   console.log("getInvoicesQuery", getInvoicesQuery?.data?.data);
 
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  //   const getStoresQuery = useTableQuery(queryFilters);
-  const getStoresQuery = {
-    totalResults: [],
-    currentPage: 1,
-    pageSize: 1,
-    isLoading: false,
-  };
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
-  };
-
-  // Generate QR data based on merchant info
-
-  // Function to download QR code as SVG
-  const downloadQRCode = () => {
-    const svg = document.getElementById("merchant-qr-code");
-    const svgData = new XMLSerializer()?.serializeToString(svg);
-    const svgBlob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    // downloadLink.download = `store-${storeId}-qr.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    URL.revokeObjectURL(svgUrl);
   };
 
   const queryFilters = {

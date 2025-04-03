@@ -19,7 +19,7 @@ export const FilterLayout = ({
             key={index}
             label={filter.label}
             data={filter.options}
-            // defaultValue={filter.options[0]?.value}
+            placeholder="Select Option"
             onChange={(e, option) => {
               filter.onChange(option);
             }}
@@ -29,6 +29,7 @@ export const FilterLayout = ({
             className={classes.filter_input}
             searchable={searchable}
             allowDeselect={false}
+            clearable
           />
         ))}
       </Group>

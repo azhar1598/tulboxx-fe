@@ -553,7 +553,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
         title="Estimate Preview"
         rightSection={
           <Group position="right" mb={15} className="no-print">
-            <Button
+            {/* <Button
               leftSection={
                 isEditing ? <SaveIcon size={16} /> : <EditIcon size={16} />
               }
@@ -561,9 +561,9 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
               color={isEditing ? "green" : "blue"}
             >
               {isEditing ? "Save Changes" : "Edit Estimate"}
-            </Button>
+            </Button> */}
 
-            {isEditing && (
+            {/* {isEditing && (
               <Tabs
                 value={activeTab}
                 onChange={(value) => setActiveTab(value)}
@@ -596,7 +596,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
               >
                 Download PDF
               </Button>
-            )}
+            )} */}
           </Group>
         }
       />

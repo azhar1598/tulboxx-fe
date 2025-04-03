@@ -72,16 +72,16 @@ function Content() {
       render: ({ content }: any) =>
         extractAndParseJson(content)?.title || "N/A",
     },
-    {
-      accessor: "name",
-      title: "Project Name",
-      textAlign: "left",
-      render: ({ estimates, project_id }: any) => (
-        <Link href={`#`} style={{ color: "blue", textDecoration: "underline" }}>
-          {estimates?.projectName || "N/A"}
-        </Link>
-      ),
-    },
+    // {
+    //   accessor: "name",
+    //   title: "Project Name",
+    //   textAlign: "left",
+    //   render: ({ estimates, project_id }: any) => (
+    //     <Link href={`#`} style={{ color: "blue", textDecoration: "underline" }}>
+    //       {estimates?.projectName || "N/A"}
+    //     </Link>
+    //   ),
+    // },
 
     {
       accessor: "platform",
@@ -186,12 +186,12 @@ function Content() {
         />
       </div>
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
-        <FilterLayout
+        {/* <FilterLayout
           filters={filters}
           onSearch={handleSearch}
           searchable={false}
           // onRecordsPerPageChange={handleRecordsPerPage}
-        />
+        /> */}
         <CustomTable
           // getStoresQuery?.tableData ||
 
