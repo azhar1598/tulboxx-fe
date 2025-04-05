@@ -17,7 +17,7 @@ function AdditionalForm({
   nextStep,
   prevStep,
   generateEstimation,
-}) {
+}: any) {
   console.log(
     "form.values.equipmentMaterials",
     form.values.equipmentMaterials,

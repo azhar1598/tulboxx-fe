@@ -9,7 +9,7 @@ export const FilterLayout = ({
   recordsPerPageOptions = ["10", "25", "50", "100"],
   defaultRecordsPerPage = "10",
   searchable,
-}) => {
+}: any) => {
   return (
     <Flex justify="space-between" align={"flex-start"} gap={10} px={20} pt={10}>
       {/* Left section with filters */}

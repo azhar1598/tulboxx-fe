@@ -19,7 +19,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 
-function ProjectForm({ form, active, nextStep, prevStep }) {
+function ProjectForm({ form, active, nextStep, prevStep }: any) {
   const addLineItem = () => {
     const newId =
       form.values.lineItems.length > 0

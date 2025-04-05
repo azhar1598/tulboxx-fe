@@ -70,11 +70,11 @@ interface EstimateData {
 }
 
 // Display component for estimate sections
-export const EstimateDescription = ({
+const EstimateDescription = ({
   descriptionJson,
   isEditing,
   isFullEditor,
-  onUpdate,
+  // onUpdate,
   lineItems,
 }) => {
   // console.log("descriptionJson", descriptionJson);
@@ -170,10 +170,10 @@ export const EstimateDescription = ({
         <h2 className="text-xl font-bold">Project Overview</h2>
         {isEditing ? (
           <div className="mb-4">
-            <Editor
+            {/* <Editor
               content={description.projectOverview}
               onChange={(value) => handleTextChange("projectOverview", value)}
-            />
+            /> */}
           </div>
         ) : (
           <div
@@ -192,17 +192,17 @@ export const EstimateDescription = ({
                   <li key={index} className="mb-4">
                     <div className="flex items-start gap-2">
                       <div className="flex-grow">
-                        <Editor
+                        {/* <Editor
                           content={item}
                           onChange={(value) =>
                             handleScopeItemChange(index, value)
                           }
-                        />
+                        /> */}
                       </div>
                       <Button
                         color="red"
                         variant=""
-                        onClick={() => removeScopeItem(index)}
+                        // onClick={() => removeScopeItem(index)}
                         disabled={description.scopeOfWork.length <= 1}
                         className="mt-2"
                       >
@@ -213,10 +213,10 @@ export const EstimateDescription = ({
                 ))
               ) : (
                 <div className="mb-4">
-                  <Editor
+                  {/* <Editor
                     content={description.scopeOfWork}
                     onChange={(value) => handleTextChange("scopeOfWork", value)}
-                  />
+                  /> */}
                 </div>
               )}
             </ul>
@@ -224,7 +224,7 @@ export const EstimateDescription = ({
               <Button
                 variant=""
                 color="blue"
-                onClick={addScopeItem}
+                // onClick={addScopeItem}
                 className="self-start mt-2"
                 leftSection={<PlusCircle size={16} />}
               >
@@ -256,10 +256,10 @@ export const EstimateDescription = ({
         <h2 className="text-xl font-bold">Timeline</h2>
         {isEditing ? (
           <div className="mb-4">
-            <Editor
+            {/* <Editor
               content={description.timeline}
               onChange={(value) => handleTextChange("timeline", value)}
-            />
+            /> */}
           </div>
         ) : (
           <div dangerouslySetInnerHTML={{ __html: description?.timeline }} />
@@ -270,10 +270,10 @@ export const EstimateDescription = ({
         <h2 className="text-xl font-bold">Pricing</h2>
         {isEditing ? (
           <div className="mb-4">
-            <Editor
+            {/* <Editor
               content={description.pricing}
               onChange={(value) => handleTextChange("pricing", value)}
-            />
+            /> */}
           </div>
         ) : (
           <div dangerouslySetInnerHTML={{ __html: description?.pricing }} />
@@ -366,7 +366,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
         getEstimateQuery?.data?.ai_generated_estimate,
         sampleJsonData
       );
-      const parsedContent = extractEstimateJson1(
+      const parsedContent: any = extractEstimateJson1(
         getEstimateQuery?.data?.ai_generated_estimate
       );
       console.log("parsedContent", parsedContent);
@@ -380,51 +380,51 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   const componentRef = useRef(null);
 
   // Print/PDF download handler
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: "Project_Estimate",
-    pageStyle: `
-      @page {
-        size: auto;
-        margin: 20mm;
-      }
-      @media print {
-        .no-print {
-          display: none;
-        }
-      }
-    `,
-  });
+  // const handlePrint = useReactToPrint({
+  //   content: () => componentRef.current,
+  //   documentTitle: "Project_Estimate",
+  //   pageStyle: `
+  //     @page {
+  //       size: auto;
+  //       margin: 20mm;
+  //     }
+  //     @media print {
+  //       .no-print {
+  //         display: none;
+  //       }
+  //     }
+  //   `,
+  // });
 
   // Update description data
-  const handleUpdateDescription = (newData) => {
-    setAiContent(newData);
-  };
+  // const handleUpdateDescription = (newData) => {
+  //   setAiContent(newData);
+  // };
 
-  // Toggle edit mode
-  const toggleEditing = () => {
-    if (isEditing) {
-      // Exiting edit mode
-      setIsEditing(false);
-      setIsFullEditor(false);
-      setActiveTab("preview");
-    } else {
-      // Entering edit mode - choose the last editing mode used
-      setIsEditing(true);
-      setActiveTab(isFullEditor ? "fullEditor" : "sectionEditor");
-    }
-  };
+  // // Toggle edit mode
+  // const toggleEditing = () => {
+  //   if (isEditing) {
+  //     // Exiting edit mode
+  //     setIsEditing(false);
+  //     setIsFullEditor(false);
+  //     setActiveTab("preview");
+  //   } else {
+  //     // Entering edit mode - choose the last editing mode used
+  //     setIsEditing(true);
+  //     setActiveTab(isFullEditor ? "fullEditor" : "sectionEditor");
+  //   }
+  // };
 
   // Toggle between full and sectional editing
-  const switchToFullEditor = () => {
-    if (!isFullEditor) {
-      // Converting from sections to full document
-      const fullDoc = sectionsToFullDocument(aiContent);
-      setFullDocumentHtml(fullDoc);
-      setIsFullEditor(true);
-      setActiveTab("fullEditor");
-    }
-  };
+  // const switchToFullEditor = () => {
+  //   if (!isFullEditor) {
+  //     // Converting from sections to full document
+  //     const fullDoc = sectionsToFullDocument(aiContent);
+  //     setFullDocumentHtml(fullDoc);
+  //     setIsFullEditor(true);
+  //     setActiveTab("fullEditor");
+  //   }
+  // };
 
   const switchToSectionEditor = () => {
     setIsFullEditor(false);
@@ -432,127 +432,127 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   };
 
   // Save the full document and extract sections
-  const handleSaveFullDocument = (html) => {
-    setFullDocumentHtml(html);
+  // const handleSaveFullDocument = (html) => {
+  //   setFullDocumentHtml(html);
 
-    // This function would parse the full document back into sections
-    // In a real implementation, you'd need a more sophisticated parser
-    // This is a simplified example:
-    try {
-      // Create a DOM parser
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
+  //   // This function would parse the full document back into sections
+  //   // In a real implementation, you'd need a more sophisticated parser
+  //   // This is a simplified example:
+  //   try {
+  //     // Create a DOM parser
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(html, "text/html");
 
-      // Find all headings
-      const headings = Array.from(
-        doc.querySelectorAll("h1, h2, h3, h4, h5, h6")
-      );
+  //     // Find all headings
+  //     const headings = Array.from(
+  //       doc.querySelectorAll("h1, h2, h3, h4, h5, h6")
+  //     );
 
-      // Extract sections based on headings
-      let projectOverview = "";
-      let scopeOfWork = [];
-      let timeline = "";
-      let pricing = "";
+  //     // Extract sections based on headings
+  //     let projectOverview = "";
+  //     let scopeOfWork = [];
+  //     let timeline = "";
+  //     let pricing = "";
 
-      // Look for each section
-      headings.forEach((heading, index) => {
-        const headingText = heading.textContent?.trim().toLowerCase() || "";
+  //     // Look for each section
+  //     headings.forEach((heading, index) => {
+  //       const headingText = heading.textContent?.trim().toLowerCase() || "";
 
-        // Skip if it's the main title
-        if (headingText === "project estimate") return;
+  //       // Skip if it's the main title
+  //       if (headingText === "project estimate") return;
 
-        // Determine which section this is
-        if (
-          headingText.includes("overview") ||
-          headingText.includes("project overview")
-        ) {
-          // Extract content until the next heading
-          let content = "";
-          let nextElement = heading.nextElementSibling;
+  //       // Determine which section this is
+  //       if (
+  //         headingText.includes("overview") ||
+  //         headingText.includes("project overview")
+  //       ) {
+  //         // Extract content until the next heading
+  //         let content = "";
+  //         let nextElement = heading.nextElementSibling;
 
-          while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
-            content += nextElement.outerHTML;
-            nextElement = nextElement.nextElementSibling;
-          }
+  //         while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
+  //           content += nextElement.outerHTML;
+  //           nextElement = nextElement.nextElementSibling;
+  //         }
 
-          projectOverview = content;
-        } else if (
-          headingText.includes("scope") ||
-          headingText.includes("scope of work")
-        ) {
-          // Look for a list
-          const listElement =
-            heading.nextElementSibling?.tagName === "UL" ||
-            heading.nextElementSibling?.tagName === "OL"
-              ? heading.nextElementSibling
-              : null;
+  //         projectOverview = content;
+  //       } else if (
+  //         headingText.includes("scope") ||
+  //         headingText.includes("scope of work")
+  //       ) {
+  //         // Look for a list
+  //         const listElement =
+  //           heading.nextElementSibling?.tagName === "UL" ||
+  //           heading.nextElementSibling?.tagName === "OL"
+  //             ? heading.nextElementSibling
+  //             : null;
 
-          if (listElement) {
-            // Extract list items
-            const items = Array.from(listElement.querySelectorAll("li"));
-            scopeOfWork = items.map((item) => item.innerHTML);
-          } else {
-            // Extract content until the next heading
-            let content = "";
-            let nextElement = heading.nextElementSibling;
+  //         if (listElement) {
+  //           // Extract list items
+  //           const items = Array.from(listElement.querySelectorAll("li"));
+  //           scopeOfWork = items.map((item) => item.innerHTML);
+  //         } else {
+  //           // Extract content until the next heading
+  //           let content = "";
+  //           let nextElement = heading.nextElementSibling;
 
-            while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
-              content += nextElement.outerHTML;
-              nextElement = nextElement.nextElementSibling;
-            }
+  //           while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
+  //             content += nextElement.outerHTML;
+  //             nextElement = nextElement.nextElementSibling;
+  //           }
 
-            scopeOfWork = content;
-          }
-        } else if (headingText.includes("timeline")) {
-          // Extract content until the next heading
-          let content = "";
-          let nextElement = heading.nextElementSibling;
+  //           scopeOfWork = content;
+  //         }
+  //       } else if (headingText.includes("timeline")) {
+  //         // Extract content until the next heading
+  //         let content = "";
+  //         let nextElement = heading.nextElementSibling;
 
-          while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
-            content += nextElement.outerHTML;
-            nextElement = nextElement.nextElementSibling;
-          }
+  //         while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
+  //           content += nextElement.outerHTML;
+  //           nextElement = nextElement.nextElementSibling;
+  //         }
 
-          timeline = content;
-        } else if (
-          headingText.includes("pricing") ||
-          headingText.includes("cost")
-        ) {
-          // Extract content until the next heading
-          let content = "";
-          let nextElement = heading.nextElementSibling;
+  //         timeline = content;
+  //       } else if (
+  //         headingText.includes("pricing") ||
+  //         headingText.includes("cost")
+  //       ) {
+  //         // Extract content until the next heading
+  //         let content = "";
+  //         let nextElement = heading.nextElementSibling;
 
-          while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
-            content += nextElement.outerHTML;
-            nextElement = nextElement.nextElementSibling;
-          }
+  //         while (nextElement && !nextElement.tagName.match(/^H[1-6]$/)) {
+  //           content += nextElement.outerHTML;
+  //           nextElement = nextElement.nextElementSibling;
+  //         }
 
-          pricing = content;
-        }
-      });
+  //         pricing = content;
+  //       }
+  //     });
 
-      // Update the sections data
-      const updatedData = {
-        ...descriptionData,
-        projectOverview,
-        scopeOfWork,
-        timeline,
-        pricing,
-      };
+  //     // Update the sections data
+  //     // const updatedData = {
+  //     //   ...descriptionData,
+  //     //   projectOverview,
+  //     //   scopeOfWork,
+  //     //   timeline,
+  //     //   pricing,
+  //     // };
 
-      setDescriptionData(updatedData);
-    } catch (error) {
-      console.error("Error parsing document:", error);
-      // Fallback - keep the current sections data
-    }
-  };
+  //     // setDescriptionData(updatedData);
+  //   } catch (error) {
+  //     console.error("Error parsing document:", error);
+  //     // Fallback - keep the current sections data
+  //   }
+  // };
 
   return (
     <>
       <PageHeader
         title="Estimate Preview"
         rightSection={
-          <Group position="right" mb={15} className="no-print">
+          <Group mb={15} className="no-print">
             {/* <Button
               leftSection={
                 isEditing ? <SaveIcon size={16} /> : <EditIcon size={16} />
@@ -617,7 +617,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                 descriptionJson={aiContent}
                 isEditing={false}
                 isFullEditor={false}
-                onUpdate={handleUpdateDescription}
+                // onUpdate={handleUpdateDescription}
                 lineItems={getEstimateQuery?.data?.lineItems}
               />
 
@@ -639,18 +639,18 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
             </div>
           )}
 
-          {activeTab === "sectionEditor" && (
+          {/* {activeTab === "sectionEditor" && (
             <div className="bg-white">
               <EstimateDescription
-                descriptionJson={descriptionData}
+                // descriptionJson={descriptionData}
                 isEditing={true}
                 isFullEditor={false}
                 onUpdate={handleUpdateDescription}
               />
             </div>
-          )}
+          )} */}
 
-          {activeTab === "fullEditor" && (
+          {/* {activeTab === "fullEditor" && (
             <div className="bg-white">
               <FullDocumentEditor
                 initialContent={
@@ -659,7 +659,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                 onSave={handleSaveFullDocument}
               />
             </div>
-          )}
+          )} */}
         </Stack>
       </PageMainWrapper>
     </>

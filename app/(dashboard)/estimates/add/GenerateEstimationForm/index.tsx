@@ -153,7 +153,7 @@ const GenerateEstimationForm = ({ form }) => {
             <form
               onSubmit={form.onSubmit(() => {
                 const newFormValues = structuredClone(form.values);
-                const formData = objectToFormData(newFormValues);
+                const formData: any = objectToFormData(newFormValues);
 
                 generateEstimation.mutate(formData);
               })}
@@ -184,7 +184,7 @@ const GenerateEstimationForm = ({ form }) => {
                 >
                   <ProjectForm
                     form={form}
-                    activeStep={active}
+                    // activeStep={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
                   />
@@ -196,7 +196,7 @@ const GenerateEstimationForm = ({ form }) => {
                 >
                   <AdditionalForm
                     form={form}
-                    activeStep={active}
+                    // activeStep={active}
                     nextStep={nextStep}
                     prevStep={prevStep}
                     generateEstimation={generateEstimation}

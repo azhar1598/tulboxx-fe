@@ -102,6 +102,7 @@ function page() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
+          searchable={true}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable

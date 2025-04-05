@@ -61,7 +61,7 @@ function Estimates() {
   }, [qrCode]);
 
   const deletEstimateMutation = useMutation({
-    mutationFn: (id) => {
+    mutationFn: (id: any) => {
       console.log("id", id);
       setDeletEstimateId(id);
       return callApi.delete(`/estimates/${id}`);
@@ -107,8 +107,7 @@ function Estimates() {
 
     {
       accessor: "type",
-
-      textAlign: "center",
+      textAlign: "left",
       title: "Project Type",
       render: ({ type }: any) => (
         <Flex gap={4} align="center">

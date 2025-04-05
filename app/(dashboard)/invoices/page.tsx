@@ -91,8 +91,9 @@ function Estimates() {
     //     >
     //       {name}
     //     </Link>
-    //   ),
+    //   ),`
     // },
+
     {
       accessor: "invoice_total_amount",
       title: "Invoice Total Amount",

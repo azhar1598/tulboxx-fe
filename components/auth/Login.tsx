@@ -156,6 +156,7 @@ const LoginForm = ({ login }: { login: any }) => {
                 alt="Google logo"
                 width={40}
                 height={20}
+                className="cursor-pointer"
                 onClick={() => {
                   googleLoginMutation.mutate();
                 }}

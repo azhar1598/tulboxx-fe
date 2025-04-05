@@ -167,7 +167,8 @@ export function extractEstimateJson(rawText: string) {
   console.log("rawText", rawText);
   try {
     // Remove "json" prefix and trim whitespace
-    const jsonMatch = rawText.match(/^json\s*(\{.*\})/s);
+    // const jsonMatch: any = rawText.match(/^json\s*(\{.*\})/s);
+    const jsonMatch: any = rawText.match(/^json\s*({[\s\S]*})/);
 
     if (!jsonMatch) {
       throw new Error("Invalid format - missing JSON data");

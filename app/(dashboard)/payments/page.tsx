@@ -138,6 +138,7 @@ function PaymentsPage() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
+          searchable={true}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
