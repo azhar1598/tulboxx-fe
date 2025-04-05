@@ -312,7 +312,7 @@ function InvoiceForm({ form, generateInvoice }) {
         <Button
           //  disabled={!form.isValid()}
           type="submit"
-          loading={generateInvoice.isLoading}
+          loading={generateInvoice.isPending}
         >
           Generate Invoice
         </Button>

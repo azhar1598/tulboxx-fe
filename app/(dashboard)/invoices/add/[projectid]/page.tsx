@@ -95,7 +95,7 @@ const InvoiceFormPage = () => {
     onSuccess: async (res: any) => {
       const { data } = res;
 
-      // router.push(`/invoices`);
+      router.push(`/invoices`);
       notification.success(`Invoice created successfully`);
     },
     onError: (err: Error) => {
