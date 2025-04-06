@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Button,
   TextInput,
@@ -10,7 +11,6 @@ import {
   Text,
   Divider,
   Card,
-  rem,
   Center,
   Loader,
 } from "@mantine/core";
@@ -22,7 +22,10 @@ import { useMutation } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 
 const LoginForm = ({ login }: { login: any }) => {
+  const router = useRouter();
   const supabase = createClient();
+  const [isLoading, setIsLoading] = useState(true);
+
   const form = useForm({
     initialValues: {
       email: "admin@gmail.com",
@@ -35,26 +38,76 @@ const LoginForm = ({ login }: { login: any }) => {
     },
   });
 
+  // Check auth state on component mount and URL changes
+  useEffect(() => {
+    // Handle redirect from OAuth provider
+    const handleAuthStateChange = async () => {
+      setIsLoading(true);
+
+      // Get current session
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      // If we have a session and we're on the login page, redirect to dashboard
+      if (session) {
+        console.log("Authenticated session found, redirecting to dashboard");
+        // router.push("/dashboard");
+        window.location.href = "/";
+        return;
+      }
+
+      setIsLoading(false);
+    };
+
+    // Run on mount
+    handleAuthStateChange();
+
+    // Subscribe to auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth state changed:", event);
+        if (event === "SIGNED_IN" && session) {
+          console.log("User signed in, redirecting to dashboard");
+          // router.push("/dashboard");
+          window.location.href = "/";
+        }
+      }
+    );
+
+    // Cleanup subscription
+    return () => {
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
+  }, [router, supabase]);
+
   const googleLoginMutation = useMutation({
-    mutationFn: async () =>
-      supabase.auth.signInWithOAuth({
+    mutationFn: async () => {
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}/dashboard`,
         },
-      }),
+      });
 
-    onSuccess: async (res) => {
-      const { data } = res;
-
-      console.log("data", data);
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      if (data && data.url) {
+        // This redirect will take user to Google's login page
+        window.location.href = data.url;
+      }
     },
     onError: (err: Error) => {
-      console.log("err", err.message);
+      console.error("Google login error:", err.message);
     },
   });
 
-  if (googleLoginMutation.isPending) {
+  if (isLoading || googleLoginMutation.isPending) {
     return (
       <Center h={"100vh"}>
         <Loader color="white" />
@@ -73,16 +126,11 @@ const LoginForm = ({ login }: { login: any }) => {
       </div>
 
       {/* Right side - Login form */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center  bg-]">
-        <div className=" ">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center">
+        <div>
           {/* Logo */}
           <div className="text-center mb-8">
-            <Title
-              order={2}
-              size={40}
-              // variant="gradient"
-              // gradient={{ from: "red", to: "orange" }}
-            >
+            <Title order={2} size={40}>
               Tulboxx
             </Title>
             <Text color="dimmed" size="sm">
@@ -134,23 +182,7 @@ const LoginForm = ({ login }: { login: any }) => {
               </form>
 
               <Divider label="Or continue with email" labelPosition="center" />
-              {/* <Button
-                variant="gradient"
-                gradient={{ from: "red", to: "orange" }}
-                // leftSection={
-                //   <Image
-                //     src={Google}
-                //     alt="Google logo"
-                //     width={20}
-                //     height={20}
-                //     style={{ marginRight: rem(10) }}
-                //   />
-                // }
 
-                w={300}
-              >
-                Sign in with Google
-              </Button> */}
               <Image
                 src={GoogleLogo}
                 alt="Google logo"
