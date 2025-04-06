@@ -49,20 +49,15 @@ function Content() {
         },
       });
 
-      console.log("response", response);
       return response;
     },
     select: (data) => {
-      console.log("data", data);
-
       return {
         data: data?.data?.data,
         metadata: data?.data?.metadata,
       };
     },
   });
-
-  console.log("getContentQuery---->", getContentQuery?.data?.data);
 
   let columns = [
     {
@@ -197,9 +192,9 @@ function Content() {
 
           records={getContentQuery?.data?.data || []}
           columns={columns}
-          totalRecords={getContentQuery?.metadata?.totalRecords || 0}
-          currentPage={getContentQuery?.metadata?.currentPage || 0}
-          pageSize={getContentQuery?.metadata?.pageSize || 0}
+          totalRecords={getContentQuery?.data?.metadata?.totalRecords || 0}
+          currentPage={getContentQuery?.data?.metadata?.currentPage || 0}
+          pageSize={getContentQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
           isLoading={getContentQuery.isLoading}
         />

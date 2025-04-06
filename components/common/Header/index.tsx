@@ -57,13 +57,9 @@ function Header() {
   };
   const [avatar, setAvatar] = useState<string>("");
 
-  console.log("user", user);
-
   useEffect(() => {
     setAvatar(user?.user_metadata?.avatar_url);
   }, [user?.user_metadata?.avatar_url]);
-
-  console.log("usermetadata", user?.user_metadata);
 
   const menuItems = [
     { icon: <IconHome size={20} />, label: "Home", link: "/" },

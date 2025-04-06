@@ -17,12 +17,11 @@ export const useDropdownOptions = ({ url, key, page, pageSize }: PropTypes) => {
       return response.data;
     },
     select(data) {
-      console.log("data", data);
       const options = data.data?.map((option) => ({
         label: option.projectName,
         value: option.id.toString(),
       }));
-      console.log("options", options);
+
       return options;
     },
   });

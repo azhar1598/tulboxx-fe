@@ -62,7 +62,6 @@ function Estimates() {
 
   const deletEstimateMutation = useMutation({
     mutationFn: (id: any) => {
-      console.log("id", id);
       setDeletEstimateId(id);
       return callApi.delete(`/estimates/${id}`);
     },
@@ -178,7 +177,7 @@ function Estimates() {
 
   useEffect(() => {
     if (!getEstimatesQueryOptions) return;
-    console.log("getEstimatesQueryOptions", getEstimatesQueryOptions);
+
     setOptions([{ value: "", label: "All" }, ...getEstimatesQueryOptions]);
   }, [getEstimatesQueryOptions]);
 
@@ -205,8 +204,6 @@ function Estimates() {
 
   const user = useContext(UserContext);
 
-  console.log("user", user);
-
   const getEstimatesQuery = useQuery({
     queryKey: ["get-estimates", search, page, projectId, user],
     queryFn: () => {
@@ -218,20 +215,16 @@ function Estimates() {
         params.append("filter.id", projectId);
       }
       const response = callApi.get("/estimates", { params });
-      console.log("response", response);
+
       return response;
     },
     select: (data) => {
-      console.log("data", data);
-
       return {
         data: data?.data?.data,
         metadata: data?.data?.metadata,
       };
     },
   });
-
-  console.log("getEstimatesQuery---->", getEstimatesQuery?.data?.data);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);

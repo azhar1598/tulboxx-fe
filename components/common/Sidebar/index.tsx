@@ -90,7 +90,6 @@ export function Sidebar() {
 
   const handleAccountSwitch = () => {
     // Handle account switching logic
-    console.log("Switching account");
   };
 
   const handleLogout = async () => {

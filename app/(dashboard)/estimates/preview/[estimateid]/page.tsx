@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Group, Stack, Textarea, Switch, Tabs } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Stack,
+  Textarea,
+  Switch,
+  Tabs,
+  Center,
+  LoadingOverlay,
+} from "@mantine/core";
 import { useReactToPrint } from "react-to-print";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -12,6 +21,7 @@ import {
   Trash2,
   LayoutIcon,
   CodeIcon,
+  Loader,
 } from "lucide-react";
 
 // Enhanced editor imports
@@ -95,8 +105,6 @@ const EstimateDescription = ({
   useEffect(() => {
     setDescription(processedDescription);
   }, [descriptionJson]);
-
-  console.log("description", description);
 
   // Handler for editing text fields
   // const handleTextChange = (field, value) => {
@@ -350,8 +358,6 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
     select: (data) => data.data,
   });
 
-  console.log("getEstimateQuery");
-
   const [isEditing, setIsEditing] = useState(false);
   const [isFullEditor, setIsFullEditor] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
@@ -360,21 +366,13 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
 
   useEffect(() => {
     if (getEstimateQuery?.data) {
-      console.log(
-        "compare",
-        getEstimateQuery?.data,
-        getEstimateQuery?.data?.ai_generated_estimate,
-        sampleJsonData
-      );
       const parsedContent: any = extractEstimateJson1(
         getEstimateQuery?.data?.ai_generated_estimate
       );
-      console.log("parsedContent", parsedContent);
+
       setAiContent(parsedContent);
     }
   }, [getEstimateQuery?.data]);
-
-  console.log("aiContent", aiContent);
 
   // Reference for the printable content
   const componentRef = useRef(null);
@@ -601,10 +599,20 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
         }
       />
       <PageMainWrapper w="full">
+        {getEstimateQuery?.isLoading && (
+          <Center h={"100vh"}>
+            <LoadingOverlay
+              visible={true}
+              zIndex={1000}
+              overlayProps={{ radius: "sm", blur: 2 }}
+              loaderProps={{ type: "bars" }}
+            />
+          </Center>
+        )}
         <Stack gap={10}>
           {/* This is the main content area */}
           {activeTab === "preview" && (
-            <div ref={componentRef} className="p-8 bg-white">
+            <div ref={componentRef} className="md:p-8 bg-white">
               {/* Company header/logo */}
               <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold">Project Estimate</h1>

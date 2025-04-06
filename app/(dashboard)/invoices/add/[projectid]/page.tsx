@@ -88,7 +88,6 @@ const InvoiceFormPage = () => {
   });
 
   const user = useContext(UserContext);
-  console.log(getSingleProject.data, "getSingleProject.data");
 
   const generateInvoice = useMutation({
     mutationFn: () => callApi.post(`/invoices`, form.values),
@@ -126,8 +125,6 @@ const InvoiceFormPage = () => {
   useEffect(() => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
-
-  console.log(form.values, "parsed.values", form.isValid);
 
   return (
     <Stack>

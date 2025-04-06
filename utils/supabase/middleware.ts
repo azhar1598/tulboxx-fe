@@ -37,8 +37,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("user", user);
-
   // Redirect to home if logged-in user tries to access any auth-related pages
   if (
     user &&

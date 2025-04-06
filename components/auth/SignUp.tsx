@@ -63,7 +63,6 @@ const SignupForm = ({ signup }: { signup: any }) => {
 
     onSuccess: async (res) => {
       const { data } = res;
-      console.log("data", data);
     },
     onError: (err: Error) => {
       console.log("err", err.message);

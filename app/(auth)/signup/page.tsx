@@ -30,7 +30,6 @@ function signup() {
   const signup = useMutation({
     mutationFn: async (form: { values: FormTypes }) => {
       const response = await callApi.post("/auth/signup", form.values);
-      console.log("response", response);
       return response;
     },
     onSuccess: async () => {

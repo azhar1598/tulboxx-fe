@@ -6,7 +6,7 @@
   line-height: 1;
   border-radius: 5px;
   &[data-variant="primary"] {
-    /* background: #2e2e38; */
+    background: #2e2e38;
   }
   &[data-variant="search"] {
     /* background: #21212cd9; */
@@ -28,6 +28,14 @@
     border: 1px solid #c8102e;
   }
   /* background-color: red !important; */
+}
+
+.text_input:focus,
+.number_input:focus,
+.select_input:focus,
+.select_options:focus,
+.text_area:focus {
+  /* border: 1px solid orangered !important; */
 }
 
 .text_input_root {

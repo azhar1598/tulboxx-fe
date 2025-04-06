@@ -2,7 +2,15 @@
 import { PageHeader } from "@/components/common/PageHeader";
 import React from "react";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
-import { Box, Text, Title, Card } from "@mantine/core";
+import {
+  Box,
+  Text,
+  Title,
+  Card,
+  Loader,
+  Center,
+  LoadingOverlay,
+} from "@mantine/core";
 import { useParams } from "next/navigation";
 import callApi from "@/services/apiService";
 import { useQuery } from "@tanstack/react-query";
@@ -19,11 +27,6 @@ function page() {
     },
   });
 
-  console.log(
-    "getContentQuery",
-    getContentQuery?.data?.data?.estimates?.projectName
-  );
-
   const contentData = extractAndParseJson(getContentQuery?.data?.data?.content);
   return (
     <>
@@ -34,6 +37,16 @@ function page() {
         <Title order={2} mb="sm">
           {contentData?.title}
         </Title>
+        {getContentQuery?.isLoading && (
+          <Center h={"100vh"}>
+            <LoadingOverlay
+              visible={true}
+              zIndex={1000}
+              overlayProps={{ radius: "sm", blur: 2 }}
+              loaderProps={{ type: "bars" }}
+            />
+          </Center>
+        )}
 
         <Text size="md" color="gray.7" style={{ whiteSpace: "pre-line" }}>
           {contentData?.content}

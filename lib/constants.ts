@@ -164,7 +164,6 @@ export function parseEstimate(data: any): ProjectEstimate {
   };
 }
 export function extractEstimateJson(rawText: string) {
-  console.log("rawText", rawText);
   try {
     // Remove "json" prefix and trim whitespace
     // const jsonMatch: any = rawText.match(/^json\s*(\{.*\})/s);
@@ -197,7 +196,6 @@ export function extractEstimateJson(rawText: string) {
 }
 
 export function extractEstimateJson1(rawText: string) {
-  console.log("Raw JSON before parsing:", rawText);
   try {
     // Extract only the first valid JSON object
     const jsonString = rawText
@@ -228,14 +226,14 @@ export function extractEstimateJson1(rawText: string) {
 
 export function extractAndParseJson(text: string): any {
   const jsonMatch = text?.match(/\{[\s\S]*\}/); // Extract the JSON part
-  console.log("jsonMatch", text, jsonMatch);
+
   // if (!jsonMatch) {
   //   throw new Error("No valid JSON found in the input.");
   // }
 
   try {
     let parsedJson = JSON.parse(jsonMatch[0]);
-    console.log("parsedJson", parsedJson);
+
     return {
       title: parsedJson.title,
       content: parsedJson.content,

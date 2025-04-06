@@ -71,8 +71,6 @@ function InvoiceForm({ form, generateInvoice }) {
     );
   }, [form.values.lineItems]);
 
-  console.log(form.values, "form.values", form.errors, form.isValid());
-
   return (
     <Box p={10}>
       <Grid>
@@ -180,7 +178,7 @@ function InvoiceForm({ form, generateInvoice }) {
                     const unitPrice: number = Number(e) || 0;
                     const quantity =
                       parseInt(form.values.lineItems[index].quantity) || 0;
-                    console.log("unit price", unitPrice);
+
                     form.setFieldValue(
                       `lineItems.${index}.totalPrice`,
                       unitPrice * quantity
@@ -211,7 +209,6 @@ function InvoiceForm({ form, generateInvoice }) {
 
                     const unitPrice =
                       parseFloat(form.values.lineItems[index]?.unitPrice) || 0;
-                    console.log("unit price", unitPrice);
 
                     form.setFieldValue(
                       `lineItems.${index}.totalPrice`,

@@ -15,7 +15,6 @@ import React from "react";
 function BasicForm({ form, active, nextStep, prevStep }) {
   // Check if required fields are filled
   const isFormValid = () => {
-    console.log(form.values);
     return (
       form.values.projectName?.trim() &&
       form.values.customerName?.trim() &&

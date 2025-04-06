@@ -146,8 +146,6 @@ const ReviewStoreForm = () => {
     );
   };
 
-  console.log("terminologies", form.errors);
-
   return (
     <form
       onSubmit={form.onSubmit(() => {

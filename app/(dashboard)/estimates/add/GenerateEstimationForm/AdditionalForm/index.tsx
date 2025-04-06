@@ -18,12 +18,6 @@ function AdditionalForm({
   prevStep,
   generateEstimation,
 }: any) {
-  console.log(
-    "form.values.equipmentMaterials",
-    form.values.equipmentMaterials,
-    form.values,
-    form.isValid()
-  );
   return (
     <Box p={10}>
       <Divider mb="md" />

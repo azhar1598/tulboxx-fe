@@ -121,8 +121,6 @@ const StoreRegistrationContent = () => {
     validateInputOnChange: true,
   });
 
-  console.log("form.erros", form.errors);
-
   const searchParams = useSearchParams();
   // const id = searchParams.get("merchantId");
 

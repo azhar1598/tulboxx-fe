@@ -74,7 +74,7 @@ const ContentForm = () => {
     mutationFn: () => callApi.post(`/content`, form.values),
     onSuccess: async (res) => {
       const { data } = res;
-      console.log("data", data);
+
       router.push(`/content/view/${data?.content?.id}`);
       notification.success(`Content created successfully`);
     },
@@ -93,12 +93,9 @@ const ContentForm = () => {
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
 
-  console.log("getEstimatesQuery", getEstimatesQuery);
-
   return (
     <form
       onSubmit={form.onSubmit(() => {
-        console.log("form.values", form.values);
         const values = form.values;
         createPost.mutate();
       })}

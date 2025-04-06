@@ -49,19 +49,6 @@ function ProjectForm({ form, active, nextStep, prevStep }: any) {
 
   // Check if required fields are filled
   const isFormValid = () => {
-    console.log(
-      "form.values.projectEstimate",
-      form.values.projectEstimate,
-      form.values.serviceType,
-      form.values.problemDescription,
-      form.values.solutionDescription,
-      form.values.projectStartDate,
-      form.values.projectEndDate,
-      form.values.lineItems,
-      form.errors.length === 0,
-      form
-    );
-
     return (
       form.values.serviceType?.trim() &&
       form.values.problemDescription?.trim() &&
@@ -205,7 +192,7 @@ function ProjectForm({ form, active, nextStep, prevStep }: any) {
                     const unitPrice: number = Number(e) || 0;
                     const quantity =
                       parseInt(form.values.lineItems[index].quantity) || 0;
-                    console.log("unit price", unitPrice);
+
                     form.setFieldValue(
                       `lineItems.${index}.totalPrice`,
                       unitPrice * quantity
@@ -236,7 +223,6 @@ function ProjectForm({ form, active, nextStep, prevStep }: any) {
 
                     const unitPrice =
                       parseFloat(form.values.lineItems[index]?.unitPrice) || 0;
-                    console.log("unit price", unitPrice);
 
                     form.setFieldValue(
                       `lineItems.${index}.totalPrice`,

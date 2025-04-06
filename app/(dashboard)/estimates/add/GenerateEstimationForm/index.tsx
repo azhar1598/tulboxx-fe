@@ -102,13 +102,11 @@ const GenerateEstimationForm = ({ form }) => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
 
-  console.log("formuser", user, form.values.userId);
-
   const generateEstimation = useMutation({
     mutationFn: () => callApi.post(`/estimates`, form.values),
     onSuccess: async (res: any) => {
       const { data } = res;
-      console.log("data", data);
+
       router.push(`/estimates/preview/${data.estimate.id}`);
       notification.success(`Estimate created successfully`);
     },

@@ -202,20 +202,16 @@ function Estimates() {
       params.append("search", search);
 
       const response = callApi.get("/invoices", { params });
-      console.log("response", response);
+
       return response;
     },
     select: (data) => {
-      console.log("data", data);
-
       return {
         data: data?.data?.data,
         metadata: data?.data?.metadata,
       };
     },
   });
-
-  console.log("getInvoicesQuery", getInvoicesQuery?.data?.data);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -229,8 +225,6 @@ function Estimates() {
   };
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
-
-  console.log("getEstimatesQuery", getEstimatesQuery);
 
   return (
     <>
@@ -269,7 +263,7 @@ function Estimates() {
             // searchable
             onChange={(value) => {
               const project = getEstimatesQuery?.find((p) => p.value === value);
-              console.log("project", project);
+
               if (project) {
                 setSelectedProject(project);
               } else {
@@ -308,7 +302,7 @@ function Estimates() {
           columns={columns}
           totalRecords={getInvoicesQuery?.data?.metadata?.totalRecords || 0}
           currentPage={getInvoicesQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getInvoicesQuery?.data?.metadata?.pageSize || 0}
+          pageSize={getInvoicesQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
           isLoading={getInvoicesQuery.isLoading}
         />

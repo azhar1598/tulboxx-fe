@@ -58,7 +58,7 @@ function AccountForm() {
 
   const handleSave = () => {
     if (form.validate().hasErrors) return; // Validate form before saving
-    console.log("Form saved:", form.values); // Replace with actual save logic
+
     form.resetDirty();
   };
 
@@ -83,8 +83,6 @@ function AccountForm() {
     }
   }, [user]);
 
-  console.log("user", user);
-
   //   const getUserQuery = useQuery({
   //     queryKey: ["get-user"],
   //     queryFn: () => {
@@ -103,8 +101,6 @@ function AccountForm() {
   //       });
   //     }
   //   }, [user]);
-
-  //   console.log("form--->", getUserQuery.data);
 
   return (
     <div className="bg-white w-full mt-5 page-main-wrapper p-[20px] mb-20">
