@@ -136,7 +136,7 @@ const StoreRegistrationContent = () => {
     <Stack>
       {" "}
       <PageHeader title={`Generate Estimation`} />
-      <div className="hidden md:block">
+      <div className=" md:block">
         {/* <SimpleGrid cols={1}> */}
 
         {/* <AddStoreForm form={form} /> */}
