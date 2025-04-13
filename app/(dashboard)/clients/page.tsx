@@ -28,6 +28,8 @@ import {
   IconPlus,
   IconQrcode,
   IconTrash,
+  IconHome,
+  IconBuilding,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
@@ -40,10 +42,10 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
 function Clients() {
   const [search, setSearch] = useState("");
-  const getContentQuery: any = useQuery({
-    queryKey: ["get-content", search],
+  const getClientsQuery: any = useQuery({
+    queryKey: ["get-clients", search],
     queryFn: () => {
-      const response = callApi.get("/content", {
+      const response = callApi.get("/clients", {
         params: {
           search,
         },
@@ -61,11 +63,24 @@ function Clients() {
 
   let columns = [
     {
-      accessor: "title",
-      title: "Title",
+      accessor: "name",
+      title: "Name",
       textAlign: "left",
-      render: ({ content }: any) =>
-        extractAndParseJson(content)?.title || "N/A",
+    },
+    {
+      accessor: "email",
+      title: "Email",
+      textAlign: "left",
+    },
+    {
+      accessor: "phone",
+      title: "Phone",
+      textAlign: "left",
+    },
+    {
+      accessor: "address",
+      title: "Address",
+      textAlign: "left",
     },
     // {
     //   accessor: "name",
@@ -79,26 +94,20 @@ function Clients() {
     // },
 
     {
-      accessor: "platform",
-      title: "Platform",
-      render: ({ platform }: any) => (
+      accessor: "type",
+      title: "Type",
+      render: ({ type }: any) => (
         <Flex gap={4} align="center">
-          {platform === "Facebook" && (
+          {type === "residential" && (
             <>
-              <IconBrandFacebook size={16} color="blue" />
-              {platform}
+              <IconHome size={16} color="blue" />
+              {type}
             </>
           )}
-          {platform === "Instagram" && (
+          {type === "commercial" && (
             <>
-              <IconBrandInstagram size={16} color="red" />
-              {platform}
-            </>
-          )}
-          {platform === "LinkedIn" && (
-            <>
-              <IconBrandLinkedin size={16} />
-              {platform}
+              <IconBuilding size={16} color="red" />
+              {type}
             </>
           )}
         </Flex>
@@ -110,13 +119,13 @@ function Clients() {
       title: <Box mr={6}>Row actions</Box>,
       textAlign: "left",
       render: (record) => (
-        <Link href={`/content/view/${record.id}`}>
+        <Link href={`/clients/edit/${record.id}`}>
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-primary"
-            leftSection={<IconEye size={16} />}
+            leftSection={<IconEdit size={16} />}
           >
-            View
+            Edit
           </Button>
         </Link>
       ),
@@ -179,22 +188,22 @@ function Clients() {
         />
       </div>
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
-        {/* <FilterLayout
+        <FilterLayout
           filters={filters}
           onSearch={handleSearch}
           searchable={false}
           // onRecordsPerPageChange={handleRecordsPerPage}
-        /> */}
+        />
         <CustomTable
           // getStoresQuery?.tableData ||
 
-          records={getContentQuery?.data?.data || []}
+          records={getClientsQuery?.data?.data || []}
           columns={columns}
-          totalRecords={getContentQuery?.data?.metadata?.totalRecords || 0}
-          currentPage={getContentQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getContentQuery?.data?.metadata?.recordsPerPage || 0}
+          totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
+          currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
+          pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
-          isLoading={getContentQuery.isLoading}
+          isLoading={getClientsQuery.isLoading}
         />
       </Stack>
     </>

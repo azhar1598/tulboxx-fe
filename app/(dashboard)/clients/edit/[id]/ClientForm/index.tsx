@@ -1,6 +1,6 @@
 "use client";
 import { useForm, zodResolver } from "@mantine/form";
-import { z } from "zod";
+import { Schema, z } from "zod";
 import {
   TextInput,
   Group,
@@ -24,9 +24,9 @@ import {
   IconSend,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useContext, useEffect } from "react";
@@ -63,29 +63,61 @@ const ClientForm = () => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
 
-  const createClient = useMutation({
-    mutationFn: () => callApi.post(`/clients`, form.values),
+  const { id } = useParams();
+
+  const getClientQuery = useQuery({
+    queryKey: ["get-client", id],
+    queryFn: () => callApi.get(`/clients/${id}`),
+  });
+
+  console.log("getClientQuery.data", getClientQuery.data);
+
+  useEffect(() => {
+    if (getClientQuery.data) {
+      const { name, email, phone, type, address } = getClientQuery.data?.data;
+      form.setValues({
+        name,
+        email,
+        phone: Number(phone),
+        type,
+        address,
+      });
+      form.resetDirty();
+    }
+  }, [getClientQuery.data]);
+
+  const updateClient = useMutation({
+    mutationFn: () => callApi.put(`/clients/${id}`, form.values),
     onSuccess: async (res) => {
       const { data } = res;
 
       notification.success(`Client created successfully`);
       router.push(`/clients`);
     },
-    onError: (err: any) => {
-      notification.error(`${err?.data?.message}`);
-      console.log("err", err);
+    onError: (err: Error) => {
+      notification.error(`${err}`);
+      console.log(err.message);
     },
   });
 
-  const isButtonEnabled = form.isValid() && !createClient.isPending;
+  const isButtonEnabled =
+    form.isValid() && !updateClient.isPending && id && form.isDirty();
 
-  console.log(form.values, form.errors, formSchema.safeParse(form.values));
+  console.log("isButtonEnabled", isButtonEnabled);
+
+  console.log(
+    "form.values",
+    form.isValid(),
+    form.isDirty(),
+    form.errors,
+    formSchema.safeParse(form.values)
+  );
 
   return (
     <form
       onSubmit={form.onSubmit(() => {
         const values = form.values;
-        createClient.mutate();
+        updateClient.mutate();
       })}
     >
       <Grid>
@@ -101,6 +133,7 @@ const ClientForm = () => {
           <TextInput
             label="Email"
             placeholder="client@email.com"
+            disabled={true}
             {...form.getInputProps("email")}
           />
         </Grid.Col>
@@ -144,11 +177,11 @@ const ClientForm = () => {
         <Button
           type="submit"
           w={200}
-          loading={createClient.isPending}
+          loading={updateClient.isPending}
           leftSection={<IconUserPlus size="1rem" />}
           disabled={!isButtonEnabled}
         >
-          Create Client
+          Update Client
         </Button>
       </Group>
     </form>
