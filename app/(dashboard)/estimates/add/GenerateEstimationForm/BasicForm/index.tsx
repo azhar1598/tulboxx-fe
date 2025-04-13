@@ -26,14 +26,7 @@ function BasicForm({ form, active, nextStep, prevStep }) {
 
   // Check if required fields are filled
   const isFormValid = () => {
-    return (
-      form.values.projectName?.trim() &&
-      form.values.customerName?.trim() &&
-      form.values.email?.trim() &&
-      form.values.phone &&
-      form.values.address?.trim() &&
-      form.values.type?.trim()
-    );
+    return form.values.projectName?.trim() && form.values.clientId?.trim();
   };
 
   const getClients = useQuery({

@@ -51,10 +51,11 @@ const esimationSchema = z.object({
   // general form
   projectName: z.string().min(1, "Project name is required"),
   // name: z.string().min(1, "Name is required"),
-  customerName: z.string().min(1, "Customer name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.number().min(10, "Phone number is required"),
-  address: z.string().min(1, "Address is required"),
+  // customerName: z.string().min(1, "Customer name is required"),
+  // email: z.string().email("Invalid email address"),
+  // phone: z.number().min(10, "Phone number is required"),
+  // address: z.string().min(1, "Address is required"),
+  clientId: z.string().min(1, "Client is required"),
 
   // project form
   serviceType: z.string().min(1, "Service type is required"),
@@ -90,12 +91,13 @@ const StoreRegistrationContent = () => {
     initialValues: {
       // general form
       projectName: "",
-      // name: "",
-      customerName: "",
-      email: "",
-      phone: "",
-      address: "",
-      type: "residential",
+      name: "",
+      clientId: "",
+      // customerName: "",
+      // email: "",
+      // phone: "",
+      // address: "",
+      // type: "residential",
       // project form
       serviceType: "",
       problemDescription: "",
