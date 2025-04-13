@@ -41,7 +41,13 @@ const formSchema = z.object({
   address: z.string().min(1, "Address is required"),
 });
 
-const ClientForm = () => {
+const ClientForm = ({
+  md = 6,
+  setClientModalOpened,
+}: {
+  md?: number;
+  setClientModalOpened: (value: boolean) => void;
+}) => {
   const router = useRouter();
   const notification = usePageNotifications();
   const form = useForm({
@@ -69,7 +75,11 @@ const ClientForm = () => {
       const { data } = res;
 
       notification.success(`Client created successfully`);
-      router.push(`/clients`);
+      if (md === 6) {
+        router.push(`/clients`);
+      } else {
+        setClientModalOpened(false);
+      }
     },
     onError: (err: any) => {
       notification.error(`${err?.data?.message}`);
@@ -89,7 +99,7 @@ const ClientForm = () => {
       })}
     >
       <Grid>
-        <Grid.Col span={{ base: 12, md: 6 }}>
+        <Grid.Col span={{ base: 12, md: md }}>
           <TextInput
             label="Name"
             placeholder="Type here..."
@@ -97,7 +107,7 @@ const ClientForm = () => {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 6 }}>
+        <Grid.Col span={{ base: 12, md: md }}>
           <TextInput
             label="Email"
             placeholder="client@email.com"
@@ -105,7 +115,7 @@ const ClientForm = () => {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 6 }}>
+        <Grid.Col span={{ base: 12, md: md }}>
           <NumberInput
             label="Phone"
             allowDecimal={false}
@@ -116,7 +126,7 @@ const ClientForm = () => {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 6 }} mt={8}>
+        <Grid.Col span={{ base: 12, md: md }} mt={8}>
           <Text size="14px" fw={500} mb={5}>
             Type
           </Text>
@@ -132,7 +142,7 @@ const ClientForm = () => {
           </Radio.Group>
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 6 }}>
+        <Grid.Col span={{ base: 12, md: md }}>
           <Textarea
             label="Address"
             placeholder="Start typing..."
