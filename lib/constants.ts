@@ -197,19 +197,28 @@ export function extractEstimateJson(rawText: string) {
 
 export function extractEstimateJson1(rawText: string) {
   try {
-    // Extract only the first valid JSON object
+    // Extract the first JSON-like object
     const jsonString = rawText
       .substring(rawText.indexOf("{"), rawText.lastIndexOf("}") + 1)
       .trim();
 
-    // Parse the JSON
     const jsonData = JSON.parse(jsonString);
+
+    // Normalize scopeOfWork
+    const scopeRaw = jsonData.scopeOfWork;
+
+    const scopeOfWork = Array.isArray(scopeRaw)
+      ? scopeRaw
+      : typeof scopeRaw === "string"
+      ? scopeRaw
+          .split("\n")
+          .map((item: string) => item.replace(/^- /, "").trim())
+          .filter(Boolean)
+      : [];
 
     return {
       projectOverview: jsonData.projectOverview || "",
-      scopeOfWork: (jsonData.scopeOfWork || "")
-        .split("\n")
-        .map((item: string) => item.replace(/^- /, "").trim()),
+      scopeOfWork,
       timeline: jsonData.timeline || "",
       pricing: jsonData.pricing || "",
     };
@@ -243,3 +252,5 @@ export function extractAndParseJson(text: string): any {
     // throw new Error("Invalid JSON format.");
   }
 }
+
+export const sampleJsonData = `json\n{\n  "projectOverview": "We are pleased to present this project estimate for the installation of a comprehensive drainage system at your residence, Mr. Mohammed. This system is specifically designed to address the current yard flooding issues, protecting your property from water damage and enhancing its overall usability and value.",\n  "scopeOfWork": "- Conduct a thorough site assessment to determine optimal drainage system placement and design.\\n- Excavate trenches and prepare the ground for drainage pipe installation.\\n- Install high-quality drainage pipes and gravel bedding to facilitate efficient water runoff.\\n- Connect the drainage system to a designated outflow point, ensuring proper water disposal.\\n- Backfill trenches and restore the landscape to its original condition, including reseeding or resodding as needed.\\n- Conduct a final inspection and testing to verify the system\'s functionality and effectiveness.",\n  "timeline": "The project is expected to take 3 weeks (approximately 16 days) for completion, contingent upon weather conditions and site accessibility.",\n  "pricing": "The total cost for the project is $2000. This pricing is all-inclusive and covers all labor, materials, equipment, and disposal fees associated with the drainage system installation. There are no hidden costs or additional charges beyond this quoted amount."\n}\n`;
