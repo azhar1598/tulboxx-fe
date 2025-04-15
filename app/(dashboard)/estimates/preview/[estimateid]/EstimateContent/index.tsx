@@ -202,8 +202,6 @@ export const EstimateContent = ({
                         />
                       </div>
                       <Button
-                        color="red"
-                        variant="outline"
                         disabled={editableDescription.scopeOfWork.length <= 1}
                         className="mt-2"
                         onClick={() => removeScopeItem(index)}
@@ -228,8 +226,6 @@ export const EstimateContent = ({
             </ul>
             {Array.isArray(editableDescription?.scopeOfWork) && (
               <Button
-                variant="outline"
-                color="blue"
                 className="self-start mt-2"
                 leftSection={<PlusCircle size={16} />}
                 onClick={addScopeItem}
@@ -350,12 +346,7 @@ export const EstimateContent = ({
                       ${item.totalPrice.toFixed(2)}
                     </td>
                     <td className="border p-2 text-center">
-                      <Button
-                        color="red"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeLineItem(item.id)}
-                      >
+                      <Button size="sm" onClick={() => removeLineItem(item.id)}>
                         <Trash2 size={16} />
                       </Button>
                     </td>

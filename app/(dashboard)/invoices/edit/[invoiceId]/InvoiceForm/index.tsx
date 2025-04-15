@@ -343,18 +343,9 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
 
       <Group justify="flex-start" mt="xl">
         <Button
-          onClick={(e) => {
-            form.setFieldValue("status", "draft");
-          }}
-          type="submit"
-          loading={generateInvoice.isPending && form.values.status === "draft"}
-        >
-          Save as Draft
-        </Button>
-        <Button
           disabled={!isButtonEnabled}
           type="submit"
-          loading={generateInvoice.isPending && form.values.status != "draft"}
+          loading={generateInvoice.isPending}
         >
           Generate Invoice
         </Button>

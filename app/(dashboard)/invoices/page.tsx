@@ -286,6 +286,15 @@ function Estimates() {
           >
             Create Invoice for Selected Project
           </Button>
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={() => {
+              router.push(`/invoices/add/standalone`);
+              closeProjectModal();
+            }}
+          >
+            Create Standalone Invoice
+          </Button>
         </Stack>
       </Modal>
 
