@@ -134,7 +134,7 @@ function Estimates() {
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-primary"
-            // onClick={() => router.push(`/patients/edit/${record.id}`)}
+            onClick={() => router.push(`/invoices/edit/${record.id}`)}
             leftSection={<IconEdit size={16} />}
           >
             View

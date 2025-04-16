@@ -70,7 +70,7 @@ const invoiceSchema = z.discriminatedUnion("status", [
       taxId: z.string().optional(),
     }),
 
-    projectId: z.string().optional(),
+    projectId: z.string().optional().nullable(),
     user_id: z.string().min(1, "User id is required"),
     status: z.literal("unpaid"),
     clientId: z.string().min(1, "Client id is required"),

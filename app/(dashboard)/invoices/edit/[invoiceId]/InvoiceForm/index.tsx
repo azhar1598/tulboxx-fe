@@ -1,3 +1,5 @@
+import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
+import callApi from "@/services/apiService";
 import {
   Box,
   Button,
@@ -9,6 +11,10 @@ import {
   Textarea,
   ActionIcon,
   NumberInput,
+  Flex,
+  Select,
+  Modal,
+  Stack,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
@@ -17,11 +23,19 @@ import {
   IconCalendar,
   IconEyeDollar,
   IconCurrencyDollar,
+  IconSearch,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
+function InvoiceForm({
+  form,
+  generateInvoice,
+  isButtonEnabled,
+  id,
+  getSingleInvoice,
+}) {
   const [lineItems, setLineItems] = useState([
     { id: 1, description: "", rate: "", qty: 1, total: 0 },
   ]);
@@ -71,6 +85,30 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
     );
   }, [form.values.lineItems]);
 
+  const getClients = useQuery({
+    queryKey: ["get-clients"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`);
+
+      return response.data;
+    },
+    select(data) {
+      console.log("data", data);
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      console.log("options", options);
+
+      return options;
+    },
+  });
+
+  const [clientModalOpened, setClientModalOpened] = useState(false);
+
+  console.log("getSingleInvoice", getSingleInvoice);
+
   return (
     <Box p={10}>
       <Grid>
@@ -80,6 +118,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
             valueFormat="DD MMM YYYY"
             placeholder="Date input"
             {...form.getInputProps("issueDate")}
+            disabled={form.values.status !== "draft"}
           />
         </Grid.Col>
 
@@ -91,6 +130,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
             icon={<IconCalendar size="1rem" />}
             {...form.getInputProps("dueDate")}
             minDate={form.values.issueDate}
+            disabled={form.values.status !== "draft"}
           />
         </Grid.Col>
 
@@ -106,6 +146,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
               form.getInputProps(`invoiceTotalAmount`).onChange(Number(e));
             }}
             hideControls
+            disabled={form.values.status !== "draft"}
           />
         </Grid.Col>
 
@@ -161,6 +202,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                   // onChange={(e) =>
                   //   updateLineItem(item.id, "description", e.target.value)
                   // }
+                  disabled={form.values.status !== "draft"}
                 />
               </Grid.Col>
               <Grid.Col span={2}>
@@ -192,6 +234,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                   //     )
                   //   // updateLineItem(item.id, "rate", e.target.value)
                   // }
+                  disabled={form.values.status !== "draft"}
                 />
               </Grid.Col>
               <Grid.Col span={2}>
@@ -215,6 +258,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                       unitPrice * quantity
                     );
                   }}
+                  disabled={form.values.status !== "draft"}
                 />
               </Grid.Col>
               <Grid.Col span={2}>
@@ -228,7 +272,10 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                   color="red"
                   variant="filled"
                   onClick={() => removeLineItem(item.id)}
-                  disabled={form.values.lineItems.length <= 1}
+                  disabled={
+                    form.values.lineItems.length <= 1 ||
+                    form.values.status !== "draft"
+                  }
                 >
                   <IconMinus size="1rem" />
                 </ActionIcon>
@@ -241,6 +288,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
             leftSection={<IconPlus size="1rem" />}
             variant=""
             onClick={addLineItem}
+            disabled={form.values.status !== "draft"}
             mb={15}
           >
             Add Line Item
@@ -259,17 +307,18 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
             placeholder="Example: Installing a drainage solution to prevent yard flooding."
             minRows={3}
             {...form.getInputProps("invoiceSummary")}
+            disabled={form.values.status !== "draft"}
           />
         </Grid.Col>
 
         <Grid.Col span={12}>
           <Grid>
-            {id === "standalone" && (
+            {form.values.status === "draft" && (
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <Text fw={500} size="sm" mb="md">
                   Customer Information
                 </Text>
-                <Grid>
+                {/* <Grid>
                   <Grid.Col span={12}>
                     <TextInput
                       label="Customer Name"
@@ -291,7 +340,28 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                       {...form.getInputProps("phone")}
                     />
                   </Grid.Col>
-                </Grid>
+                </Grid> */}
+                <Stack>
+                  <Select
+                    label="Choose Client"
+                    placeholder="Search Clients..."
+                    data={getClients?.data}
+                    searchable
+                    clearable
+                    {...form.getInputProps("clientId")}
+                    rightSection={<IconSearch size={16} color="gray" />}
+                  />
+                  <Button
+                    size="sm"
+                    color="white"
+                    leftSection={<IconPlus size={16} color="white" />}
+                    onClick={() => setClientModalOpened(true)}
+                  >
+                    <Text size="14px" fw={500}>
+                      New Client
+                    </Text>
+                  </Button>
+                </Stack>
               </Grid.Col>
             )}
             <Grid.Col span={{ base: 12, md: 6 }}>
@@ -342,14 +412,38 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
       </Grid>
 
       <Group justify="flex-start" mt="xl">
-        <Button
-          disabled={!isButtonEnabled}
-          type="submit"
-          loading={generateInvoice.isPending}
-        >
-          Generate Invoice
-        </Button>
+        {getSingleInvoice?.data?.status === "draft" && (
+          <Button
+            onClick={(e) => {
+              generateInvoice.mutate("draft");
+            }}
+            loading={
+              generateInvoice.isPending && form.values.status !== "draft"
+            }
+          >
+            Save as Draft
+          </Button>
+        )}
+        {getSingleInvoice?.data?.status === "draft" && (
+          <Button
+            disabled={!isButtonEnabled}
+            onClick={(e) => {
+              generateInvoice.mutate("unpaid");
+            }}
+            loading={generateInvoice.isPending && form.values.status != "draft"}
+          >
+            Generate Invoice
+          </Button>
+        )}
       </Group>
+      <Modal
+        opened={clientModalOpened}
+        onClose={() => setClientModalOpened(false)}
+        title="Create New Client"
+        size="md"
+      >
+        <ClientForm md={12} setClientModalOpened={setClientModalOpened} />
+      </Modal>
     </Box>
   );
 }

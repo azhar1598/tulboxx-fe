@@ -16,31 +16,66 @@ import { UserContext } from "@/app/layout";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import dayjs from "dayjs";
 
-const invoiceSchema = z.object({
+const baseInvoiceSchema = {
   issueDate: z.date(),
   dueDate: z.date(),
-  invoiceTotalAmount: z.number().min(1, "Total amount is required"),
+  invoiceTotalAmount: z.number(),
   lineItems: z.array(
     z.object({
-      description: z.string().min(1, "Description is required"),
-      quantity: z.number().min(1, "Quantity is required"),
-      unitPrice: z.number().min(1, "Unit price is required"),
-      totalPrice: z.number().min(1, "Total price is required"),
+      description: z.string(),
+      quantity: z.number(),
+      unitPrice: z.number(),
+      totalPrice: z.number(),
     })
   ),
   invoiceSummary: z.string().optional(),
   remitPayment: z.object({
-    accountName: z.string().min(1, "Account name is required"),
-    accountNumber: z.string().min(1, "Account number is required"),
-    routingNumber: z.string().min(1, "Routing number is required"),
+    accountName: z.string(),
+    accountNumber: z.string(),
+    routingNumber: z.string(),
     taxId: z.string().optional(),
   }),
-  customerName: z.string().min(1, "Customer name is required"),
-  email: z.string().min(1, "Customer email is required"),
-  phone: z.string().min(1, "Customer phone is required"),
-  projectId: z.string().optional(),
-  user_id: z.string().min(1, "User id is required"),
-});
+  customerName: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  projectId: z.string().optional().nullable(),
+  user_id: z.string(),
+  clientId: z.string().min(1, "Client id is required"),
+};
+
+const invoiceSchema = z.discriminatedUnion("status", [
+  // Draft schema - all fields are allowed as is
+  z.object({
+    ...baseInvoiceSchema,
+    status: z.literal("draft"),
+  }),
+  // Final schema - with all validations
+  z.object({
+    issueDate: z.date(),
+    dueDate: z.date(),
+    invoiceTotalAmount: z.number().min(1, "Total amount is required"),
+    lineItems: z.array(
+      z.object({
+        description: z.string().min(1, "Description is required"),
+        quantity: z.number().min(1, "Quantity is required"),
+        unitPrice: z.number().min(1, "Unit price is required"),
+        totalPrice: z.number().min(1, "Total price is required"),
+      })
+    ),
+    invoiceSummary: z.string().optional(),
+    remitPayment: z.object({
+      accountName: z.string().min(1, "Account name is required"),
+      accountNumber: z.string().min(1, "Account number is required"),
+      routingNumber: z.string().min(1, "Routing number is required"),
+      taxId: z.string().optional(),
+    }),
+
+    projectId: z.string().optional().nullable(),
+    user_id: z.string().min(1, "User id is required"),
+    status: z.literal("unpaid"),
+    clientId: z.string().min(1, "Client id is required"),
+  }),
+]);
 
 const InvoiceFormPage = () => {
   const form = useForm({
@@ -70,6 +105,8 @@ const InvoiceFormPage = () => {
       phone: "",
       projectName: "",
       user_id: "",
+      status: "unpaid",
+      clientId: "",
     },
     validateInputOnChange: true,
   });
@@ -78,28 +115,38 @@ const InvoiceFormPage = () => {
   const notification = usePageNotifications();
 
   const params = useParams();
-  const id = params.projectid as string;
+  const id = params.invoiceId as string;
 
-  const getSingleProject = useQuery({
-    queryKey: ["get-single-project", id],
+  const getSingleInvoice = useQuery({
+    queryKey: ["get-single-invoice", id],
     queryFn: async () => {
       if (id === "standalone") {
         return null;
       }
-      const response = await callApi.get(`/estimates/${id}`);
+      const response = await callApi.get(`/invoices/${id}`);
       return response.data;
     },
   });
 
   const user = useContext(UserContext);
 
+  console.log("form.valies", form.values);
+
   const generateInvoice = useMutation({
-    mutationFn: () => callApi.post(`/invoices`, form.values),
+    mutationFn: (status) => {
+      console.log("status", status);
+      const payload = {
+        ...form.values,
+        status,
+      };
+      console.log("status---->", payload);
+      return callApi.patch(`/invoices/${id}`, payload);
+    },
     onSuccess: async (res: any) => {
       const { data } = res;
 
       router.push(`/invoices`);
-      notification.success(`Invoice created successfully`);
+      notification.success(`Invoice updated successfully`);
     },
     onError: (err: Error) => {
       notification.error(err.message);
@@ -109,37 +156,40 @@ const InvoiceFormPage = () => {
   });
 
   useEffect(() => {
-    if (getSingleProject.data) {
+    if (getSingleInvoice.data) {
       form.setValues({
         remitPayment: {
-          accountName: user?.user_metadata?.name,
-          accountNumber: user?.accountNumber || "234234234",
-          routingNumber: user?.routingNumber || "111000025 ",
-          taxId: user?.taxId || "TXN8263",
+          accountName: getSingleInvoice.data.remit_payment.accountName,
+          accountNumber: getSingleInvoice.data.remit_payment.accountNumber,
+          routingNumber: getSingleInvoice.data.remit_payment.routingNumber,
+          taxId: getSingleInvoice.data.remit_payment.taxId,
         },
-        customerName: getSingleProject.data?.clients?.name,
-        email: getSingleProject.data?.clients?.email,
-        phone: getSingleProject.data?.clients?.phone,
-        projectId: getSingleProject.data?.id,
-        projectName: getSingleProject.data?.projectName,
-        issueDate: dayjs(getSingleProject.data?.projectStartDate).toDate(),
-        dueDate: dayjs(getSingleProject.data?.projectEndDate).toDate(),
-        invoiceTotalAmount: getSingleProject.data?.total_amount,
-        lineItems: getSingleProject.data?.lineItems,
-        invoiceSummary: getSingleProject.data?.solutionDescription,
+        customerName: getSingleInvoice.data.customerName || "",
+        email: getSingleInvoice.data.email || "",
+        phone: getSingleInvoice.data.phone || "",
+        projectId: getSingleInvoice.data.project_id,
+        projectName: getSingleInvoice.data.projectName || "",
+        issueDate: dayjs(getSingleInvoice.data.issue_date).toDate(),
+        dueDate: dayjs(getSingleInvoice.data.due_date).toDate(),
+        invoiceTotalAmount: getSingleInvoice.data.invoice_total_amount,
+        lineItems: getSingleInvoice.data.line_items.map((item: any) => ({
+          id: item.id,
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+        })),
+        invoiceSummary: getSingleInvoice.data.invoice_summary,
+        status: getSingleInvoice.data.status,
       });
     }
-  }, [getSingleProject.data]);
+  }, [getSingleInvoice.data]);
 
   useEffect(() => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
 
-  console.log(
-    getSingleProject.data,
-    "here is",
-    invoiceSchema.safeParse(form.values)
-  );
+  console.log("form.values", invoiceSchema.safeParse(form.values));
 
   const isButtonEnabled = form.isValid() && form.isDirty();
 
@@ -148,7 +198,7 @@ const InvoiceFormPage = () => {
       {" "}
       <PageHeader
         title={`Generate Invoice:${
-          getSingleProject.data?.projectName || "Standalone Invoice"
+          getSingleInvoice.data?.project?.projectName || "Standalone Invoice"
         }`}
       />
       <PageMainWrapper w="100%">
@@ -157,6 +207,7 @@ const InvoiceFormPage = () => {
             form={form}
             generateInvoice={generateInvoice}
             isButtonEnabled={isButtonEnabled}
+            getSingleInvoice={getSingleInvoice}
             id={id}
           />
         </form>
