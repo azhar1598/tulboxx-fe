@@ -49,6 +49,7 @@ function Estimates() {
   const [storeInfo, setStoreInfo] = useState();
   const [search, setSearch] = useDebouncedState("", 500);
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("all");
   const pageSize = 10;
 
   const router = useRouter();
@@ -80,19 +81,23 @@ function Estimates() {
       align: "left",
       render: ({ invoice_number }: any) => invoice_number || "N/A",
     },
-    // {
-    //   accessor: "name",
-    //   title: "Project Name",
-    //   align: "left",
-    //   render: ({ name, id }: any) => (
-    //     <Link
-    //       href={`/stores/${id}`}
-    //       style={{ color: "blue", textDecoration: "underline" }}
-    //     >
-    //       {name}
-    //     </Link>
-    //   ),`
-    // },
+    {
+      accessor: "project",
+      title: "Project Name",
+      align: "left",
+      render: ({ project, id }: any) => (
+        <Link
+          href={`${project?.id ? `/estimates/preview/${project?.id}` : ""}`}
+          style={
+            project?.id
+              ? { color: "blue", textDecoration: "underline" }
+              : { color: "gray" }
+          }
+        >
+          {project?.projectName || "N/A"}
+        </Link>
+      ),
+    },
 
     {
       accessor: "invoice_total_amount",
@@ -105,7 +110,7 @@ function Estimates() {
       accessor: "customerName",
       title: "Customer Name",
       align: "left",
-      render: ({ customer_name }: any) => customer_name || "N/A",
+      render: ({ client }: any) => client?.name || "N/A",
     },
     {
       accessor: "due_date",
@@ -162,13 +167,6 @@ function Estimates() {
 
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
-  const handleTypeChange = () => {};
-  const handleSearch = (value) => {
-    setSearch(value);
-  };
-
-  const handleRecordsPerPage = () => {};
-
   const filters = [
     // {
     //   id: "type",
@@ -183,24 +181,37 @@ function Estimates() {
       id: "invoice_status",
       label: "Invoice Status",
       options: [
-        { value: "1", label: "All" },
-        { value: "2", label: "Paid" },
-        { value: "3", label: "Pending" },
-        { value: "4", label: "Draft" },
+        { value: "all", label: "All" },
+        { value: "paid", label: "Paid" },
+        { value: "unpaid", label: "Unpaid" },
+        { value: "pending", label: "Pending" },
+        { value: "draft", label: "Draft" },
       ],
-      // onChange: (value) => handleTypeChange(value),
+      onChange: (value) => handleTypeChange(value),
     },
     // ... more filters
   ];
 
+  const handleTypeChange = (value) => {
+    console.log("value", value);
+    // filters.status = value;
+    setStatus(value);
+  };
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
+
+  const handleRecordsPerPage = () => {};
+
   const getInvoicesQuery = useQuery({
-    queryKey: ["get-invoices", search, page],
+    queryKey: ["get-invoices", search, page, status],
     queryFn: () => {
       const params = new URLSearchParams();
       params.append("page", page.toString());
       params.append("pageSize", pageSize.toString());
       params.append("search", search);
-
+      params.append("status", status);
+      // params.append("status", filters.);
       const response = callApi.get("/invoices", { params });
 
       return response;
@@ -211,6 +222,7 @@ function Estimates() {
         metadata: data?.data?.metadata,
       };
     },
+    retry: 2,
   });
 
   const handlePageChange = (newPage) => {
@@ -218,8 +230,8 @@ function Estimates() {
   };
 
   const queryFilters = {
-    url: "/estimates",
-    key: "get-estimates",
+    url: "/invoices",
+    key: "get-invoices",
     page,
     pageSize,
   };

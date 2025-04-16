@@ -21,11 +21,13 @@ export const FilterLayout = ({
             data={filter.options}
             placeholder="Select Option"
             onChange={(e, option) => {
-              filter.onChange(option);
+              console.log("option", option, filter);
+              filter.onChange(option.value);
             }}
-            value={
-              filter.form?.getInputProps(`${filter.fieldName}`).value.value
-            }
+            // value={
+            //   filter.form?.getInputProps(`${filter.fieldName}`).value.value
+            // }
+            {...filter.form?.getInputProps(`${filter.fieldName}`)}
             className={classes.filter_input}
             searchable={searchable}
             allowDeselect={false}
