@@ -1,3 +1,5 @@
+import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
+import callApi from "@/services/apiService";
 import {
   Box,
   Button,
@@ -9,6 +11,10 @@ import {
   Textarea,
   ActionIcon,
   NumberInput,
+  Flex,
+  Select,
+  Modal,
+  Stack,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
@@ -17,7 +23,9 @@ import {
   IconCalendar,
   IconEyeDollar,
   IconCurrencyDollar,
+  IconSearch,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -70,6 +78,28 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
       "Invoice total amount is less than the grand total"
     );
   }, [form.values.lineItems]);
+
+  const getClients = useQuery({
+    queryKey: ["get-clients"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`);
+
+      return response.data;
+    },
+    select(data) {
+      console.log("data", data);
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      console.log("options", options);
+
+      return options;
+    },
+  });
+
+  const [clientModalOpened, setClientModalOpened] = useState(false);
 
   return (
     <Box p={10}>
@@ -269,7 +299,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                 <Text fw={500} size="sm" mb="md">
                   Customer Information
                 </Text>
-                <Grid>
+                {/* <Grid>
                   <Grid.Col span={12}>
                     <TextInput
                       label="Customer Name"
@@ -291,7 +321,28 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                       {...form.getInputProps("phone")}
                     />
                   </Grid.Col>
-                </Grid>
+                </Grid> */}
+                <Stack>
+                  <Select
+                    label="Choose Client"
+                    placeholder="Search Clients..."
+                    data={getClients?.data}
+                    searchable
+                    clearable
+                    {...form.getInputProps("clientId")}
+                    rightSection={<IconSearch size={16} color="gray" />}
+                  />
+                  <Button
+                    size="sm"
+                    color="white"
+                    leftSection={<IconPlus size={16} color="white" />}
+                    onClick={() => setClientModalOpened(true)}
+                  >
+                    <Text size="14px" fw={500}>
+                      New Client
+                    </Text>
+                  </Button>
+                </Stack>
               </Grid.Col>
             )}
             <Grid.Col span={{ base: 12, md: 6 }}>
@@ -359,6 +410,14 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
           Generate Invoice
         </Button>
       </Group>
+      <Modal
+        opened={clientModalOpened}
+        onClose={() => setClientModalOpened(false)}
+        title="Create New Client"
+        size="md"
+      >
+        <ClientForm md={12} setClientModalOpened={setClientModalOpened} />
+      </Modal>
     </Box>
   );
 }
