@@ -373,6 +373,7 @@ function InvoiceForm({
                   <TextInput
                     label="Account Name"
                     placeholder="Type here..."
+                    disabled={true}
                     {...form.getInputProps("remitPayment.accountName")}
                   />
                 </Grid.Col>

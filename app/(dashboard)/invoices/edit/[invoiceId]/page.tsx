@@ -158,12 +158,6 @@ const InvoiceFormPage = () => {
   useEffect(() => {
     if (getSingleInvoice.data) {
       form.setValues({
-        remitPayment: {
-          accountName: getSingleInvoice.data.remit_payment.accountName,
-          accountNumber: getSingleInvoice.data.remit_payment.accountNumber,
-          routingNumber: getSingleInvoice.data.remit_payment.routingNumber,
-          taxId: getSingleInvoice.data.remit_payment.taxId,
-        },
         customerName: getSingleInvoice.data.customerName || "",
         email: getSingleInvoice.data.email || "",
         phone: getSingleInvoice.data.phone || "",
@@ -184,6 +178,28 @@ const InvoiceFormPage = () => {
       });
     }
   }, [getSingleInvoice.data]);
+
+  const getPaymentInfo = useQuery({
+    queryKey: ["get-payment-info"],
+    queryFn: async () => {
+      const response = await callApi.get(`/payment-info`);
+      return response;
+    },
+    select: (data) => data?.data,
+  });
+
+  useEffect(() => {
+    if (getPaymentInfo.data) {
+      form.setValues({
+        remitPayment: {
+          accountName: getPaymentInfo.data.account_holder_name,
+          accountNumber: getPaymentInfo.data.account_number,
+          routingNumber: getPaymentInfo.data.routing_number,
+          taxId: getPaymentInfo.data.tax_id,
+        },
+      });
+    }
+  }, [getPaymentInfo.data]);
 
   useEffect(() => {
     form.setFieldValue("user_id", user?.id);
