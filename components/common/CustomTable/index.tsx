@@ -74,7 +74,7 @@ function CustomTable({
         page={page}
         onPageChange={handlePageChange}
         fetching={isLoading && !records.length}
-        loaderType={"bars"}
+        // loaderType={"bars"}
       />
     </Box>
   );

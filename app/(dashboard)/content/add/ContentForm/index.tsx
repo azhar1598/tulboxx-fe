@@ -31,7 +31,7 @@ import { UserContext } from "@/app/layout";
 
 // Define the validation schema using zod
 const formSchema = z.object({
-  projectId: z.string().min(1, "Project name must be at least 1 characters"),
+  projectId: z.any().optional(),
   postType: z.string().min(1, "Please select a post type"),
   advice: z.string().min(10, "Advice must be at least 10 characters"),
   benefit: z.string().min(10, "Benefit must be at least 10 characters"),
@@ -49,7 +49,7 @@ const ContentForm = () => {
   const form = useForm({
     validate: zodResolver(formSchema),
     initialValues: {
-      projectId: "",
+      projectId: null,
       postType: "Tips & Advice",
       advice: "",
       benefit: "",
@@ -89,6 +89,8 @@ const ContentForm = () => {
     key: "get-estimates",
     page: 1,
     pageSize: 10,
+    label: "projectName",
+    value: "id",
   };
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
@@ -103,12 +105,11 @@ const ContentForm = () => {
       <Stack gap="xl">
         <Group grow>
           <Select
-            label="Project Name"
+            label="Project Name (optional)"
             placeholder="Select Project"
             {...form.getInputProps("projectId")}
             searchable
             data={getEstimatesQuery}
-            withAsterisk
             allowDeselect={false}
           />
 
