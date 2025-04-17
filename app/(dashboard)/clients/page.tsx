@@ -94,27 +94,6 @@ function Clients() {
     // },
 
     {
-      accessor: "type",
-      title: "Type",
-      render: ({ type }: any) => (
-        <Flex gap={4} align="center">
-          {type === "residential" && (
-            <>
-              <IconHome size={16} color="blue" />
-              {type}
-            </>
-          )}
-          {type === "commercial" && (
-            <>
-              <IconBuilding size={16} color="red" />
-              {type}
-            </>
-          )}
-        </Flex>
-      ),
-    },
-
-    {
       accessor: "actions",
       title: <Box mr={6}>Row actions</Box>,
       textAlign: "left",

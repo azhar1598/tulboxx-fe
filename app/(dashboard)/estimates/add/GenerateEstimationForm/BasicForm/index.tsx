@@ -17,7 +17,12 @@ import {
   TextInput,
   Textarea,
 } from "@mantine/core";
-import { IconPlus, IconSearch } from "@tabler/icons-react";
+import {
+  IconBuilding,
+  IconHome,
+  IconPlus,
+  IconSearch,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
@@ -56,35 +61,64 @@ function BasicForm({ form, active, nextStep, prevStep }) {
       <Divider mb="md" />
 
       <Stack gap={10}>
-        <TextInput
-          label="Project Name"
-          placeholder="Type here..."
-          className="md:w-1/2"
-          {...form.getInputProps("projectName")}
-        />
-        <Flex justify="space-between" align="center" className="md:w-1/2">
-          <Select
-            label="Choose Client"
-            placeholder="Search Clients..."
-            data={getClients?.data}
-            searchable
-            clearable
-            w="75%"
-            {...form.getInputProps("clientId")}
-            rightSection={<IconSearch size={16} color="gray" />}
-          />
-          <Button
-            size="sm"
-            color="white"
-            mt={25}
-            leftSection={<IconPlus size={16} color="white" />}
-            onClick={() => setClientModalOpened(true)}
-          >
-            <Text size="14px" fw={500}>
-              New Client
+        <Grid>
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <TextInput
+              label="Project Name"
+              placeholder="Type here..."
+              className=""
+              {...form.getInputProps("projectName")}
+            />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Text size="14px" fw={500} mt={7}>
+              Project Type
             </Text>
-          </Button>
-        </Flex>
+            <Radio.Group
+              {...form.getInputProps("type")}
+              defaultValue="residential"
+              mt={12}
+            >
+              <Group>
+                <Radio
+                  value="residential"
+                  label="Residential"
+                  leftSection={<IconHome size={16} />}
+                />
+                <Radio
+                  value="commercial"
+                  label="Commercial"
+                  leftSection={<IconBuilding size={16} />}
+                />
+              </Group>
+            </Radio.Group>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Flex justify="space-between" align="center" className="">
+              <Select
+                label="Choose Client"
+                placeholder="Search Clients..."
+                data={getClients?.data}
+                searchable
+                clearable
+                w="75%"
+                {...form.getInputProps("clientId")}
+                rightSection={<IconSearch size={16} color="gray" />}
+              />
+              <Button
+                size="sm"
+                color="white"
+                mt={25}
+                leftSection={<IconPlus size={16} color="white" />}
+                onClick={() => setClientModalOpened(true)}
+              >
+                <Text size="14px" fw={500}>
+                  New Client
+                </Text>
+              </Button>
+            </Flex>
+          </Grid.Col>
+        </Grid>
 
         {/* 
         <Grid.Col span={{ base: 12, md: 6 }}>

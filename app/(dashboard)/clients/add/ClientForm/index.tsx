@@ -37,7 +37,6 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.number().min(10, "Phone number is required"),
-  type: z.string().min(1, "Please select a type"),
   address: z.string().min(1, "Address is required"),
 });
 
@@ -56,7 +55,6 @@ const ClientForm = ({
       name: "",
       email: "",
       phone: "",
-      type: "residential",
       address: "",
     },
     validateInputOnChange: true,
@@ -124,22 +122,6 @@ const ClientForm = ({
             placeholder="(555) 555-5555"
             {...form.getInputProps("phone")}
           />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: md }} mt={8}>
-          <Text size="14px" fw={500} mb={5}>
-            Type
-          </Text>
-          <Radio.Group
-            {...form.getInputProps("type")}
-            defaultValue="residential"
-            mt={12}
-          >
-            <Group>
-              <Radio value="residential" label="Residential" />
-              <Radio value="commercial" label="Commercial" />
-            </Group>
-          </Radio.Group>
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: md }}>

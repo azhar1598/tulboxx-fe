@@ -95,13 +95,13 @@ function Estimates() {
     {
       accessor: "customerName",
       title: "Customer Name",
-      render: ({ customerName }: any) => customerName || "N/A",
+      render: ({ clients }: any) => clients?.name || "N/A",
     },
     {
       accessor: "email",
       textAlign: "left",
       title: "Customer Email",
-      render: ({ email }: any) => email || "N/A",
+      render: ({ clients }: any) => clients?.email || "N/A",
     },
 
     {
