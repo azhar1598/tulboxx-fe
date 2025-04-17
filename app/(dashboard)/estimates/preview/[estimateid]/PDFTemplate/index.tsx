@@ -175,16 +175,7 @@ export const generatePDFTemplate = (estimateData, aiContent) => {
               <p>Date: ${currentDate}</p>
             </div>
             
-            <div class="section client-info">
-              <h2>Client Information</h2>
-              <p><strong>Name:</strong> ${
-                estimateData?.customerName || "N/A"
-              }</p>
-              <p><strong>Email:</strong> ${estimateData?.email || "N/A"}</p>
-              <p><strong>Phone:</strong> ${estimateData?.phone || "N/A"}</p>
-              <p><strong>Address:</strong> ${estimateData?.address || "N/A"}</p>
-            </div>
-            
+         
             <div class="section">
               <h2>Project Overview</h2>
               <div>${

@@ -54,6 +54,8 @@ export const EstimateContent = ({
     }));
   };
 
+  console.log("getEstimateQuery", getEstimateQuery?.data);
+
   // Handle scope of work item change
   const handleScopeItemChange = (index, value) => {
     if (!Array.isArray(editableDescription?.scopeOfWork)) return;
