@@ -230,13 +230,17 @@ function Estimates() {
   };
 
   const queryFilters = {
-    url: "/invoices",
-    key: "get-invoices",
+    url: "/estimates",
+    key: "get-estimates",
     page,
     pageSize,
+    value: "id",
+    label: "projectName",
   };
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
+
+  console.log("getEstimatesQuery", getEstimatesQuery);
 
   return (
     <>
