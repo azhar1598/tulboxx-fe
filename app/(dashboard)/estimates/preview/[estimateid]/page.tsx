@@ -19,6 +19,7 @@ import {
   Trash2,
   LayoutIcon,
   CodeIcon,
+  ShareIcon,
 } from "lucide-react";
 import html2pdf from "html2pdf.js";
 
@@ -134,6 +135,34 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   //   }
   // };
 
+  const handleShare = async () => {
+    // Check if Web Share API is supported
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: getEstimateQuery?.data?.projectName || "Project Estimate",
+          text: `Estimate for ${getEstimateQuery?.data?.projectName}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log("Error sharing:", error);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      // You could either show a modal with sharing options or use direct links
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(
+        getEstimateQuery?.data?.projectName || "Project Estimate"
+      );
+
+      window.open(
+        `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+        "_blank"
+      );
+      // Or you could implement a modal with multiple sharing options
+    }
+  };
+
   return (
     <>
       <div ref={pdfRef} style={{ display: "none" }}></div>
@@ -157,6 +186,13 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                   color="teal"
                 >
                   Download PDF
+                </Button>
+                <Button
+                  leftSection={<ShareIcon size={16} />}
+                  onClick={handleShare}
+                  color="teal"
+                >
+                  Share Estimate
                 </Button>
               </>
             ) : (
