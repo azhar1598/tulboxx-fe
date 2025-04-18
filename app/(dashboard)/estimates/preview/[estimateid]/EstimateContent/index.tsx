@@ -176,6 +176,7 @@ export const EstimateContent = ({
               }
               minRows={4}
               className="w-full"
+              rows={3}
             />
           </div>
         ) : (
@@ -280,6 +281,7 @@ export const EstimateContent = ({
               value={editableDescription?.pricing || ""}
               onChange={(e) => handleTextChange("pricing", e.target.value)}
               minRows={4}
+              rows={3}
               className="w-full"
             />
           </div>
@@ -358,8 +360,6 @@ export const EstimateContent = ({
             </table>
             <div className="flex justify-between mt-4">
               <Button
-                variant="outline"
-                color="blue"
                 onClick={addLineItem}
                 leftSection={<PlusCircle size={16} />}
               >
@@ -439,6 +439,7 @@ export const EstimateContent = ({
             <Textarea
               defaultValue="We ensure that all aspects of the project will comply with relevant regulations and standards. Should any unforeseen complications arise during the project, we will notify you immediately and discuss any necessary adjustments. We value your trust and look forward to helping you enhance your home. Please feel free to contact us with any questions or concerns you may have."
               minRows={4}
+              rows={5}
               className="w-full"
             />
           </div>
