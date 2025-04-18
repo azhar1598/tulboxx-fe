@@ -71,6 +71,7 @@ function page() {
           }`
         );
       }
+      closeShareModal();
       // Handle success
     } catch (error) {
       console.error("Error sharing to Facebook:", error);
@@ -96,6 +97,8 @@ function page() {
           },
         }
       );
+      const data = await response.json();
+      closeShareModal();
       // Handle success
     } catch (error) {
       console.error("Error sharing to Instagram:", error);

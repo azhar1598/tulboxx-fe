@@ -22,9 +22,17 @@ import { useForm, zodResolver } from "@mantine/form";
 import React, { useContext, useEffect } from "react";
 import { z } from "zod";
 import { UserContext } from "@/app/layout";
-import { IconUser, IconBuildingBank } from "@tabler/icons-react";
+import {
+  IconUser,
+  IconBuildingBank,
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandTwitter,
+  IconBrandYoutube,
+} from "@tabler/icons-react";
 import PersonalForm from "./PersonalForm";
 import BankingForm from "./BankingForm";
+import ThirdPartySetupForm from "./ThirdPartySetupForm";
 
 function AccountForm() {
   const getUserProfile = useQuery({
@@ -73,6 +81,12 @@ function AccountForm() {
             >
               Banking Details
             </Tabs.Tab>
+            <Tabs.Tab
+              value="third-party-setups"
+              leftSection={<IconBrandFacebook size={14} />}
+            >
+              Third Party Setups
+            </Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="personal">
@@ -81,6 +95,10 @@ function AccountForm() {
 
           <Tabs.Panel value="banking">
             <BankingForm />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="third-party-setups">
+            <ThirdPartySetupForm />
           </Tabs.Panel>
         </Tabs>
       </Stack>
