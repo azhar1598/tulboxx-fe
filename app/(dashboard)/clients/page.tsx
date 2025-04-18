@@ -42,13 +42,18 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
 function Clients() {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const getClientsQuery: any = useQuery({
-    queryKey: ["get-clients", search],
+    queryKey: ["get-clients", search, page, pageSize],
     queryFn: () => {
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("pageSize", pageSize.toString());
+      params.append("search", search);
       const response = callApi.get("/clients", {
-        params: {
-          search,
-        },
+        params,
       });
 
       return response;
@@ -129,9 +134,6 @@ function Clients() {
     // },
     // ... more filters
   ];
-
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
 
   const queryFilters = {
     url: "/v1/stores",
