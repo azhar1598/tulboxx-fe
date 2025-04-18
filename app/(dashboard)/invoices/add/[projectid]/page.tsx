@@ -6,15 +6,16 @@ import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 
 import InvoiceForm from "./InvoiceForm";
-import { Paper } from "@mantine/core";
+import { Modal, Paper } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import callApi from "@/services/apiService";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/app/layout";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import dayjs from "dayjs";
+import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
 const baseInvoiceSchema = {
   issueDate: z.date(),
@@ -56,7 +57,7 @@ const invoiceSchema = z.discriminatedUnion("status", [
     invoiceTotalAmount: z.number().min(1, "Total amount is required"),
     lineItems: z.array(
       z.object({
-        description: z.string().min(1, "Description is required"),
+        description: z.string().optional(),
         quantity: z.number().min(1, "Quantity is required"),
         unitPrice: z.number().min(1, "Unit price is required"),
         totalPrice: z.number().min(1, "Total price is required"),
@@ -181,7 +182,19 @@ const InvoiceFormPage = () => {
     invoiceSchema.safeParse(form.values)
   );
 
-  const isButtonEnabled = form.isValid() && form.isDirty();
+  console.log(
+    "form.values",
+    form.values,
+    form.errors,
+    invoiceSchema.safeParse(form.values)
+  );
+
+  const isButtonEnabled =
+    form.isValid() && form.isDirty() && Object.keys(form.errors).length === 0;
+
+  const [clientModalOpened, setClientModalOpened] = useState(false);
+
+  console.log("isButtonEnabled", isButtonEnabled, form.errors);
 
   return (
     <Stack>
@@ -197,10 +210,23 @@ const InvoiceFormPage = () => {
             form={form}
             generateInvoice={generateInvoice}
             isButtonEnabled={isButtonEnabled}
+            setClientModalOpened={setClientModalOpened}
             id={id}
           />
         </form>
       </PageMainWrapper>
+      <Modal
+        opened={clientModalOpened}
+        onClose={() => setClientModalOpened(false)}
+        title="Create New Client"
+        size="md"
+      >
+        <ClientForm
+          md={12}
+          setClientModalOpened={setClientModalOpened}
+          invoiceForm={form}
+        />
+      </Modal>
     </Stack>
   );
 };

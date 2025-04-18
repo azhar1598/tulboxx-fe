@@ -35,6 +35,7 @@ function InvoiceForm({
   isButtonEnabled,
   id,
   getSingleInvoice,
+  setClientModalOpened,
 }) {
   const [lineItems, setLineItems] = useState([
     { id: 1, description: "", rate: "", qty: 1, total: 0 },
@@ -86,9 +87,13 @@ function InvoiceForm({
   }, [form.values.lineItems]);
 
   const getClients = useQuery({
-    queryKey: ["get-clients"],
+    queryKey: ["get-clients-dropdown"],
     queryFn: async () => {
-      const response = await callApi.get(`/clients`);
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
 
       return response.data;
     },
@@ -105,9 +110,45 @@ function InvoiceForm({
     },
   });
 
-  const [clientModalOpened, setClientModalOpened] = useState(false);
-
   console.log("getSingleInvoice", getSingleInvoice);
+
+  const checkAllFieldsFilled = () => {
+    // Check required fields
+    if (!form.values.issueDate || !form.values.dueDate) return false;
+
+    // Check line items
+    const lineItemsValid = form.values.lineItems.every(
+      (item) => item.quantity > 0 && item.unitPrice > 0 && item.totalPrice > 0
+    );
+    if (!lineItemsValid) return false;
+
+    // Check remit payment details
+    if (
+      !form.values.remitPayment.accountName ||
+      !form.values.remitPayment.accountNumber ||
+      !form.values.remitPayment.routingNumber ||
+      !form.values.invoiceSummary ||
+      !form.values.clientId ||
+      form.values.invoiceTotalAmount <= 0
+    )
+      return false;
+
+    // Check client details
+    if (!form.values.clientId) return false;
+
+    // Check invoice total
+    if (form.values.invoiceTotalAmount <= 0) return false;
+
+    return true;
+  };
+
+  const generateBtnDisabled =
+    form.values.clientId === "" ||
+    form.values.invoiceTotalAmount === 0 ||
+    form.values.invoiceTotalAmount < calculateGrandTotal() ||
+    !checkAllFieldsFilled();
+
+  console.log("generateBtnDisabled", generateBtnDisabled);
 
   return (
     <Box p={10}>
@@ -401,11 +442,11 @@ function InvoiceForm({
                     disabled
                   />
                 </Grid.Col>
-                <Grid.Col span={12}>
+                {/* <Grid.Col span={12}>
                   <Link href="/account" className="underline text-blue-600">
                     Edit
                   </Link>
-                </Grid.Col>
+                </Grid.Col> */}
               </Grid>
             </Grid.Col>
           </Grid>
@@ -419,7 +460,7 @@ function InvoiceForm({
               generateInvoice.mutate("draft");
             }}
             loading={
-              generateInvoice.isPending && form.values.status !== "draft"
+              generateInvoice.isPending && form.values.status === "draft"
             }
           >
             Save as Draft
@@ -427,7 +468,7 @@ function InvoiceForm({
         )}
         {getSingleInvoice?.data?.status === "draft" && (
           <Button
-            disabled={!isButtonEnabled}
+            disabled={generateBtnDisabled}
             onClick={(e) => {
               generateInvoice.mutate("unpaid");
             }}
@@ -437,14 +478,6 @@ function InvoiceForm({
           </Button>
         )}
       </Group>
-      <Modal
-        opened={clientModalOpened}
-        onClose={() => setClientModalOpened(false)}
-        title="Create New Client"
-        size="md"
-      >
-        <ClientForm md={12} setClientModalOpened={setClientModalOpened} />
-      </Modal>
     </Box>
   );
 }

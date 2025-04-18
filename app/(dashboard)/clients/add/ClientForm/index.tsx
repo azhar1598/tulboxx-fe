@@ -26,7 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useContext, useEffect } from "react";
@@ -45,11 +45,13 @@ const ClientForm = ({
   setClientModalOpened,
   getClients,
   estimateForm,
+  invoiceForm,
 }: {
   md?: number;
   setClientModalOpened?: (value: boolean) => void;
   getClients?: any;
   estimateForm?: any;
+  invoiceForm?: any;
 }) => {
   const router = useRouter();
   const notification = usePageNotifications();
@@ -65,6 +67,7 @@ const ClientForm = ({
   });
 
   const user = useContext(UserContext);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!user) return;
@@ -82,7 +85,11 @@ const ClientForm = ({
       } else {
         setClientModalOpened(false);
         getClients?.refetch();
+        queryClient.invalidateQueries({
+          queryKey: ["get-clients-dropdown"],
+        });
         estimateForm?.setFieldValue("clientId", data.client.id);
+        invoiceForm?.setFieldValue("clientId", data.client.id);
       }
     },
     onError: (err: any) => {

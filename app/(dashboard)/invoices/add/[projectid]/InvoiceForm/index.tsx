@@ -29,7 +29,13 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
+function InvoiceForm({
+  form,
+  generateInvoice,
+  isButtonEnabled,
+  id,
+  setClientModalOpened,
+}) {
   const [lineItems, setLineItems] = useState([
     { id: 1, description: "", rate: "", qty: 1, total: 0 },
   ]);
@@ -80,9 +86,13 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
   }, [form.values.lineItems]);
 
   const getClients = useQuery({
-    queryKey: ["get-clients"],
+    queryKey: ["get-clients-dropdown"],
     queryFn: async () => {
-      const response = await callApi.get(`/clients`);
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
 
       return response.data;
     },
@@ -98,8 +108,6 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
       return options;
     },
   });
-
-  const [clientModalOpened, setClientModalOpened] = useState(false);
 
   return (
     <Box p={10}>
@@ -355,6 +363,7 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                     label="Account Name"
                     placeholder="Type here..."
                     {...form.getInputProps("remitPayment.accountName")}
+                    disabled
                   />
                 </Grid.Col>
                 <Grid.Col span={12}>
@@ -381,11 +390,11 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
                     disabled
                   />
                 </Grid.Col>
-                <Grid.Col span={12}>
+                {/* <Grid.Col span={12}>
                   <Link href="/account" className="underline text-blue-600">
                     Edit
                   </Link>
-                </Grid.Col>
+                </Grid.Col> */}
               </Grid>
             </Grid.Col>
           </Grid>
@@ -410,14 +419,6 @@ function InvoiceForm({ form, generateInvoice, isButtonEnabled, id }) {
           Generate Invoice
         </Button>
       </Group>
-      <Modal
-        opened={clientModalOpened}
-        onClose={() => setClientModalOpened(false)}
-        title="Create New Client"
-        size="md"
-      >
-        <ClientForm md={12} setClientModalOpened={setClientModalOpened} />
-      </Modal>
     </Box>
   );
 }

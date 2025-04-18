@@ -6,15 +6,16 @@ import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 
 import InvoiceForm from "./InvoiceForm";
-import { Paper } from "@mantine/core";
+import { Badge, Modal, Paper } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import PageMainWrapper from "@/components/common/PageMainWrapper";
 import callApi from "@/services/apiService";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/app/layout";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import dayjs from "dayjs";
+import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
 const baseInvoiceSchema = {
   issueDate: z.date(),
@@ -56,7 +57,7 @@ const invoiceSchema = z.discriminatedUnion("status", [
     invoiceTotalAmount: z.number().min(1, "Total amount is required"),
     lineItems: z.array(
       z.object({
-        description: z.string().min(1, "Description is required"),
+        description: z.string().optional(),
         quantity: z.number().min(1, "Quantity is required"),
         unitPrice: z.number().min(1, "Unit price is required"),
         totalPrice: z.number().min(1, "Total price is required"),
@@ -144,9 +145,16 @@ const InvoiceFormPage = () => {
     },
     onSuccess: async (res: any) => {
       const { data } = res;
+      const invoiceStatus = data.status; // Get status from response
+
+      console.log("invoiceStatus", invoiceStatus);
 
       router.push(`/invoices`);
-      notification.success(`Invoice updated successfully`);
+      if (invoiceStatus === "unpaid") {
+        notification.success(`Invoice updated successfully`);
+      } else {
+        notification.success(`Invoice saved as draft successfully`);
+      }
     },
     onError: (err: Error) => {
       notification.error(err.message);
@@ -154,6 +162,8 @@ const InvoiceFormPage = () => {
       console.log(err.message);
     },
   });
+
+  console.log("form.values", form.values);
 
   useEffect(() => {
     if (getSingleInvoice.data) {
@@ -175,6 +185,7 @@ const InvoiceFormPage = () => {
         })),
         invoiceSummary: getSingleInvoice.data.invoice_summary,
         status: getSingleInvoice.data.status,
+        clientId: getSingleInvoice.data.client_id,
       });
     }
   }, [getSingleInvoice.data]);
@@ -207,7 +218,10 @@ const InvoiceFormPage = () => {
 
   console.log("form.values", invoiceSchema.safeParse(form.values));
 
-  const isButtonEnabled = form.isValid() && form.isDirty();
+  const isButtonEnabled =
+    form.isValid() && form.isDirty() && Object.keys(form.errors).length === 0;
+
+  const [clientModalOpened, setClientModalOpened] = useState(false);
 
   return (
     <Stack>
@@ -216,6 +230,19 @@ const InvoiceFormPage = () => {
         title={`Generate Invoice:${
           getSingleInvoice.data?.project?.projectName || "Standalone Invoice"
         }`}
+        leftSection={
+          <Badge
+            color={
+              getSingleInvoice.data?.status === "unpaid"
+                ? "red"
+                : getSingleInvoice.data?.status === "paid"
+                ? "green"
+                : "gray"
+            }
+          >
+            {getSingleInvoice.data?.status}
+          </Badge>
+        }
       />
       <PageMainWrapper w="100%">
         <form onSubmit={form.onSubmit(() => generateInvoice.mutate())}>
@@ -224,9 +251,22 @@ const InvoiceFormPage = () => {
             generateInvoice={generateInvoice}
             isButtonEnabled={isButtonEnabled}
             getSingleInvoice={getSingleInvoice}
+            setClientModalOpened={setClientModalOpened}
             id={id}
           />
         </form>
+        <Modal
+          opened={clientModalOpened}
+          onClose={() => setClientModalOpened(false)}
+          title="Create New Client"
+          size="md"
+        >
+          <ClientForm
+            md={12}
+            setClientModalOpened={setClientModalOpened}
+            invoiceForm={form}
+          />
+        </Modal>
       </PageMainWrapper>
     </Stack>
   );
