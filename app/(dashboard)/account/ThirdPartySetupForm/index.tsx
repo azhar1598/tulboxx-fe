@@ -41,7 +41,7 @@ function ThirdPartySetupForm() {
   const form = useForm({
     validate: zodResolver(formSchema),
     initialValues: {
-      facebookPageId: "",
+      facebookPageId: "63874528346",
       facebookAccessToken: "",
       enableAutoPosting: false,
     },
