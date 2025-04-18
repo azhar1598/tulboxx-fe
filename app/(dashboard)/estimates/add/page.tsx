@@ -64,6 +64,7 @@ const esimationSchema = z.object({
   projectEstimate: z.number().min(1, "Project estimate is required"),
   projectStartDate: z.date(),
   projectEndDate: z.date(),
+  type: z.string().min(1, "Type is required"),
   lineItems: z
     .array(
       z.object({
@@ -91,7 +92,7 @@ const StoreRegistrationContent = () => {
     initialValues: {
       // general form
       projectName: "",
-      name: "",
+
       clientId: "",
       // customerName: "",
       // email: "",
@@ -104,6 +105,7 @@ const StoreRegistrationContent = () => {
       solutionDescription: "",
       projectEstimate: "",
       projectStartDate: "",
+      type: "residential",
       projectEndDate: "",
       lineItems: [
         {

@@ -26,7 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useContext, useEffect } from "react";
@@ -43,9 +43,13 @@ const formSchema = z.object({
 const ClientForm = ({
   md = 6,
   setClientModalOpened,
+  getClients,
+  estimateForm,
 }: {
   md?: number;
-  setClientModalOpened: (value: boolean) => void;
+  setClientModalOpened?: (value: boolean) => void;
+  getClients?: any;
+  estimateForm?: any;
 }) => {
   const router = useRouter();
   const notification = usePageNotifications();
@@ -77,6 +81,8 @@ const ClientForm = ({
         router.push(`/clients`);
       } else {
         setClientModalOpened(false);
+        getClients?.refetch();
+        estimateForm?.setFieldValue("clientId", data.client.id);
       }
     },
     onError: (err: any) => {

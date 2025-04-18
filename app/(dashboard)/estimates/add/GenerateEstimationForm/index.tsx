@@ -25,6 +25,7 @@ import {
   ThemeIcon,
   rem,
   Stepper,
+  Modal,
 } from "@mantine/core";
 import {
   IconBuilding,
@@ -51,16 +52,41 @@ import PageMainWrapper from "@/components/common/PageMainWrapper";
 // import WebForm from "./WebForm";
 // import BusinessForm from "./BusinessForm";
 import BasicForm from "./BasicForm";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import ProjectForm from "./ProjectForm";
 import AdditionalForm from "./AdditionalForm";
 import axios from "axios";
 import { UserContext } from "@/app/layout";
+import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
 const GenerateEstimationForm = ({ form }) => {
   const router = useRouter();
+  const [clientModalOpened, setClientModalOpened] = useState(false);
+  const getClients = useQuery({
+    queryKey: ["get-clients"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
+
+      return response.data;
+    },
+    select(data) {
+      console.log("data", data);
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      console.log("options", options);
+
+      return options;
+    },
+  });
 
   const [active, setActive] = useState(0);
   const notification = usePageNotifications();
@@ -117,6 +143,8 @@ const GenerateEstimationForm = ({ form }) => {
     },
   });
 
+  console.log(form.values);
+
   const payload = {
     projectName: "Missouri Drainage System",
     customerName: "Azhar Mohammed",
@@ -172,6 +200,8 @@ const GenerateEstimationForm = ({ form }) => {
                   <BasicForm
                     form={form}
                     active={active}
+                    setClientModalOpened={setClientModalOpened}
+                    getClients={getClients}
                     nextStep={nextStep}
                     prevStep={prevStep}
                   />
@@ -206,6 +236,19 @@ const GenerateEstimationForm = ({ form }) => {
                 </Stepper.Completed>
               </Stepper>
             </form>
+            <Modal
+              opened={clientModalOpened}
+              onClose={() => setClientModalOpened(false)}
+              title="Create New Client"
+              size="md"
+            >
+              <ClientForm
+                md={12}
+                setClientModalOpened={setClientModalOpened}
+                getClients={getClients}
+                estimateForm={form}
+              />
+            </Modal>
           </Stack>
         </Paper>
       </div>

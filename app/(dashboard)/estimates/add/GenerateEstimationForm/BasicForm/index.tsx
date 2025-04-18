@@ -26,35 +26,18 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 
-function BasicForm({ form, active, nextStep, prevStep }) {
-  const [clientModalOpened, setClientModalOpened] = useState(false);
-
+function BasicForm({
+  form,
+  active,
+  nextStep,
+  prevStep,
+  setClientModalOpened,
+  getClients,
+}) {
   // Check if required fields are filled
   const isFormValid = () => {
     return form.values.projectName?.trim() && form.values.clientId?.trim();
   };
-
-  const getClients = useQuery({
-    queryKey: ["get-clients"],
-    queryFn: async () => {
-      const response = await callApi.get(`/clients`);
-
-      return response.data;
-    },
-    select(data) {
-      console.log("data", data);
-      const options = data?.data?.map((option) => ({
-        label: `${option.name} - ${option.email}`,
-        value: option.id.toString(),
-      }));
-
-      console.log("options", options);
-
-      return options;
-    },
-  });
-
-  console.log("getClients", getClients?.data);
 
   return (
     <Box p={10}>
@@ -83,12 +66,12 @@ function BasicForm({ form, active, nextStep, prevStep }) {
                 <Radio
                   value="residential"
                   label="Residential"
-                  leftSection={<IconHome size={16} />}
+                  // leftSection={<IconHome size={16} />}
                 />
                 <Radio
                   value="commercial"
                   label="Commercial"
-                  leftSection={<IconBuilding size={16} />}
+                  // leftSection={<IconBuilding size={16} />}
                 />
               </Group>
             </Radio.Group>
@@ -179,15 +162,6 @@ function BasicForm({ form, active, nextStep, prevStep }) {
           Next step
         </Button>
       </Group>
-
-      <Modal
-        opened={clientModalOpened}
-        onClose={() => setClientModalOpened(false)}
-        title="Create New Client"
-        size="md"
-      >
-        <ClientForm md={12} setClientModalOpened={setClientModalOpened} />
-      </Modal>
     </Box>
   );
 }
