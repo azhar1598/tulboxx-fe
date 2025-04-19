@@ -84,7 +84,7 @@ const ContentForm = () => {
     },
   });
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/estimates",
     key: "get-estimates",
     page: 1,

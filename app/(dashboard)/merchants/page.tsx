@@ -69,7 +69,7 @@ function page() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/v1/merchants",
     key: "get-merchants",
     page,

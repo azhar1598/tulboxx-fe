@@ -128,7 +128,7 @@ function ProductsListing() {
     setPage(newPage);
   };
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/v1/stores",
     key: "get-stores",
     page,

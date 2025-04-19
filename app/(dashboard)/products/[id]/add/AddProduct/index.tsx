@@ -26,7 +26,7 @@ function AddProductPage() {
     },
   });
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: `/v1/stores/${id}/categories`,
     key: "get-stores",
     page: 1,

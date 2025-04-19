@@ -117,7 +117,7 @@ function PaymentsPage() {
   //   staleTime: 0, // Ensure fresh data on page changes
 
   // });
-  const queryFilters = {
+  const queryFilters: any = {
     url: "v1/payments",
     key: "get-payments",
     page,

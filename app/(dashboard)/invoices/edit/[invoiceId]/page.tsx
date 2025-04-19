@@ -79,7 +79,7 @@ const invoiceSchema = z.discriminatedUnion("status", [
 ]);
 
 const InvoiceFormPage = () => {
-  const form = useForm({
+  const form: any = useForm({
     validate: zodResolver(invoiceSchema),
     initialValues: {
       issueDate: new Date(),

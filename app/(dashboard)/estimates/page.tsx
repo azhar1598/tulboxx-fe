@@ -164,7 +164,7 @@ function Estimates() {
 
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/estimates",
     key: "get-estimates",
     page: 1,

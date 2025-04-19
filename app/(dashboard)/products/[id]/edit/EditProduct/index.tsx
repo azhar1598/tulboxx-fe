@@ -43,7 +43,7 @@ function EditProductPage() {
     },
   });
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: `/v1/stores/${storeId}/categories`,
     key: "get-stores",
     page: 1,

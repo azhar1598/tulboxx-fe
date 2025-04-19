@@ -145,7 +145,7 @@ function Content() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/v1/stores",
     key: "get-stores",
     page,

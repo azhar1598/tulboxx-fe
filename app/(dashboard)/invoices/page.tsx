@@ -229,7 +229,7 @@ function Estimates() {
     setPage(newPage);
   };
 
-  const queryFilters = {
+  const queryFilters: any = {
     url: "/estimates",
     key: "get-estimates",
     page,
