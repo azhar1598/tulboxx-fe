@@ -460,7 +460,7 @@ function InvoiceForm({
               generateInvoice.mutate("draft");
             }}
             loading={
-              generateInvoice.isPending && form.values.status === "draft"
+              generateInvoice.isPending && generateInvoice.variables === "draft"
             }
           >
             Save as Draft
@@ -472,7 +472,10 @@ function InvoiceForm({
             onClick={(e) => {
               generateInvoice.mutate("unpaid");
             }}
-            loading={generateInvoice.isPending && form.values.status != "draft"}
+            loading={
+              generateInvoice.isPending &&
+              generateInvoice.variables === "unpaid"
+            }
           >
             Generate Invoice
           </Button>

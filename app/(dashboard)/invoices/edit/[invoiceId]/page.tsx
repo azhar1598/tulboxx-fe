@@ -145,13 +145,13 @@ const InvoiceFormPage = () => {
     },
     onSuccess: async (res: any) => {
       const { data } = res;
-      const invoiceStatus = data.status; // Get status from response
+      const invoiceStatus = data.invoice.status; // Get status from response
 
-      console.log("invoiceStatus", invoiceStatus);
+      console.log("invoiceStatus", data.invoice.status, invoiceStatus);
 
       router.push(`/invoices`);
       if (invoiceStatus === "unpaid") {
-        notification.success(`Invoice updated successfully`);
+        notification.success(`Invoice generated successfully`);
       } else {
         notification.success(`Invoice saved as draft successfully`);
       }
