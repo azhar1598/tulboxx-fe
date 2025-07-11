@@ -15,10 +15,13 @@ import {
   Modal,
   Stack,
   Text,
+  Card,
 } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import {
+  IconBook,
   IconBuilding,
+  IconCurrencyDollar,
   IconDownload,
   IconEdit,
   IconEye,
@@ -43,6 +46,7 @@ import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { queryClient } from "@/lib/queryClient";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { UserContext } from "@/app/layout";
+import CustomCard from "@/components/common/Card";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -94,14 +98,16 @@ function Estimates() {
     },
     {
       accessor: "customerName",
-      title: "Customer Name",
-      render: ({ clients }: any) => clients?.name || "N/A",
-    },
-    {
-      accessor: "email",
-      textAlign: "left",
-      title: "Customer Email",
-      render: ({ clients }: any) => clients?.email || "N/A",
+      title: "Customer",
+      render: ({ clients }: any) => (
+        <p>
+          {clients?.name || "N/A"}
+          <br />
+          <Text size="12px" c="gray">
+            {clients?.email || "N/A"}
+          </Text>
+        </p>
+      ),
     },
 
     {
@@ -250,6 +256,16 @@ function Estimates() {
     URL.revokeObjectURL(svgUrl);
   };
 
+  const totalEstimates = getEstimatesQuery?.data?.metadata?.totalRecords || 0;
+  // Example breakdowns (replace with real data if available)
+  const draftCount = 8;
+  const sentCount = 2;
+  const approvedCount = 1;
+
+  const totalPipelineValue = 92658; // Example value, replace with real data
+  const approvedValue = 3500; // Example value, replace with real data
+  const winRate = 33; // Example value, replace with real data
+
   return (
     <>
       <div className="mb-4">
@@ -266,6 +282,22 @@ function Estimates() {
           }
         />
       </div>
+      <div className="flex gap-6 mb-6">
+        {/* Total Estimates Card */}
+        <CustomCard
+          title="Total Estimates"
+          Icon={<IconBook size={22} />}
+          value={totalEstimates}
+          description={`${draftCount} draft, ${sentCount} sent, ${approvedCount} approved`}
+        />
+        <CustomCard
+          title="Total Pipeline Value"
+          Icon={<IconCurrencyDollar size={22} />}
+          value={totalPipelineValue}
+          description={`${approvedValue} approved (${winRate}% win rate)`}
+        />
+      </div>
+
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
           filters={filters}

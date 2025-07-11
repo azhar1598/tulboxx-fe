@@ -158,7 +158,9 @@ function Clients() {
     <>
       <div className="mb-4">
         <PageHeader
-          title={"Clients"}
+          title={`Clients (${
+            getClientsQuery?.data?.metadata?.totalRecords || 0
+          })`}
           rightSection={
             <Group>
               <Link href={"/clients/add"}>
