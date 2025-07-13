@@ -35,7 +35,6 @@ import {
   IconMail,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 // import PreviewQR from "./add/PreviewQR";
@@ -46,40 +45,53 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 function Clients() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [apiData, setApiData] = useState([]);
 
-  const getClientsQuery: any = useQuery({
-    queryKey: ["get-clients", search, page, pageSize],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("pageSize", pageSize.toString());
-      params.append("search", search);
-      const response = callApi.get("/clients", {
-        params,
-      });
-
-      return response;
-    },
-    select: (data) => {
-      return {
-        data: data?.data?.data,
-        metadata: data?.data?.metadata,
-      };
+  const [state, setState] = useState({
+    sortOrder: "",
+    sortedColumn: "",
+    metaData: {
+      totalRecords: 0,
     },
   });
+
+  const pageSize = 10;
+
+  // const getClientsQuery: any = useQuery({
+  //   queryKey: ["get-clients", search, page, pageSize, state],
+  //   queryFn: () => {
+  //     const params = new URLSearchParams();
+  //     params.append("page", page.toString());
+  //     params.append("pageSize", pageSize.toString());
+  //     params.append("search", search);
+  //     params.append("sortBy", `${state.sortedColumn}:${state.sortOrder}`);
+  //     const response = callApi.get("clients", {
+  //       params,
+  //     });
+
+  //     return response;
+  //   },
+  //   select: (data) => {
+  //     return {
+  //       data: data?.data?.data,
+  //       metadata: data?.data?.metadata,
+  //     };
+  //   },
+  // });
 
   let columns = [
     {
       accessor: "name",
       title: "Name",
       textAlign: "left",
+      sortable: true,
     },
 
     {
       accessor: "email",
       title: "Email",
       textAlign: "left",
+      sortable: true,
       render: ({ email, phone }: any) => (
         <Text size="14px" className="flex items-center gap-3">
           <IconMail size={16} />
@@ -92,6 +104,7 @@ function Clients() {
       accessor: "phone",
       title: "Phone",
       textAlign: "left",
+      sortable: true,
       render: ({ phone }: any) => (
         <Text size="14px" className="flex items-center gap-2">
           <IconPhone size={16} />
@@ -104,6 +117,7 @@ function Clients() {
       accessor: "location",
       title: "Location",
       textAlign: "left",
+      sortable: true,
       render: ({ city, state, zip }: any) => (
         <Text size="14px" className="flex items-center gap-2">
           <IconMapPin size={16} />
@@ -141,9 +155,6 @@ function Clients() {
     },
   ];
 
-  const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
-
-  const handleTypeChange = () => {};
   const handleSearch = (value) => {
     setSearch(value);
   };
@@ -160,32 +171,16 @@ function Clients() {
     // ... more filters
   ];
 
-  const queryFilters: any = {
-    url: "/v1/stores",
-    key: "get-stores",
-    page,
-    pageSize,
-  };
-
-  //   const getStoresQuery = useTableQuery(queryFilters);
-  const getStoresQuery = {
-    totalResults: [],
-    currentPage: 1,
-    pageSize: 1,
-    isLoading: false,
-  };
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
 
+  console.log("apiData", state);
   return (
     <>
       <div className="mb-4">
         <PageHeader
-          title={`Clients (${
-            getClientsQuery?.data?.metadata?.totalRecords || 0
-          })`}
+          title={`Clients (${state?.metaData?.totalRecords || 0})`}
           rightSection={
             <Group>
               <Link href={"/clients/add"}>
@@ -204,14 +199,23 @@ function Clients() {
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-
-          records={getClientsQuery?.data?.data || []}
+          url={"/clients"}
+          // records={getClientsQuery?.data?.data || []}
+          search={search}
+          // filters={filters}
+          // operators={operators}
           columns={columns}
-          totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
-          currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
-          onPageChange={handlePageChange}
-          isLoading={getClientsQuery.isLoading}
+          pagination={true}
+          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
+          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
+          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
+          // onPageChange={handlePageChange}
+          // isLoading={getClientsQuery.isLoading}
+          sortable
+          defaultSortedColumn={"name"}
+          defaultSortedColumnDirection={"asc"}
+          setMetaData={setState}
+          state={state}
         />
       </Stack>
     </>
