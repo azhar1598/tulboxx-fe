@@ -2,15 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Center,
-  Tooltip,
-  UnstyledButton,
-  Stack,
-  rem,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Center, UnstyledButton, Stack, rem, Text, Title } from "@mantine/core";
 import {
   IconSwitchHorizontal,
   IconLogout,
@@ -49,23 +41,16 @@ function NavbarLink({
   };
 
   return (
-    // <Tooltizp
-    //   label={label}
-    //   // position="flex-start"
-    //   transitionProps={{ duration: 0 }}
-    // >
     <UnstyledButton
       onClick={handleClick}
       className={classes.link}
       data-active={active || undefined}
-      // style={{ borderBottom: "0.5px solid gray" }}
     >
-      <Icon style={{ width: "", height: "100px" }} stroke={1.5} />
-      <Text size="15px" ml={10}>
+      <Icon style={{ width: rem(22), height: rem(22) }} stroke={1.5} />
+      <Text size="sm" ml="md">
         {label}
       </Text>
     </UnstyledButton>
-    // </Tooltizp>
   );
 }
 
@@ -104,23 +89,26 @@ export function Sidebar() {
 
   return (
     <nav className={classes.navbar}>
-      <Center>
-        {/* <IconTool color="white" /> */}
-
+      <Center
+        style={{
+          paddingBottom: "20px",
+          borderBottom: "1px solid #1a2f45",
+        }}
+      >
+        <IconTool color="white" size="1.8rem" />
         <Title
           order={1}
           c={"white"}
           fw={600}
-          size="28px"
-          style={{ fontWeight: 600 }}
+          size="26px"
+          style={{ fontWeight: 700, marginLeft: "12px" }}
         >
           Tulboxx
         </Title>
-        {/* <Image src={LogoImage} alt="logo" height={300} width={300} /> */}
       </Center>
 
       <div className={classes.navbarMain}>
-        <Stack justify="flex-start" gap={5}>
+        <Stack justify="flex-start" gap={0}>
           {links}
           <UnstyledButton
             onClick={() => {
@@ -129,8 +117,11 @@ export function Sidebar() {
             className={classes.link}
             // data-active={}
           >
-            <IconLogout style={{ width: "", height: "100px" }} stroke={1.5} />
-            <Text size="14px" ml={10}>
+            <IconLogout
+              style={{ width: rem(22), height: rem(22) }}
+              stroke={1.5}
+            />
+            <Text size="sm" ml="md">
               Logout
             </Text>
           </UnstyledButton>
