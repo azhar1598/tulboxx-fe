@@ -191,6 +191,7 @@ const ClientForm = () => {
             }}
             allowDeselect={false}
             withAsterisk
+            searchable
           />
         </Grid.Col>
 
@@ -203,6 +204,7 @@ const ClientForm = () => {
             disabled={!form.values.state}
             allowDeselect={false}
             withAsterisk
+            searchable
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
