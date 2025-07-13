@@ -9,7 +9,7 @@ interface CustomCardProps {
 
 function CustomCard({ title, Icon, value, description }: CustomCardProps) {
   return (
-    <div className="flex-1 bg-white shadow border p-3 flex flex-col justify-between min-w-[350px]">
+    <div className="flex-1 bg-white shadow border p-3 flex flex-col justify-between min-w-[350px] rounded-lg">
       <div className="flex items-start justify-between">
         <span className="text-md font-medium text-gray-800">{title}</span>
         {Icon}

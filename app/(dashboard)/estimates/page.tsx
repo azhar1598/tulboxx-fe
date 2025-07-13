@@ -47,6 +47,7 @@ import { queryClient } from "@/lib/queryClient";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { UserContext } from "@/app/layout";
 import CustomCard from "@/components/common/Card";
+import { Mail, MapPinIcon } from "lucide-react";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -100,13 +101,24 @@ function Estimates() {
       accessor: "customerName",
       title: "Customer",
       render: ({ clients }: any) => (
-        <p>
+        <Stack gap={4}>
           {clients?.name || "N/A"}
           <br />
-          <Text size="12px" c="gray">
-            {clients?.email || "N/A"}
-          </Text>
-        </p>
+          <Flex gap={4} align="center" c="gray">
+            <Mail size={12} />
+            <Text size="12px" c="gray">
+              {clients?.email || "N/A"}
+            </Text>
+          </Flex>
+
+          {/* <Flex gap={4} align="center" c="gray">
+            <span>
+              {" "}
+              <MapPinIcon size={14} />
+            </span>
+            <Text size="12px">{clients?.address || "N/A"}</Text>
+          </Flex> */}
+        </Stack>
       ),
     },
 
@@ -298,7 +310,11 @@ function Estimates() {
         />
       </div>
 
-      <Stack gap={20} mb={20} className=" bg-white shadow-xl">
+      <Stack
+        gap={20}
+        mb={20}
+        className=" bg-white shadow-xl rounded-lg shadow-2xl"
+      >
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}

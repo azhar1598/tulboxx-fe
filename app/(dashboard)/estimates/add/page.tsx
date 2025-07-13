@@ -1,6 +1,7 @@
 "use client";
 import { useForm, zodResolver } from "@mantine/form";
 import { TimeInput } from "@mantine/dates";
+import classes from "./estimate.module.css";
 import {
   TextInput,
   Textarea,
@@ -25,6 +26,7 @@ import {
   ThemeIcon,
   rem,
   Tabs,
+  FloatingIndicator,
 } from "@mantine/core";
 import {
   IconBuilding,
@@ -37,6 +39,10 @@ import {
   IconMapPin,
   IconPalette,
   IconPower,
+  IconMessageCircle,
+  IconSettings,
+  IconBrandSpeedtest,
+  IconFileDescription,
 } from "@tabler/icons-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -46,6 +52,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 
 import GenerateEstimationForm from "./GenerateEstimationForm";
+import GenerateQuickEstimateForm from "./GenerateQuickEstimateForm";
 
 const esimationSchema = z.object({
   // general form
@@ -87,6 +94,7 @@ const esimationSchema = z.object({
 });
 
 const StoreRegistrationContent = () => {
+  const [activeTab, setActiveTab] = useState<string | null>("quick");
   const form = useForm({
     validate: zodResolver(esimationSchema),
     initialValues: {
@@ -136,6 +144,16 @@ const StoreRegistrationContent = () => {
   //   },
   // });
 
+  const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
+  const [value, setValue] = useState<string | null>("1");
+  const [controlsRefs, setControlsRefs] = useState<
+    Record<string, HTMLButtonElement | null>
+  >({});
+  const setControlRef = (val: string) => (node: HTMLButtonElement) => {
+    controlsRefs[val] = node;
+    setControlsRefs(controlsRefs);
+  };
+
   return (
     <Stack>
       {" "}
@@ -143,26 +161,48 @@ const StoreRegistrationContent = () => {
       <div className=" md:block">
         {/* <SimpleGrid cols={1}> */}
 
-        {/* <AddStoreForm form={form} /> */}
-        <GenerateEstimationForm form={form} />
+        <Tabs
+          value={activeTab}
+          onChange={setActiveTab}
+          mt="md"
+          variant="unstyled"
+          classNames={classes}
+          defaultValue="quick"
+        >
+          <Tabs.List
+            className={classes.list}
+            grow
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Tabs.Tab
+              value="quick"
+              leftSection={<IconBrandSpeedtest size={16} />}
+            >
+              Quick Estimate
+            </Tabs.Tab>
+            <Tabs.Tab value="detailed" leftSection={<IconFileDescription />}>
+              Detailed Estimate
+            </Tabs.Tab>
+          </Tabs.List>
 
-        {/* <Flex direction={"column"}>
-            <Tabs defaultValue="qr">
-              <Tabs.List mb={10}>
-                <Tabs.Tab value="qr">Preview QR</Tabs.Tab>
-                <Tabs.Tab value="website">Preview Website</Tabs.Tab>
-              </Tabs.List>
-              <Tabs.Panel value="qr" pb="xs">
-                <PreviewQR storeInfo={form.values} />
-              </Tabs.Panel>
-              <Tabs.Panel value="website" pb="xs">
-                <div className="relative">
-                  <WebPreview />
-                </div>
-              </Tabs.Panel>
-            </Tabs>
-          </Flex> */}
-        {/* </SimpleGrid> */}
+          <Tabs.Panel value="quick" pt="xs">
+            <GenerateQuickEstimateForm
+              form={form}
+              active={activeTab}
+              nextStep={() => {}}
+              prevStep={() => {}}
+              setClientModalOpened={() => {}}
+              getClients={() => {}}
+            />
+          </Tabs.Panel>
+          <Tabs.Panel value="detailed" pt="xs">
+            <GenerateEstimationForm form={form} />
+          </Tabs.Panel>
+        </Tabs>
       </div>
       {/* <div className="md:hidden block">
         <SimpleGrid cols={1}>

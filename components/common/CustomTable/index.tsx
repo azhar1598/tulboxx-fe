@@ -67,6 +67,7 @@ function CustomTable({
           footer: {
             backgroundColor: "#f0f3f8",
             borderTop: "1px solid #e9ecef",
+            borderRadius: "30px",
           },
         }}
         totalRecords={totalRecords}
