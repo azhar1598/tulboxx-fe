@@ -41,7 +41,7 @@ const formSchema = z.object({
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
-  zipCode: z.number().min(1, "Zip Code is required"),
+  zip: z.number().min(1, "Zip Code is required"),
   notes: z.string().optional(),
 });
 
@@ -52,7 +52,7 @@ interface ClientFormValues {
   address: string;
   state: string | null;
   city: string | null;
-  zipCode: string | number;
+  zip: string | number;
   notes: string;
 }
 
@@ -80,7 +80,7 @@ const ClientForm = ({
       address: "",
       state: "",
       city: "",
-      zipCode: "",
+      zip: "",
       notes: "",
     },
     validateInputOnChange: true,
@@ -208,7 +208,7 @@ const ClientForm = ({
             hideControls
             allowNegative={false}
             placeholder="12345"
-            {...form.getInputProps("zipCode")}
+            {...form.getInputProps("zip")}
             withAsterisk
           />
         </Grid.Col>

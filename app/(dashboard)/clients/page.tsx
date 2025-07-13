@@ -30,6 +30,9 @@ import {
   IconTrash,
   IconHome,
   IconBuilding,
+  IconMapPin,
+  IconPhone,
+  IconMail,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
@@ -72,21 +75,43 @@ function Clients() {
       title: "Name",
       textAlign: "left",
     },
+
     {
       accessor: "email",
       title: "Email",
       textAlign: "left",
+      render: ({ email, phone }: any) => (
+        <Text size="14px" className="flex items-center gap-3">
+          <IconMail size={16} />
+          {email}
+        </Text>
+      ),
     },
+
     {
       accessor: "phone",
       title: "Phone",
       textAlign: "left",
+      render: ({ phone }: any) => (
+        <Text size="14px" className="flex items-center gap-2">
+          <IconPhone size={16} />
+          {phone}
+        </Text>
+      ),
     },
+
     {
-      accessor: "address",
-      title: "Address",
+      accessor: "location",
+      title: "Location",
       textAlign: "left",
+      render: ({ city, state, zip }: any) => (
+        <Text size="14px" className="flex items-center gap-2">
+          <IconMapPin size={16} />
+          {city}, {state}, {zip}
+        </Text>
+      ),
     },
+
     // {
     //   accessor: "name",
     //   title: "Project Name",
