@@ -20,15 +20,18 @@ import {
   IconInvoice,
   IconNews,
   IconFileTime,
+  IconBriefcase,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
   // { label: "Generate", icon: IconWandOff, link: "/" },
 
   { label: "Clients", icon: IconUser, link: "/clients" },
+  { label: "Jobs", icon: IconBriefcase, link: "/jobs" },
   { label: "Estimates", icon: IconFileTime, link: "/estimates" },
   { label: "Invoices", icon: IconInvoice, link: "/invoices" },
   { label: "Content", icon: IconNews, link: "/content" },
+
   // { label: "Clients", icon: IconUser, link: "/clients" },
 
   // { label: "Merchants", icon: IconUsersGroup, link: "/merchants" },

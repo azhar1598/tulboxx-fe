@@ -60,6 +60,14 @@ function Estimates() {
   const notification = usePageNotifications();
   const [deletEstimateId, setDeletEstimateId] = useState();
 
+  const [state, setState] = useState({
+    sortOrder: "",
+    sortedColumn: "",
+    metaData: {
+      totalRecords: 0,
+    },
+  });
+
   useEffect(() => {
     if (!qrCode) return;
     open();
@@ -83,6 +91,7 @@ function Estimates() {
     {
       accessor: "projectName",
       title: "Project Name",
+      sortable: true,
       render: ({ projectName, id }: any) => (
         <Link
           href={`/estimates/preview/${id}`}
@@ -92,14 +101,16 @@ function Estimates() {
         </Link>
       ),
     },
-    {
-      accessor: "projectEstimate",
-      title: "Project Estimate",
-      render: ({ projectEstimate }: any) => projectEstimate || "N/A",
-    },
+    // {
+    //   accessor: "projectEstimate",
+    //   title: "Project Estimate",
+    //   sortable: true,
+    //   render: ({ projectEstimate }: any) => projectEstimate || "N/A",
+    // },
     {
       accessor: "customerName",
       title: "Customer",
+      sortable: true,
       render: ({ clients }: any) => (
         <Stack gap={4}>
           {clients?.name || "N/A"}
@@ -126,6 +137,7 @@ function Estimates() {
       accessor: "type",
       textAlign: "left",
       title: "Project Type",
+      sortable: true,
       render: ({ type }: any) => (
         <Flex gap={4} align="center">
           {type === "home" ? (
@@ -143,6 +155,7 @@ function Estimates() {
     {
       accessor: "total_amount",
       title: "Total Amount",
+      sortable: true,
       render: ({ total_amount }: any) => (
         <Text size="14px" fw={600}>
           {total_amount ? `$${total_amount}` : "N/A"}
@@ -154,6 +167,7 @@ function Estimates() {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
       textAlign: "left",
+
       render: (record: any) => (
         <Group>
           {/* <Button
@@ -222,27 +236,27 @@ function Estimates() {
 
   const user = useContext(UserContext);
 
-  const getEstimatesQuery = useQuery({
-    queryKey: ["get-estimates", search, page, projectId, user],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("pageSize", pageSize.toString());
-      params.append("search", search);
-      if (projectId) {
-        params.append("filter.id", projectId);
-      }
-      const response = callApi.get("/estimates", { params });
+  // const getEstimatesQuery = useQuery({
+  //   queryKey: ["get-estimates", search, page, projectId, user],
+  //   queryFn: () => {
+  //     const params = new URLSearchParams();
+  //     params.append("page", page.toString());
+  //     params.append("pageSize", pageSize.toString());
+  //     params.append("search", search);
+  //     if (projectId) {
+  //       params.append("filter.id", projectId);
+  //     }
+  //     const response = callApi.get("/estimates", { params });
 
-      return response;
-    },
-    select: (data) => {
-      return {
-        data: data?.data?.data,
-        metadata: data?.data?.metadata,
-      };
-    },
-  });
+  //     return response;
+  //   },
+  //   select: (data) => {
+  //     return {
+  //       data: data?.data?.data,
+  //       metadata: data?.data?.metadata,
+  //     };
+  //   },
+  // });
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -268,7 +282,7 @@ function Estimates() {
     URL.revokeObjectURL(svgUrl);
   };
 
-  const totalEstimates = getEstimatesQuery?.data?.metadata?.totalRecords || 0;
+  // const totalEstimates = getEstimatesQuery?.data?.metadata?.totalRecords || 0;
   // Example breakdowns (replace with real data if available)
   const draftCount = 8;
   const sentCount = 2;
@@ -296,7 +310,7 @@ function Estimates() {
       </div>
       <div className="flex gap-6 mb-6">
         {/* Total Estimates Card */}
-        <CustomCard
+        {/* <CustomCard
           title="Total Estimates"
           Icon={<IconBook size={22} />}
           value={totalEstimates}
@@ -307,7 +321,7 @@ function Estimates() {
           Icon={<IconCurrencyDollar size={22} />}
           value={totalPipelineValue}
           description={`${approvedValue} approved (${winRate}% win rate)`}
-        />
+        /> */}
       </div>
 
       <Stack
@@ -321,7 +335,7 @@ function Estimates() {
           searchable={true}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
-        <CustomTable
+        {/* <CustomTable
           // getStoresQuery?.tableData ||
           records={getEstimatesQuery?.data?.data || []}
           columns={columns}
@@ -330,6 +344,27 @@ function Estimates() {
           pageSize={getEstimatesQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
           isLoading={getEstimatesQuery.isLoading}
+        /> */}
+
+        <CustomTable
+          // getStoresQuery?.tableData ||
+          url={"/estimates"}
+          // records={getClientsQuery?.data?.data || []}
+          search={search}
+          // filters={filters}
+          // operators={operators}
+          columns={columns}
+          pagination={true}
+          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
+          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
+          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
+          // onPageChange={handlePageChange}
+          // isLoading={getClientsQuery.isLoading}
+          sortable
+          defaultSortedColumn={"name"}
+          defaultSortedColumnDirection={"asc"}
+          setMetaData={setState}
+          state={state}
         />
       </Stack>
     </>

@@ -52,6 +52,14 @@ function Estimates() {
   const [status, setStatus] = useState("all");
   const pageSize = 10;
 
+  const [state, setState] = useState({
+    sortOrder: "",
+    sortedColumn: "",
+    metaData: {
+      totalRecords: 0,
+    },
+  });
+
   const router = useRouter();
 
   const handleProjectSelect = (project) => {
@@ -76,15 +84,17 @@ function Estimates() {
 
   const columns = [
     {
-      accessor: "number",
+      accessor: "invoice_number",
       title: "Invoice #",
       align: "left",
+      sortable: true,
       render: ({ invoice_number }: any) => invoice_number || "N/A",
     },
     {
       accessor: "project",
       title: "Project Name",
       align: "left",
+      sortable: true,
       render: ({ project, id }: any) => (
         <Link
           href={`${project?.id ? `/estimates/preview/${project?.id}` : ""}`}
@@ -103,19 +113,22 @@ function Estimates() {
       accessor: "invoice_total_amount",
       title: "Invoice Total Amount",
       align: "left",
+      sortable: true,
       render: ({ invoice_total_amount }: any) =>
         `$${invoice_total_amount}` || "N/A",
     },
     {
-      accessor: "customerName",
+      accessor: "client.name",
       title: "Customer Name",
       align: "left",
+      sortable: true,
       render: ({ client }: any) => client?.name || "N/A",
     },
     {
       accessor: "due_date",
       title: "Due Date",
       align: "left",
+      sortable: true,
       render: ({ due_date }: any) =>
         due_date ? new Date(due_date).toLocaleDateString() : "N/A",
     },
@@ -126,6 +139,7 @@ function Estimates() {
       accessor: "status",
       title: "Status",
       align: "left",
+      sortable: true,
       render: ({ status }: any) => (
         <Badge color={getStatusColor(status)}>{status}</Badge>
       ),
@@ -203,27 +217,27 @@ function Estimates() {
 
   const handleRecordsPerPage = () => {};
 
-  const getInvoicesQuery = useQuery({
-    queryKey: ["get-invoices", search, page, status],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("pageSize", pageSize.toString());
-      params.append("search", search);
-      params.append("status", status);
-      // params.append("status", filters.);
-      const response = callApi.get("/invoices", { params });
+  // const getInvoicesQuery = useQuery({
+  //   queryKey: ["get-invoices", search, page, status],
+  //   queryFn: () => {
+  //     const params = new URLSearchParams();
+  //     params.append("page", page.toString());
+  //     params.append("pageSize", pageSize.toString());
+  //     params.append("search", search);
+  //     params.append("status", status);
+  //     // params.append("status", filters.);
+  //     const response = callApi.get("/invoices", { params });
 
-      return response;
-    },
-    select: (data) => {
-      return {
-        data: data?.data?.data,
-        metadata: data?.data?.metadata,
-      };
-    },
-    retry: 2,
-  });
+  //     return response;
+  //   },
+  //   select: (data) => {
+  //     return {
+  //       data: data?.data?.data,
+  //       metadata: data?.data?.metadata,
+  //     };
+  //   },
+  //   retry: 2,
+  // });
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -323,13 +337,23 @@ function Estimates() {
         />
         <CustomTable
           // getStoresQuery?.tableData ||
-          records={getInvoicesQuery?.data?.data || []}
+          url={"/invoices"}
+          // records={getClientsQuery?.data?.data || []}
+          search={search}
+          // filters={filters}
+          // operators={operators}
           columns={columns}
-          totalRecords={getInvoicesQuery?.data?.metadata?.totalRecords || 0}
-          currentPage={getInvoicesQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getInvoicesQuery?.data?.metadata?.recordsPerPage || 0}
-          onPageChange={handlePageChange}
-          isLoading={getInvoicesQuery.isLoading}
+          pagination={true}
+          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
+          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
+          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
+          // onPageChange={handlePageChange}
+          // isLoading={getClientsQuery.isLoading}
+          sortable
+          defaultSortedColumn={"name"}
+          defaultSortedColumnDirection={"asc"}
+          setMetaData={setState}
+          state={state}
         />
       </Stack>
     </>
