@@ -58,7 +58,7 @@ import {
   ComposedChart,
 } from "recharts";
 import dayjs from "dayjs";
-import { UserContext } from "./layout";
+import { UserContext } from "@/app/layout";
 
 const StatCard = ({ title, value, icon: Icon, diff, isLoading }) => {
   const theme = useMantineTheme();
@@ -300,7 +300,7 @@ function DashboardPage() {
   const isLoading = invoicesLoading || estimatesLoading;
 
   return (
-    <Stack gap="xl" w="78vw">
+    <Stack gap="xl" className="dashboard-page">
       <Paper withBorder p="lg" radius="md" shadow="md">
         <Group>
           <ThemeIcon color="teal" size={48} radius="md">

@@ -11,8 +11,8 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
-
-import LogoImage from "../../../public/assets/logo/logo.png";
+import LogoImage1 from "../../../public/logo/logo-negative.png";
+import LogoImage2 from "../../../public/logo/logo-positive.png";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 
@@ -60,9 +60,12 @@ export function Sidebar() {
 
   const supabase = createClient();
 
-  const activeIndex = sidebarItems.findIndex((item) =>
-    pathname.includes(item.link)
-  );
+  const activeIndex = sidebarItems.findIndex((item) => {
+    if (item.link === "/") {
+      return pathname === item.link;
+    }
+    return pathname.startsWith(item.link);
+  });
 
   const links = sidebarItems.map((link, index) => (
     <NavbarLink
@@ -91,11 +94,10 @@ export function Sidebar() {
     <nav className={classes.navbar}>
       <Center
         style={{
-          paddingBottom: "20px",
           borderBottom: "1px solid #1a2f45",
         }}
       >
-        <IconTool color="white" size="1.8rem" />
+        {/* <IconTool color="white" size="1.8rem" />
         <Title
           order={1}
           c={"white"}
@@ -104,7 +106,8 @@ export function Sidebar() {
           style={{ fontWeight: 700, marginLeft: "12px" }}
         >
           Tulboxx
-        </Title>
+        </Title> */}
+        <Image src={LogoImage1} alt="logo" width={150} height={150} />
       </Center>
 
       <div className={classes.navbarMain}>

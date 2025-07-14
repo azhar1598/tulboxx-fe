@@ -21,11 +21,13 @@ import {
   IconNews,
   IconFileTime,
   IconBriefcase,
+  IconHome,
+  IconDeviceAnalytics,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
   // { label: "Generate", icon: IconWandOff, link: "/" },
-
+  { label: "Dashboard", icon: IconDeviceAnalytics, link: "/" },
   { label: "Clients", icon: IconUser, link: "/clients" },
   { label: "Jobs", icon: IconBriefcase, link: "/jobs" },
   { label: "Estimates", icon: IconFileTime, link: "/estimates" },

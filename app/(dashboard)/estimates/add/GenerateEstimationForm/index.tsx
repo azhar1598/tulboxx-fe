@@ -61,12 +61,10 @@ import axios from "axios";
 import { UserContext } from "@/app/layout";
 import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
-const GenerateEstimationForm = ({ form, getClients }) => {
-  const router = useRouter();
+const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
   const [clientModalOpened, setClientModalOpened] = useState(false);
 
   const [active, setActive] = useState(0);
-  const notification = usePageNotifications();
 
   const nextStep = () =>
     setActive((current) => (current < 5 ? current + 1 : current));
@@ -105,21 +103,6 @@ const GenerateEstimationForm = ({ form, getClients }) => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
 
-  const generateEstimation = useMutation({
-    mutationFn: () => callApi.post(`/estimates`, form.values),
-    onSuccess: async (res: any) => {
-      const { data } = res;
-
-      router.push(`/estimates/preview/${data.estimate.id}`);
-      notification.success(`Estimate created successfully`);
-    },
-    onError: (err: Error) => {
-      // notification.error(err);
-
-      console.log(err.message);
-    },
-  });
-
   console.log(form.values);
 
   const payload = {
@@ -156,9 +139,9 @@ const GenerateEstimationForm = ({ form, getClients }) => {
             <form
               onSubmit={form.onSubmit(() => {
                 const newFormValues = structuredClone(form.values);
-                const formData: any = objectToFormData(newFormValues);
+                // const formData: any = objectToFormData(newFormValues);
 
-                generateEstimation.mutate(formData);
+                generateEstimation.mutate(newFormValues);
               })}
             >
               <Stepper

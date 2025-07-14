@@ -2,7 +2,7 @@
   width: 250px;
   min-height: 100vh;
   height: auto;
-  padding-top: 25px;
+  /* padding-top: 10px; */
   /* padding: var(--mantine-spacing-md); */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -14,7 +14,7 @@
 
 .navbarMain {
   flex: 1;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .link {

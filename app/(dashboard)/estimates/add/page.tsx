@@ -53,8 +53,9 @@ import { PageHeader } from "@/components/common/PageHeader";
 
 import GenerateEstimationForm from "./GenerateEstimationForm";
 import GenerateQuickEstimateForm from "./GenerateQuickEstimateForm";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
 const quickEstimationSchema = z
   .object({
@@ -101,11 +102,13 @@ const detailedEstimationSchema = z.object({
   additionalNotes: z.string().optional(),
 
   // user id
-  user_id: z.string().min(1, "User id is required"),
+  // user_id: z.string().min(1, "User id is required"),
 });
 
 const StoreRegistrationContent = () => {
   const [activeTab, setActiveTab] = useState<string | null>("quick");
+  const router = useRouter();
+  const notification = usePageNotifications();
   const form = useForm({
     validate: (values) => {
       const schema =
@@ -149,7 +152,7 @@ const StoreRegistrationContent = () => {
       equipmentMaterials: "",
       additionalNotes: "",
       // user id
-      user_id: "",
+      // user_id: "",
     },
     validateInputOnChange: true,
   });
@@ -199,6 +202,24 @@ const StoreRegistrationContent = () => {
     },
   });
 
+  const generateEstimation = useMutation({
+    mutationFn: (formData: FormData) =>
+      callApi.post(`/estimates?type=${activeTab}`, formData),
+    onSuccess: async (res: any) => {
+      const { data } = res;
+
+      router.push(`/estimates/preview/${data.estimate.id}`);
+      notification.success(`Estimate created successfully`);
+    },
+    onError: (err: Error) => {
+      // notification.error(err);
+
+      console.log(err.message);
+    },
+  });
+
+  console.log("form", detailedEstimationSchema.safeParse(form.values));
+
   return (
     <Stack>
       {" "}
@@ -245,10 +266,15 @@ const StoreRegistrationContent = () => {
               prevStep={() => {}}
               setClientModalOpened={() => {}}
               getClients={getClients}
+              generateEstimation={generateEstimation}
             />
           </Tabs.Panel>
           <Tabs.Panel value="detailed" pt="xs">
-            <GenerateEstimationForm form={form} getClients={getClients} />
+            <GenerateEstimationForm
+              form={form}
+              getClients={getClients}
+              generateEstimation={generateEstimation}
+            />
           </Tabs.Panel>
         </Tabs>
       </div>
