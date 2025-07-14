@@ -61,32 +61,9 @@ import axios from "axios";
 import { UserContext } from "@/app/layout";
 import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
-const GenerateEstimationForm = ({ form }) => {
+const GenerateEstimationForm = ({ form, getClients }) => {
   const router = useRouter();
   const [clientModalOpened, setClientModalOpened] = useState(false);
-  const getClients = useQuery({
-    queryKey: ["get-clients"],
-    queryFn: async () => {
-      const response = await callApi.get(`/clients`, {
-        params: {
-          limit: -1,
-        },
-      });
-
-      return response.data;
-    },
-    select(data) {
-      console.log("data", data);
-      const options = data?.data?.map((option) => ({
-        label: `${option.name} - ${option.email}`,
-        value: option.id.toString(),
-      }));
-
-      console.log("options", options);
-
-      return options;
-    },
-  });
 
   const [active, setActive] = useState(0);
   const notification = usePageNotifications();

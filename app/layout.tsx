@@ -77,8 +77,11 @@ export default function RootLayout({
                     {pathname !== "/login" &&
                       pathname !== "/test" &&
                       pathname !== "/signup" && <Header />}
-
-                    {children}
+                    <div
+                      className={`${pathname === "/" ? "main-content" : ""}`}
+                    >
+                      {children}
+                    </div>
                   </Stack>
                 </Flex>
               </UserContext.Provider>

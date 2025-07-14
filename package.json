@@ -46,6 +46,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "^9.1.2",
     "react-to-print": "^3.0.5",
+    "recharts": "^3.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

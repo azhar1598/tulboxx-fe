@@ -53,8 +53,19 @@ import { PageHeader } from "@/components/common/PageHeader";
 
 import GenerateEstimationForm from "./GenerateEstimationForm";
 import GenerateQuickEstimateForm from "./GenerateQuickEstimateForm";
+import { useQuery } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
-const esimationSchema = z.object({
+const quickEstimationSchema = z
+  .object({
+    projectName: z.string().min(1, "Project name is required"),
+    projectEstimate: z.coerce.number().min(1, "Project estimate is required"),
+    clientId: z.string().min(1, "Client is required"),
+    additionalNotes: z.string().optional(),
+  })
+  .passthrough();
+
+const detailedEstimationSchema = z.object({
   // general form
   projectName: z.string().min(1, "Project name is required"),
   // name: z.string().min(1, "Name is required"),
@@ -68,7 +79,7 @@ const esimationSchema = z.object({
   serviceType: z.string().min(1, "Service type is required"),
   problemDescription: z.string().min(1, "Problem description is required"),
   solutionDescription: z.string().min(1, "Solution description is required"),
-  projectEstimate: z.number().min(1, "Project estimate is required"),
+  projectEstimate: z.coerce.number().min(1, "Project estimate is required"),
   projectStartDate: z.date(),
   projectEndDate: z.date(),
   type: z.string().min(1, "Type is required"),
@@ -96,7 +107,17 @@ const esimationSchema = z.object({
 const StoreRegistrationContent = () => {
   const [activeTab, setActiveTab] = useState<string | null>("quick");
   const form = useForm({
-    validate: zodResolver(esimationSchema),
+    validate: (values) => {
+      const schema =
+        activeTab === "quick"
+          ? quickEstimationSchema
+          : detailedEstimationSchema;
+      const result = schema.safeParse(values);
+      if (!result.success) {
+        return result.error.flatten().fieldErrors;
+      }
+      return {};
+    },
     initialValues: {
       // general form
       projectName: "",
@@ -154,6 +175,30 @@ const StoreRegistrationContent = () => {
     setControlsRefs(controlsRefs);
   };
 
+  const getClients = useQuery({
+    queryKey: ["get-clients"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
+
+      return response.data;
+    },
+    select(data) {
+      console.log("data", data);
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      console.log("options", options);
+
+      return options;
+    },
+  });
+
   return (
     <Stack>
       {" "}
@@ -163,7 +208,10 @@ const StoreRegistrationContent = () => {
 
         <Tabs
           value={activeTab}
-          onChange={setActiveTab}
+          onChange={(value) => {
+            setActiveTab(value);
+            form.reset();
+          }}
           mt="md"
           variant="unstyled"
           classNames={classes}
@@ -196,11 +244,11 @@ const StoreRegistrationContent = () => {
               nextStep={() => {}}
               prevStep={() => {}}
               setClientModalOpened={() => {}}
-              getClients={() => {}}
+              getClients={getClients}
             />
           </Tabs.Panel>
           <Tabs.Panel value="detailed" pt="xs">
-            <GenerateEstimationForm form={form} />
+            <GenerateEstimationForm form={form} getClients={getClients} />
           </Tabs.Panel>
         </Tabs>
       </div>

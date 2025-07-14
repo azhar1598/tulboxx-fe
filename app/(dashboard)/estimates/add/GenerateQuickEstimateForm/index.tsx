@@ -38,7 +38,11 @@ function GenerateQuickEstimateForm({
 }) {
   // Check if required fields are filled
   const isFormValid = () => {
-    return form.values.projectName?.trim() && form.values.clientId?.trim();
+    return (
+      form.values.projectName?.trim() &&
+      form.values.clientId?.trim() &&
+      form.values.projectEstimate
+    );
   };
 
   return (
@@ -56,24 +60,15 @@ function GenerateQuickEstimateForm({
             </Grid.Col>
 
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <TextInput
+              <NumberInput
                 label="Project Estimate"
                 placeholder="$5,000"
                 className=""
-                leftSection={<IconCurrencyDollar stroke={2} size={15} />}
-                {...form.getInputProps("projectEstimate")}
-              />
-            </Grid.Col>
-
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              <NumberInput
-                label="What is the total project estimate?"
-                placeholder="$5,000"
                 allowDecimal={false}
                 allowNegative={false}
+                hideControls
                 leftSection={<IconCurrencyDollar stroke={2} size={15} />}
                 {...form.getInputProps("projectEstimate")}
-                hideControls
               />
             </Grid.Col>
 
@@ -108,7 +103,7 @@ function GenerateQuickEstimateForm({
                 label="Additional Notes"
                 placeholder="Additional Notes"
                 minRows={3}
-                {...form.getInputProps("solutionDescription")}
+                {...form.getInputProps("additionalNotes")}
               />
             </Grid.Col>
           </Grid>
