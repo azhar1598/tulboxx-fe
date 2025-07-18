@@ -308,7 +308,7 @@ function DashboardPage() {
           </ThemeIcon>
           <div>
             <Title order={3}>
-              Welcome back, {user?.user_metadata?.first_name || "buddy"}!
+              Welcome back, {user?.user_metadata?.name || "buddy"}!
             </Title>
             <Text c="dimmed">
               Here's what's happening with your business today.

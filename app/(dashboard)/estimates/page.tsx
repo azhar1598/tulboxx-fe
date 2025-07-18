@@ -349,6 +349,7 @@ function Estimates() {
         <CustomTable
           // getStoresQuery?.tableData ||
           url={"/estimates"}
+          queryKey={["get-estimates"]}
           // records={getClientsQuery?.data?.data || []}
           search={search}
           // filters={filters}

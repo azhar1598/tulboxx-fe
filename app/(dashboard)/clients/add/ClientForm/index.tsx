@@ -165,6 +165,15 @@ const ClientForm = ({
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: md }}>
+          <Textarea
+            label="Address"
+            placeholder="Start typing..."
+            {...form.getInputProps("address")}
+            withAsterisk
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: md }}>
           <Select
             label="State"
             placeholder="Select State"
@@ -191,15 +200,6 @@ const ClientForm = ({
             allowDeselect={false}
             withAsterisk
             searchable
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: md }}>
-          <Textarea
-            label="Address"
-            placeholder="Start typing..."
-            {...form.getInputProps("address")}
-            withAsterisk
           />
         </Grid.Col>
 

@@ -207,8 +207,11 @@ const StoreRegistrationContent = () => {
       callApi.post(`/estimates?type=${activeTab}`, formData),
     onSuccess: async (res: any) => {
       const { data } = res;
-
-      router.push(`/estimates/preview/${data.estimate.id}`);
+      if (activeTab === "quick") {
+        router.push(`/estimates`);
+      } else {
+        router.push(`/estimates/preview/${data.estimate.id}`);
+      }
       notification.success(`Estimate created successfully`);
     },
     onError: (err: Error) => {

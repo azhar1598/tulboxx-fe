@@ -70,7 +70,7 @@ function Estimates() {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "paid":
         return "green"; // Success
       case "pending":
