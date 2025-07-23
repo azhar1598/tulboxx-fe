@@ -407,7 +407,11 @@ export default function PipelinePage() {
           />
 
           {/* Kanban Board */}
-          <Kanban columns={columns} />
+          <Kanban
+            columns={columns}
+            getClients={getClients}
+            getStages={getStagesQuery}
+          />
         </Stack>
 
         <AddLeadModal
@@ -420,7 +424,13 @@ export default function PipelinePage() {
         <AddStageModal opened={addStageOpened} onClose={closeAddStage} />
 
         <DragOverlay>
-          {activeLead ? <LeadCard lead={activeLead} /> : null}
+          {activeLead ? (
+            <LeadCard
+              lead={activeLead}
+              getClients={getClients}
+              getStages={getStagesQuery}
+            />
+          ) : null}
         </DragOverlay>
       </div>
     </DndContext>

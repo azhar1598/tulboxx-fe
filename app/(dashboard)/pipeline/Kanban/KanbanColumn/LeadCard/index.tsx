@@ -8,8 +8,10 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { Menu } from "@mantine/core";
+import { AddLeadModal } from "../../../AddLeadModal";
+import { useDisclosure } from "@mantine/hooks";
 
-export const LeadCard = ({ lead }) => {
+export const LeadCard = ({ lead, getClients, getStages }) => {
   const {
     attributes,
     listeners,
@@ -25,6 +27,11 @@ export const LeadCard = ({ lead }) => {
     },
   });
 
+  const [addLeadOpened, { open: openAddLead, close: closeAddLead }] =
+    useDisclosure(false);
+  const [addStageOpened, { open: openAddStage, close: closeAddStage }] =
+    useDisclosure(false);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -32,66 +39,86 @@ export const LeadCard = ({ lead }) => {
   };
 
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      shadow="sm"
-      padding="md"
-      radius="md"
-      withBorder
-      mb="sm"
-    >
-      <Stack gap="xs">
-        <Group justify="space-between" align="flex-start">
-          <Group gap="xs" style={{ flex: 1 }}>
-            <ActionIcon variant="transparent" {...attributes} {...listeners}>
-              <IconGripVertical size={16} />
-            </ActionIcon>
-            <Box>
-              <Text size="sm" fw={500}>
-                {lead.name}
+    <>
+      <Card
+        ref={setNodeRef}
+        style={style}
+        shadow="sm"
+        padding="md"
+        radius="md"
+        withBorder
+        mb="sm"
+      >
+        <Stack gap="xs">
+          <Group justify="space-between" align="flex-start">
+            <Group gap="xs" style={{ flex: 1 }}>
+              <ActionIcon variant="transparent" {...attributes} {...listeners}>
+                <IconGripVertical size={16} />
+              </ActionIcon>
+              <Box>
+                <Text size="sm" fw={500}>
+                  {lead.name}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {lead.percentage}%
+                </Text>
+              </Box>
+            </Group>
+            <Menu withinPortal position="bottom-end">
+              <Menu.Target>
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  <IconDotsVertical size={14} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconEdit size={14} />}
+                  onClick={(e) => {
+                    console.log("edit lead");
+                    e.stopPropagation();
+                    openAddLead;
+                  }}
+                >
+                  Edit Lead
+                </Menu.Item>
+                <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                  Delete Lead
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+
+          <Stack gap={4}>
+            <Group justify="space-between">
+              <Text size="xs" c="dimmed">
+                Value
+              </Text>
+              <Text size="sm" fw={600}>
+                ${lead.value.toLocaleString()}
+              </Text>
+            </Group>
+            <Group justify="space-between">
+              <Text size="xs" c="dimmed">
+                Due Date
               </Text>
               <Text size="xs" c="dimmed">
-                {lead.percentage}%
+                {lead.date}
               </Text>
-            </Box>
-          </Group>
-          <Menu withinPortal position="bottom-end">
-            <Menu.Target>
-              <ActionIcon variant="subtle" size="sm">
-                <IconDotsVertical size={14} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item leftSection={<IconEdit size={14} />}>
-                Edit Lead
-              </Menu.Item>
-              <Menu.Item leftSection={<IconTrash size={14} />} color="red">
-                Delete Lead
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-
-        <Stack gap={4}>
-          <Group justify="space-between">
-            <Text size="xs" c="dimmed">
-              Value
-            </Text>
-            <Text size="sm" fw={600}>
-              ${lead.value.toLocaleString()}
-            </Text>
-          </Group>
-          <Group justify="space-between">
-            <Text size="xs" c="dimmed">
-              Due Date
-            </Text>
-            <Text size="xs" c="dimmed">
-              {lead.date}
-            </Text>
-          </Group>
+            </Group>
+          </Stack>
         </Stack>
-      </Stack>
-    </Card>
+      </Card>
+
+      <AddLeadModal
+        opened={addLeadOpened}
+        onClose={closeAddLead}
+        getClients={getClients}
+        getStages={getStages}
+      />
+    </>
   );
 };

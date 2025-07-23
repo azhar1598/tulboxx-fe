@@ -14,7 +14,7 @@ import { useSortable, SortableContext } from "@dnd-kit/sortable";
 import { LeadCard } from "./LeadCard";
 import { CSS } from "@dnd-kit/utilities";
 
-export const KanbanColumn = ({ column }) => {
+export const KanbanColumn = ({ column, getClients, getStages }) => {
   const {
     setNodeRef,
     attributes,
@@ -68,7 +68,11 @@ export const KanbanColumn = ({ column }) => {
             </Group>
             <Menu withinPortal position="bottom-end">
               <Menu.Target>
-                <ActionIcon variant="subtle" size="sm">
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
                   <IconDotsVertical size={14} />
                 </ActionIcon>
               </Menu.Target>
@@ -113,7 +117,12 @@ export const KanbanColumn = ({ column }) => {
               ) : (
                 <Stack gap="xs">
                   {column.leads.map((lead) => (
-                    <LeadCard key={lead.id} lead={lead} />
+                    <LeadCard
+                      key={lead.id}
+                      lead={lead}
+                      getClients={getClients}
+                      getStages={getStages}
+                    />
                   ))}
                 </Stack>
               )}

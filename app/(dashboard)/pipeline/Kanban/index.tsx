@@ -7,7 +7,7 @@ import {
 
 import { KanbanColumn } from "./KanbanColumn";
 
-export default function Kanban({ columns }) {
+export default function Kanban({ columns, getClients, getStages }) {
   return (
     <SortableContext
       items={Object.keys(columns)}
@@ -15,7 +15,12 @@ export default function Kanban({ columns }) {
     >
       <Group align="flex-start" gap="md" wrap="nowrap">
         {Object.values(columns).map((column: any) => (
-          <KanbanColumn key={column.id} column={column} />
+          <KanbanColumn
+            key={column.id}
+            column={column}
+            getClients={getClients}
+            getStages={getStages}
+          />
         ))}
       </Group>
     </SortableContext>
