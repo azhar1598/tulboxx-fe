@@ -70,3 +70,17 @@
   background-color: #c8102e !important;
   color: white !important;
 }
+
+.recordsPerPageSelector :global(.mantine-Select-input) {
+  background-color: #c8102e !important;
+  color: white !important;
+  border-color: #c8102e !important;
+}
+
+.recordsPerPageSelectorLabel {
+  color: #c8102e !important;
+}
+
+.default_button__13dB2 {
+  background-color: gray !important;
+}

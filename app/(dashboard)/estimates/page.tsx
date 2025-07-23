@@ -48,6 +48,7 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { UserContext } from "@/app/layout";
 import CustomCard from "@/components/common/Card";
 import { Mail, MapPinIcon } from "lucide-react";
+import StatisticsCards from "./StatisticsCards";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -66,6 +67,12 @@ function Estimates() {
     metaData: {
       totalRecords: 0,
     },
+  });
+
+  const { data: estimatesData, isLoading: estimatesLoading } = useQuery({
+    queryKey: ["estimates-stats"],
+    queryFn: () => callApi.get("/estimates?page=1&limit=1000"), // Fetch all for stats
+    select: (data) => data?.data?.data,
   });
 
   useEffect(() => {
@@ -194,8 +201,6 @@ function Estimates() {
     },
   ];
 
-  const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
-
   const queryFilters: any = {
     url: "/estimates",
     key: "get-estimates",
@@ -236,62 +241,6 @@ function Estimates() {
 
   const user = useContext(UserContext);
 
-  // const getEstimatesQuery = useQuery({
-  //   queryKey: ["get-estimates", search, page, projectId, user],
-  //   queryFn: () => {
-  //     const params = new URLSearchParams();
-  //     params.append("page", page.toString());
-  //     params.append("pageSize", pageSize.toString());
-  //     params.append("search", search);
-  //     if (projectId) {
-  //       params.append("filter.id", projectId);
-  //     }
-  //     const response = callApi.get("/estimates", { params });
-
-  //     return response;
-  //   },
-  //   select: (data) => {
-  //     return {
-  //       data: data?.data?.data,
-  //       metadata: data?.data?.metadata,
-  //     };
-  //   },
-  // });
-
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
-
-  // Generate QR data based on merchant info
-
-  // Function to download QR code as SVG
-  const downloadQRCode = () => {
-    const svg = document.getElementById("merchant-qr-code");
-    const svgData = new XMLSerializer()?.serializeToString(svg);
-    const svgBlob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    // downloadLink.download = `store-${storeId}-qr.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    URL.revokeObjectURL(svgUrl);
-  };
-
-  // const totalEstimates = getEstimatesQuery?.data?.metadata?.totalRecords || 0;
-  // Example breakdowns (replace with real data if available)
-  const draftCount = 8;
-  const sentCount = 2;
-  const approvedCount = 1;
-
-  const totalPipelineValue = 92658; // Example value, replace with real data
-  const approvedValue = 3500; // Example value, replace with real data
-  const winRate = 33; // Example value, replace with real data
-
   return (
     <>
       <div className="mb-4">
@@ -308,18 +257,11 @@ function Estimates() {
           }
         />
       </div>
+      <StatisticsCards estimates={estimatesData || []} />
       <div className="flex gap-6 mb-6">
         {/* Total Estimates Card */}
         {/* <CustomCard
-          title="Total Estimates"
-          Icon={<IconBook size={22} />}
-          value={totalEstimates}
-          description={`${draftCount} draft, ${sentCount} sent, ${approvedCount} approved`}
-        />
-        <CustomCard
-          title="Total Pipeline Value"
-          Icon={<IconCurrencyDollar size={22} />}
-          value={totalPipelineValue}
+// ... existing code ...
           description={`${approvedValue} approved (${winRate}% win rate)`}
         /> */}
       </div>
@@ -335,32 +277,13 @@ function Estimates() {
           searchable={true}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
-        {/* <CustomTable
-          // getStoresQuery?.tableData ||
-          records={getEstimatesQuery?.data?.data || []}
-          columns={columns}
-          totalRecords={getEstimatesQuery?.data?.metadata?.totalRecords || 0}
-          currentPage={getEstimatesQuery?.data?.metadata?.currentPage || 0}
-          pageSize={getEstimatesQuery?.data?.metadata?.recordsPerPage || 0}
-          onPageChange={handlePageChange}
-          isLoading={getEstimatesQuery.isLoading}
-        /> */}
 
         <CustomTable
-          // getStoresQuery?.tableData ||
           url={"/estimates"}
           queryKey={["get-estimates"]}
-          // records={getClientsQuery?.data?.data || []}
           search={search}
-          // filters={filters}
-          // operators={operators}
           columns={columns}
           pagination={true}
-          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
-          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
-          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
-          // onPageChange={handlePageChange}
-          // isLoading={getClientsQuery.isLoading}
           sortable
           defaultSortedColumn={"name"}
           defaultSortedColumnDirection={"asc"}

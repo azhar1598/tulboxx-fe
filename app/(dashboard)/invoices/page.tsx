@@ -4,7 +4,6 @@ import { FilterLayout } from "@/components/common/FilterLayout";
 import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
 import callApi from "@/services/apiService";
-import QRCode from "react-qr-code";
 
 import {
   ActionIcon,
@@ -33,11 +32,10 @@ import React, { useEffect, useState } from "react";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus } from "@/lib/constants";
-import { useTableQuery } from "@/lib/hooks/useTableQuery";
 
-import { invoiceData } from "@/apiData";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useRouter } from "next/navigation";
+import StatisticsCards from "./StatisticsCards";
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -68,6 +66,12 @@ function Estimates() {
     // Navigate to the add invoice page with project ID
     // window.location.href = `/invoices/add/${project.id}`;
   };
+
+  const { data: invoicesData, isLoading: invoicesLoading } = useQuery({
+    queryKey: ["invoices-stats"],
+    queryFn: () => callApi.get("/invoices?page=1&limit=1000"), // Fetch all for stats
+    select: (data) => data?.data?.data,
+  });
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -146,7 +150,7 @@ function Estimates() {
     },
     {
       accessor: "actions",
-      title: <Box mr={6}>Row actions</Box>,
+      title: <Box mr={6}>Actions</Box>,
       textAlign: "left",
       render: (record: any) => (
         <Group>
@@ -158,22 +162,6 @@ function Estimates() {
           >
             View
           </Button>
-          {/* <Button
-            style={{ fontSize: "12px" }}
-            variant="table-btn-danger"
-            // onClick={() => router.push(`/patients/customize/${record.id}`)}
-            leftSection={<IconTrash size={16} />}
-          >
-            Delete
-          </Button> */}
-          {/* <Button
-        style={{ fontSize: "12px" }}
-        variant="table"
-        onClick={() => router.push(`/patients/customize/${record.id}`)}
-        leftSection={<IconQrcode size={16} />}
-      >
-        App Settings
-      </Button> */}
         </Group>
       ),
     },
@@ -182,15 +170,6 @@ function Estimates() {
   const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
 
   const filters = [
-    // {
-    //   id: "type",
-    //   label: "Choose Project",
-    //   options: [
-    //     { value: "1", label: "All" },
-    //     { value: "2", label: "Type 1" },
-    //   ],
-    //   // onChange: (value) => handleTypeChange(value),
-    // },
     {
       id: "invoice_status",
       label: "Invoice Status",
@@ -203,44 +182,13 @@ function Estimates() {
       ],
       onChange: (value) => handleTypeChange(value),
     },
-    // ... more filters
   ];
 
   const handleTypeChange = (value) => {
-    console.log("value", value);
-    // filters.status = value;
     setStatus(value);
   };
   const handleSearch = (value) => {
     setSearch(value);
-  };
-
-  const handleRecordsPerPage = () => {};
-
-  // const getInvoicesQuery = useQuery({
-  //   queryKey: ["get-invoices", search, page, status],
-  //   queryFn: () => {
-  //     const params = new URLSearchParams();
-  //     params.append("page", page.toString());
-  //     params.append("pageSize", pageSize.toString());
-  //     params.append("search", search);
-  //     params.append("status", status);
-  //     // params.append("status", filters.);
-  //     const response = callApi.get("/invoices", { params });
-
-  //     return response;
-  //   },
-  //   select: (data) => {
-  //     return {
-  //       data: data?.data?.data,
-  //       metadata: data?.data?.metadata,
-  //     };
-  //   },
-  //   retry: 2,
-  // });
-
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
   };
 
   const queryFilters: any = {
@@ -253,8 +201,6 @@ function Estimates() {
   };
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
-
-  console.log("getEstimatesQuery", getEstimatesQuery);
 
   return (
     <>
@@ -274,7 +220,8 @@ function Estimates() {
         />
       </div>
 
-      {/* Add the Project Selection Modal */}
+      <StatisticsCards invoices={invoicesData || []} />
+
       <Modal
         opened={projectModalOpened}
         onClose={closeProjectModal}
@@ -290,7 +237,6 @@ function Estimates() {
             label="Search and select project"
             placeholder="Type to search projects..."
             data={getEstimatesQuery}
-            // searchable
             onChange={(value) => {
               const project = getEstimatesQuery?.find((p) => p.value === value);
 
@@ -306,7 +252,6 @@ function Estimates() {
             leftSection={<IconPlus size={16} />}
             onClick={() => {
               if (selectedProject) {
-                // window.location.href = `/invoices/add/${selectedProject.value}`;
                 router.push(`/invoices/add/${selectedProject.value}`);
                 closeProjectModal();
               }
@@ -333,22 +278,13 @@ function Estimates() {
           filters={filters}
           searchable={false}
           onSearch={handleSearch}
-          // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          // getStoresQuery?.tableData ||
           url={"/invoices"}
-          // records={getClientsQuery?.data?.data || []}
           search={search}
-          // filters={filters}
-          // operators={operators}
+          filters={status === "all" ? {} : { status: [status] }}
           columns={columns}
           pagination={true}
-          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
-          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
-          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
-          // onPageChange={handlePageChange}
-          // isLoading={getClientsQuery.isLoading}
           sortable
           defaultSortedColumn={"name"}
           defaultSortedColumnDirection={"asc"}

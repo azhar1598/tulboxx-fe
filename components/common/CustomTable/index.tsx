@@ -4,6 +4,7 @@ import {
   DataTableSortStatus,
   DataTableColumn,
   DataTableProps as MantineDataTableProps,
+  reorderRecords,
 } from "mantine-datatable";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { useDebouncedState } from "@mantine/hooks";
@@ -353,6 +354,8 @@ const CustomDataTable = <T extends BaseRecord>({
       header: classes.header,
       footer: classes.footer,
       pagination: classes.pagination,
+      recordsPerPageSelector: classes.recordsPerPageSelector,
+      recordsPerPageSelectorLabel: classes.recordsPerPageSelectorLabel,
     },
     defaultColumnProps: {
       textAlign: "left",
