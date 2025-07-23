@@ -56,25 +56,25 @@ function StatisticsCards({ invoices }) {
       title: "Total Revenue",
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: IconCurrencyDollar,
-      color: "teal.6",
+      color: "dark.8",
     },
     {
       title: "Total Invoices",
       value: stats.totalInvoices,
       icon: IconFileInvoice,
-      color: "blue.6",
+      color: "dark.8",
     },
     {
       title: "Paid Invoices",
       value: stats.paidInvoices,
       icon: IconCheck,
-      color: "green.6",
+      color: "dark.8",
     },
     {
       title: "Overdue",
       value: stats.overdue,
       icon: IconAlertCircle,
-      color: "red.6",
+      color: "dark.8",
     },
   ];
 

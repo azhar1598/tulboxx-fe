@@ -77,7 +77,7 @@ function StatisticsCards({ estimates }) {
       value: stats.totalEstimates,
       subtitle: `${stats.draft} draft, ${stats.sent} sent, ${stats.approved} approved`,
       icon: IconFileText,
-      color: "blue.6",
+      color: "dark.8",
     },
     {
       title: "Total Pipeline Value",
@@ -90,7 +90,7 @@ function StatisticsCards({ estimates }) {
         maximumFractionDigits: 2,
       })} approved (${stats.winRate.toFixed(0)}% win rate)`,
       icon: IconCurrencyDollar,
-      color: "teal.6",
+      color: "dark.8",
     },
   ];
 

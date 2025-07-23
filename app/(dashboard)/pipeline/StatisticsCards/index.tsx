@@ -82,11 +82,11 @@ function StatisticsCards({ columns, getLeads, stages }) {
             <Text size="sm" c="dimmed" fw={600} tt="uppercase">
               Pipeline Value
             </Text>
-            <Text size="2rem" fw={700} lh={1} c="teal.8">
+            <Text size="2rem" fw={700} lh={1} c="dark.8">
               ${totalPipelineValue?.toLocaleString()}
             </Text>
           </Stack>
-          <ThemeIcon size="lg" radius="md" color="teal.6" variant="light">
+          <ThemeIcon size="lg" radius="md" color="slate.6" variant="light">
             <IconCurrencyDollar size={20} />
           </ThemeIcon>
         </Group>
@@ -104,11 +104,11 @@ function StatisticsCards({ columns, getLeads, stages }) {
             <Text size="sm" c="dimmed" fw={600} tt="uppercase">
               Weighted Value
             </Text>
-            <Text size="2rem" fw={700} lh={1} c="indigo.8">
+            <Text size="2rem" fw={700} lh={1} c="dark.8">
               ${statistics.weightedValue.toLocaleString()}
             </Text>
           </Stack>
-          <ThemeIcon size="lg" radius="md" color="indigo.6" variant="light">
+          <ThemeIcon size="lg" radius="md" color="slate.6" variant="light">
             <IconTarget size={20} />
           </ThemeIcon>
         </Group>

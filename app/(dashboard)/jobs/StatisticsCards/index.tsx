@@ -109,7 +109,7 @@ function StatisticsCards({ jobs }) {
           <Text size="md" c="dimmed" fw={600}>
             Total Pipeline Value
           </Text>
-          <ThemeIcon size="lg" radius="md" color="teal.6" variant="light">
+          <ThemeIcon size="lg" radius="md" color="slate.6" variant="light">
             <IconCurrencyDollar size={20} />
           </ThemeIcon>
         </Group>
