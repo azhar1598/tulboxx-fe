@@ -13,7 +13,12 @@ export default function Kanban({ columns, getClients, getStages }) {
       items={Object.keys(columns)}
       strategy={horizontalListSortingStrategy}
     >
-      <Group align="flex-start" gap="md" wrap="nowrap">
+      <Group
+        align="flex-start"
+        gap="md"
+        wrap="nowrap"
+        style={{ minWidth: "100%" }}
+      >
         {Object.values(columns).map((column: any) => (
           <KanbanColumn
             key={column.id}

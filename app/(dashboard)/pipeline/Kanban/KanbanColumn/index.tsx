@@ -11,8 +11,9 @@ import {
 } from "@mantine/core";
 import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
 import { useSortable, SortableContext } from "@dnd-kit/sortable";
-import { LeadCard } from "./LeadCard";
+
 import { CSS } from "@dnd-kit/utilities";
+import LeadCard from "./LeadCard";
 
 export const KanbanColumn = ({ column, getClients, getStages }) => {
   const {
@@ -47,7 +48,7 @@ export const KanbanColumn = ({ column, getClients, getStages }) => {
           minWidth: rem(280),
           maxWidth: rem(320),
           flex: "0 0 auto",
-          backgroundColor: "#fafafa",
+          // backgroundColor: "red",
           height: "fit-content",
         }}
       >

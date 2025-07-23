@@ -19,7 +19,7 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-export const AddStageModal = ({ opened, onClose }) => {
+const AddStageModal = ({ opened, onClose }) => {
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
 
@@ -37,7 +37,8 @@ export const AddStageModal = ({ opened, onClose }) => {
     mutationFn: (values: any) => callApi.post("/pipeline/stages", values),
     onSuccess: () => {
       notification.success("Stage added successfully");
-      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] });
+      queryClient.invalidateQueries({ queryKey: ["get-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["get-stages"] });
       onClose();
       form.reset();
     },
@@ -107,3 +108,5 @@ export const AddStageModal = ({ opened, onClose }) => {
     </Modal>
   );
 };
+
+export default AddStageModal;

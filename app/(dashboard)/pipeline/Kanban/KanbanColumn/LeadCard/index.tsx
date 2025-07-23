@@ -8,10 +8,11 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { Menu } from "@mantine/core";
-import { AddLeadModal } from "../../../AddLeadModal";
-import { useDisclosure } from "@mantine/hooks";
 
-export const LeadCard = ({ lead, getClients, getStages }) => {
+import { useDisclosure } from "@mantine/hooks";
+import AddLeadModal from "../../../AddLeadModal";
+
+const LeadCard = ({ lead, getClients, getStages }) => {
   const {
     attributes,
     listeners,
@@ -46,6 +47,7 @@ export const LeadCard = ({ lead, getClients, getStages }) => {
         shadow="sm"
         padding="md"
         radius="md"
+        bg="gray.0"
         withBorder
         mb="sm"
       >
@@ -59,9 +61,9 @@ export const LeadCard = ({ lead, getClients, getStages }) => {
                 <Text size="sm" fw={500}>
                   {lead.name}
                 </Text>
-                <Text size="xs" c="dimmed">
+                {/* <Text size="xs" c="dimmed">
                   {lead.percentage}%
-                </Text>
+                </Text> */}
               </Box>
             </Group>
             <Menu withinPortal position="bottom-end">
@@ -122,3 +124,5 @@ export const LeadCard = ({ lead, getClients, getStages }) => {
     </>
   );
 };
+
+export default LeadCard;

@@ -63,15 +63,16 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { AddLeadModal } from "./AddLeadModal";
-import { AddStageModal } from "./AddStageModal";
 import SearchAndFilter from "./SearchAndFilter";
 import StatisticsCards from "./StatisticsCards";
 import Kanban from "./Kanban";
-import { LeadCard } from "./Kanban/KanbanColumn/LeadCard";
+
 import { useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useEffect } from "react";
+import AddStageModal from "./AddStageModal";
+import AddLeadModal from "./AddLeadModal";
+import LeadCard from "./Kanban/KanbanColumn/LeadCard";
 
 interface Lead {
   id: string;
@@ -407,11 +408,30 @@ export default function PipelinePage() {
           />
 
           {/* Kanban Board */}
-          <Kanban
-            columns={columns}
-            getClients={getClients}
-            getStages={getStagesQuery}
-          />
+          <ScrollArea
+            className="custom-scrollbar"
+            style={{ transform: "rotateX(180deg)" }}
+          >
+            <Paper
+              withBorder
+              p="md"
+              radius="md"
+              shadow="md"
+              style={{
+                transform: "rotateX(180deg)",
+                backgroundColor: "white",
+                padding: "30px",
+                borderRadius: "10px",
+                height: "100%",
+              }}
+            >
+              <Kanban
+                columns={columns}
+                getClients={getClients}
+                getStages={getStagesQuery}
+              />
+            </Paper>
+          </ScrollArea>
         </Stack>
 
         <AddLeadModal

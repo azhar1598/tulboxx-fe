@@ -23,7 +23,7 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
-export const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
+const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
 
@@ -43,7 +43,8 @@ export const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
     mutationFn: (values: any) => callApi.post("/pipeline/leads", values),
     onSuccess: () => {
       notification.success("Lead added successfully");
-      queryClient.invalidateQueries({ queryKey: ["pipeline-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["get-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["get-stages"] });
       onClose();
       form.reset();
     },
@@ -96,9 +97,7 @@ export const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
           />
 
           <Group justify="flex-end" mt="md">
-            <Button variant="default" onClick={onClose}>
-              Cancel
-            </Button>
+            <Button onClick={onClose}>Cancel</Button>
             <Button
               type="submit"
               loading={addLeadMutation.isPending}
@@ -112,3 +111,5 @@ export const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
     </Modal>
   );
 };
+
+export default AddLeadModal;
