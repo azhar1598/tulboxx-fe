@@ -1,19 +1,34 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./calendar.module.css";
-import UnscheduledJobs from "./UnScheduledJobs";
 import { PageHeader } from "@/components/common/PageHeader";
-import { Button, Flex, Group } from "@mantine/core";
-import Link from "next/link";
+import { Button, Group } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { ScheduleJobModal } from "./ScheduleJobModal";
 import { useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import CalendarView from "./CalendarView";
+import ScheduledJobs from "./ScheduledJobs";
+
+interface Job {
+  id: string;
+  name: string;
+  type: string;
+  amount: number;
+  date: string;
+  hours: number;
+  notes: string;
+  client: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
 
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const [openScheduleJobModal, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
@@ -30,12 +45,15 @@ function Calendar() {
       return response.data;
     },
     select(data) {
-      console.log("data", data);
       return data?.data;
     },
   });
 
-  console.log("getJobsQuery", getJobsQuery?.data);
+  const handleJobSelect = (job: Job) => {
+    const jobDate = new Date(job.date);
+    setSelectedDate(jobDate);
+    setSelectedJobId(job.id);
+  };
 
   return (
     <>
@@ -55,9 +73,10 @@ function Calendar() {
         />
       </div>
       <div className={styles["calendar-container"]}>
-        <UnscheduledJobs />
+        <ScheduledJobs onJobSelect={handleJobSelect} />
         <CalendarView
           selectedDate={selectedDate}
+          selectedJobId={selectedJobId}
           getJobs={getJobsQuery?.data || []}
         />
         <ScheduleJobModal

@@ -21,6 +21,7 @@ interface Job {
 interface CalendarViewProps {
   getJobs?: Job[];
   selectedDate?: Date | null;
+  selectedJobId?: string | null;
 }
 
 interface DayInfo {
@@ -32,10 +33,20 @@ interface DayInfo {
 const CalendarView: React.FC<CalendarViewProps> = ({
   getJobs = [],
   selectedDate,
+  selectedJobId,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 23)); // July 23, 2025
-  const [currentView, setCurrentView] = useState("month"); // Add this state
+  const [currentDate, setCurrentDate] = useState(
+    selectedDate || new Date(2025, 6, 23)
+  );
+  const [currentView, setCurrentView] = useState("month");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+  // Update currentDate when selectedDate changes
+  React.useEffect(() => {
+    if (selectedDate) {
+      setCurrentDate(selectedDate);
+    }
+  }, [selectedDate]);
 
   const monthNames = [
     "January",
@@ -158,7 +169,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       withBorder
       shadow="sm"
       radius="sm"
-      className="mb-2 p-2"
+      className={`mb-2 p-2 transition-all ${
+        selectedJobId === job.id
+          ? "border-2 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"
+          : ""
+      }`}
       style={{ backgroundColor: "#f8f9fa" }}
       onClick={(e) => {
         e.stopPropagation();
@@ -180,106 +195,25 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     </Card>
   );
 
-  // Add view rendering functions
-  const renderDayView = () => {
-    return (
-      <div className="p-6">
-        <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">
-            {currentDate.toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </h3>
-          <div className="grid grid-cols-1 gap-4">
-            {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="flex items-center border-t py-2">
-                <span className="w-20 text-sm text-gray-500">
-                  {hour.toString().padStart(2, "0")}:00
-                </span>
-                <div className="flex-1 h-12 border-l"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderWeekView = () => {
-    const startOfWeek = new Date(currentDate);
-    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-
-    const weekDays = Array.from({ length: 7 }).map((_, index) => {
-      const day = new Date(startOfWeek);
-      day.setDate(startOfWeek.getDate() + index);
-      return day;
-    });
-
-    return (
-      <div className="p-6">
-        {/* Week header showing days and dates */}
-        <div className="grid grid-cols-7 border-b">
-          {weekDays.map((day, index) => (
-            <div
-              key={index}
-              className={`text-center p-4 ${
-                day.getDate() === currentDate.getDate()
-                  ? "border-t-2 border-blue-500"
-                  : ""
-              }`}
-            >
-              <div className="text-base font-semibold text-gray-900">
-                {daysOfWeek[day.getDay()]}
-              </div>
-              <div
-                className={`text-2xl mt-1 ${
-                  day.getDate() === currentDate.getDate()
-                    ? "text-blue-500"
-                    : "text-gray-500"
-                }`}
-              >
-                {day.getDate()}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Week content area */}
-        <div className="grid grid-cols-7 border rounded-lg mt-4">
-          {weekDays.map((day, index) => {
-            const dayJobs = getJobsForDate(day);
-            return (
-              <div
-                key={index}
-                className={`min-h-[500px] border-r last:border-r-0 p-2 overflow-y-auto ${
-                  day.getDate() === currentDate.getDate() ? "bg-blue-50" : ""
-                }`}
-              >
-                {dayJobs.map((job) => (
-                  <JobCard key={job.id} job={job} />
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
+  // Get the days for the current month
   const days = getDaysInMonth(currentDate);
-  const currentMonth = monthNames[currentDate.getMonth()];
-  const currentYear = currentDate.getFullYear();
+
+  // Get the week days for week view
+  const startOfWeek = new Date(currentDate);
+  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+  const weekDays = Array.from({ length: 7 }).map((_, index) => {
+    const day = new Date(startOfWeek);
+    day.setDate(startOfWeek.getDate() + index);
+    return day;
+  });
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-white">
+    <div className="w-full bg-white">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         {/* View Toggle Buttons */}
         <div className="flex items-center space-x-1">
-          <button
+          {/* <button
             onClick={() => setCurrentView("day")}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               currentView === "day"
@@ -288,7 +222,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             }`}
           >
             Day
-          </button>
+          </button> */}
           <button
             onClick={() => setCurrentView("week")}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
@@ -324,7 +258,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
           <h2 className="text-xl font-semibold text-gray-900">
             {currentView === "month"
-              ? `${currentMonth} ${currentYear}`
+              ? `${
+                  monthNames[currentDate.getMonth()]
+                } ${currentDate.getFullYear()}`
               : currentView === "week"
               ? `${new Date(
                   currentDate.setDate(
@@ -359,11 +295,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Render the appropriate view based on currentView state */}
-      {currentView === "day" && renderDayView()}
-      {currentView === "week" && renderWeekView()}
       {currentView === "month" && (
-        // Calendar Grid
         <div className="p-6">
           {/* Days of Week Header */}
           <div className="grid grid-cols-7 mb-2">
@@ -390,8 +322,17 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 <div
                   key={index}
                   className={`
-                    h-40 bg-white border border-gray-200 p-2 hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
-                    ${dayInfo.isToday ? "bg-blue-50 border-blue-200" : ""}
+                    h-40 bg-white border hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
+                    ${
+                      dayInfo.isToday
+                        ? "bg-blue-50 border-blue-200"
+                        : "border-gray-200"
+                    }
+                    ${
+                      dayInfo.isCurrentMonth && dayJobs.length > 0
+                        ? "border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                        : ""
+                    }
                   `}
                 >
                   <div className="flex justify-between items-center mb-2">
@@ -421,6 +362,66 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       ))}
                     </>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {currentView === "week" && (
+        <div className="p-6">
+          {/* Week header showing days and dates */}
+          <div className="grid grid-cols-7 border-b">
+            {weekDays.map((day, index) => (
+              <div
+                key={index}
+                className={`text-center p-4 ${
+                  day.getDate() === currentDate.getDate()
+                    ? "border-t-2 border-blue-500"
+                    : ""
+                }`}
+              >
+                <div className="text-base font-semibold text-gray-900">
+                  {daysOfWeek[day.getDay()]}
+                </div>
+                <div
+                  className={`text-2xl mt-1 ${
+                    day.getDate() === currentDate.getDate()
+                      ? "text-blue-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {day.getDate()}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Week content area */}
+          <div className="grid grid-cols-7 border rounded-lg mt-4">
+            {weekDays.map((day, index) => {
+              const dayJobs = getJobsForDate(day);
+              return (
+                <div
+                  key={index}
+                  className={`
+                    min-h-[500px] border-r last:border-r-0 p-2 overflow-y-auto
+                    ${
+                      day.getDate() === currentDate.getDate()
+                        ? "bg-blue-50"
+                        : ""
+                    }
+                    ${
+                      dayJobs.length > 0
+                        ? "border-t-2 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                        : ""
+                    }
+                  `}
+                >
+                  {dayJobs.map((job) => (
+                    <JobCard key={job.id} job={job} />
+                  ))}
                 </div>
               );
             })}

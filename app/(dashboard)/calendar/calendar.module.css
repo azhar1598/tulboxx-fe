@@ -1,13 +1,13 @@
 .calendar-container {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 280px 2fr;
+  gap: 1rem;
 }
 
 .unscheduled-jobs {
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 1rem;
   background-color: white;
   height: fit-content;
 }
@@ -16,5 +16,4 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   background-color: white;
-  padding: 1.5rem;
 }
