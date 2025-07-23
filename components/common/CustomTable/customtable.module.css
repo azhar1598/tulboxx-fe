@@ -1,10 +1,9 @@
 .table {
+  table-layout: fixed; /* This helps maintain consistent column widths */
 }
 
 .th {
-  background-color: red !important;
-  margin-left: 500px;
-  padding: 500px !important;
+  /* Remove all the problematic styles */
 }
 
 .header {
@@ -13,26 +12,56 @@
 .footer {
   font-style: italic;
   color: gray;
-
-  /* th {
-    border-top: 1px solid var(--mantine-color-orange-6);
-  } */
 }
 
 .pagination {
   background: transparent;
   color: gray;
   border-top: 1px solid rgba(128, 128, 128, 0.452);
+}
 
-  /* button {
-    background: transparent;
-    color: var(--mantine-color-red-6);
-    border-color: var(--mantine-color-red-6);
+/* Only active page button gets the dark color */
+.pagination button[data-active="true"] {
+  background: #182a4d !important;
+  border-color: #182a4d !important;
+  color: #ffffff !important;
+}
 
-    &[data-active="true"] {
-      color: white;
-      border: transparent;
-      background: var(--mantine-color-red-6);
-    }
-  } */
+/* Regular pagination buttons keep default styling */
+.pagination button:not([data-active="true"]) {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.pagination button:not([data-active="true"]):hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.pagination button:disabled {
+  background: #f8f9fa !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.paginationInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recordsInfo {
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.previouslySharedBadge {
+  background: rgba(98, 113, 221, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(98, 113, 221, 0.2);
 }

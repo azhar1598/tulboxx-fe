@@ -85,6 +85,7 @@ function Clients() {
       title: "Name",
       textAlign: "left",
       sortable: true,
+      width: "20%",
     },
 
     {
@@ -92,6 +93,7 @@ function Clients() {
       title: "Email",
       textAlign: "left",
       sortable: true,
+      width: "30%",
       render: ({ email, phone }: any) => (
         <Text size="14px" className="flex items-center gap-3">
           <IconMail size={16} />
@@ -105,6 +107,7 @@ function Clients() {
       title: "Phone",
       textAlign: "left",
       sortable: true,
+      width: "20%",
       render: ({ phone }: any) => (
         <Text size="14px" className="flex items-center gap-2">
           <IconPhone size={16} />
@@ -118,6 +121,7 @@ function Clients() {
       title: "Location",
       textAlign: "left",
       sortable: true,
+      width: "20%",
       render: ({ city, state, zip }: any) => (
         <Text size="14px" className="flex items-center gap-2">
           <IconMapPin size={16} />
@@ -141,6 +145,7 @@ function Clients() {
       accessor: "actions",
       title: <Box mr={6}>Row actions</Box>,
       textAlign: "left",
+      width: "20%",
       render: (record) => (
         <Link href={`/clients/edit/${record.id}`}>
           <Button

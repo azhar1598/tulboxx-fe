@@ -3,7 +3,7 @@ import {
   DataTable,
   DataTableSortStatus,
   DataTableColumn,
-  DataTableProps as MantineDatatableProps,
+  DataTableProps as MantineDataTableProps,
 } from "mantine-datatable";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { useDebouncedState } from "@mantine/hooks";
@@ -123,6 +123,11 @@ const CustomDataTable = <T extends BaseRecord>({
   const [data, setData] = useState<T[]>([]);
 
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(recordsPerPage);
+
+  useEffect(() => {
+    setLimit(recordsPerPage);
+  }, [recordsPerPage]);
 
   const notification = usePageNotifications();
 
@@ -156,7 +161,7 @@ const CustomDataTable = <T extends BaseRecord>({
       debouncedSearch,
       filters,
       operators,
-      recordsPerPage,
+      limit,
     ],
     [
       _queryKey,
@@ -165,7 +170,7 @@ const CustomDataTable = <T extends BaseRecord>({
       getSortByParam,
       operators,
       page,
-      recordsPerPage,
+      limit,
       sortStatus,
     ]
   );
@@ -233,7 +238,7 @@ const CustomDataTable = <T extends BaseRecord>({
       const params = new URLSearchParams();
 
       params.append("page", page.toString());
-      params.append("pageSize", recordsPerPage.toString());
+      params.append("limit", limit.toString());
       params.append("search", search);
       params.append(
         "sortBy",
@@ -270,7 +275,7 @@ const CustomDataTable = <T extends BaseRecord>({
     if (isError) {
       notification.error(`something went wrong`);
     }
-  }, [isError, recordsPerPage, debouncedSearch]);
+  }, [isError, limit, debouncedSearch]);
 
   console.log("tablePageInfo", tableData, tablePageInfo);
 
@@ -296,46 +301,6 @@ const CustomDataTable = <T extends BaseRecord>({
           setPage(1);
           setSortStatus(status);
         },
-      }
-    : {};
-
-  const paginationProps = pagination
-    ? {
-        totalRecords: tablePageInfo?.totalRecords ?? 0,
-        recordsPerPage: recordsPerPage,
-        page: page,
-        onPageChange: (pageNo: number) => {
-          if (pageNo > 0) setPage(pageNo);
-        },
-        paginationSize: "lg" as const,
-        paginationText: ({
-          from,
-          to,
-          totalRecords,
-        }: {
-          from: number;
-          to: number;
-          totalRecords: number;
-        }) => (
-          <Stack gap={10}>
-            {showPreviousBorder && (
-              <Group gap={10} align="center" p={"0 10px"}>
-                <Box
-                  w={8}
-                  h={20}
-                  style={{ borderRadius: 2 }}
-                  bg={"#6271DD"}
-                ></Box>
-                <Text size="sm" c={"#182A4D"}>
-                  Previously Shared
-                </Text>
-              </Group>
-            )}
-            <Text size="sm" c={"#8898a9"} p={"0 10px"}>
-              Showing {from} to {to} of {totalRecords} records
-            </Text>
-          </Stack>
-        ),
       }
     : {};
 
@@ -367,65 +332,101 @@ const CustomDataTable = <T extends BaseRecord>({
 
   console.log("data", data);
 
+  const tableProps: MantineDataTableProps<T> = {
+    ...sortableProps,
+    ...selectableProps,
+    records: data,
+    fetching: isLoading,
+    minHeight: minHeight,
+    striped: true,
+    highlightOnHover: true,
+    rowClassName: rowClassName,
+    withTableBorder: true,
+    columns: tableColumns,
+    onRowClick: onRowClick,
+    height: height ?? "100% !important",
+    classNames: {
+      table: classes.table,
+      header: classes.header,
+      footer: classes.footer,
+      pagination: classes.pagination,
+    },
+    defaultColumnProps: {
+      textAlign: "left",
+      noWrap: false,
+      titleStyle: () => ({
+        color: "#8898a9",
+        fontSize: "13px",
+        paddingTop: "20px",
+        paddingBottom: "20px",
+      }),
+    },
+    styles: {
+      header: {
+        backgroundColor: "#f8f9fa",
+        color: "#495057",
+        padding: "16px 20px",
+        fontSize: "14px",
+        fontWeight: 600,
+        borderBottom: "2px solid #dee2e6",
+      },
+      footer: {
+        backgroundColor: "#ffffff",
+        borderTop: "1px solid #e9ecef",
+        borderRadius: "0 0 8px 8px",
+      },
+      table: {
+        tableLayout: "fixed",
+        width: "100%",
+        borderRadius: "8px",
+        overflow: "hidden",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      },
+    },
+  };
+
+  if (pagination) {
+    tableProps.totalRecords = tablePageInfo?.totalRecords ?? 0;
+    tableProps.recordsPerPage = limit;
+    tableProps.page = page;
+    tableProps.onPageChange = (pageNo: number) => {
+      if (pageNo > 0) setPage(pageNo);
+    };
+    tableProps.paginationSize = "md";
+    tableProps.paginationText = ({ from, to, totalRecords }) => (
+      <div className={classes.paginationInfo}>
+        {showPreviousBorder && (
+          <Group gap={8} className={classes.previouslySharedBadge}>
+            <Box w={6} h={16} style={{ borderRadius: 2 }} bg={"#6271DD"} />
+            <Text size="sm" c={"#182A4D"} fw={500}>
+              Previously Shared
+            </Text>
+          </Group>
+        )}
+        <Group gap={12} align="center">
+          <div className={classes.recordsInfo}>
+            <Text size="sm" c={"#495057"} fw={500}>
+              {from}-{to} of {totalRecords.toLocaleString()} records
+            </Text>
+          </div>
+          {totalRecords > limit && (
+            <Text size="xs" c={"#6c757d"}>
+              Page {page} of {Math.ceil(totalRecords / limit)}
+            </Text>
+          )}
+        </Group>
+      </div>
+    );
+    tableProps.recordsPerPageOptions = [10, 20, 50, 100];
+    tableProps.onRecordsPerPageChange = (newLimit: number) => {
+      setPage(1);
+      setLimit(newLimit);
+    };
+  }
+
   return (
     <Box className="data-table">
-      {" "}
-      <DataTable
-        records={data}
-        fetching={isLoading}
-        minHeight={minHeight}
-        striped
-        highlightOnHover
-        rowClassName={rowClassName}
-        withTableBorder
-        columns={tableColumns}
-        onRowClick={onRowClick}
-        height={height ?? "100% !important"}
-        // sortIcons={{
-        //   sorted: <Image src={asc.src} alt="sort asc" width={7} height={9} />,
-        //   unsorted: <Image src={dsc.src} alt="sort desc" width={7} height={9} />,
-        // }}
-        classNames={{
-          table: classes.table,
-          header: classes.header,
-          footer: classes.footer,
-          pagination: classes.pagination,
-        }}
-        {...sortableProps}
-        {...paginationProps}
-        {...selectableProps}
-        // noRecordsText={"defaultRecordText"}
-        // selectionColumnStyle={{
-        //   backgroundColor: "#ffffff",
-        //   minWidth: "5%",
-        // }}
-        defaultColumnProps={{
-          textAlign: "left",
-          noWrap: false,
-          titleStyle: (theme) => ({
-            color: "#8898a9",
-            fontSize: "13px",
-            paddingTop: "20px",
-            paddingBottom: "20px",
-          }),
-        }}
-        // rowStyle={({ state: any }) =>
-        //   state !== "NH" ? { padding: "20px" } : undefined
-        // }
-        styles={{
-          header: {
-            backgroundColor: "#f0f3f8",
-            color: "white",
-            padding: "20px",
-            height: "30px",
-          },
-          footer: {
-            backgroundColor: "#f0f3f8",
-            borderTop: "1px solid #e9ecef",
-            borderRadius: "30px",
-          },
-        }}
-      />
+      <DataTable {...tableProps} />
     </Box>
   );
 };

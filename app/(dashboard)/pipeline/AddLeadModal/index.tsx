@@ -1,0 +1,114 @@
+import {
+  Button,
+  Group,
+  Modal,
+  Select,
+  Stack,
+  Textarea,
+  NumberInput,
+} from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import callApi from "@/services/apiService";
+import { IconSearch } from "@tabler/icons-react";
+import { DatePickerInput } from "@mantine/dates";
+
+const formSchema = z.object({
+  customerId: z.string().min(1, "Client is required"),
+  stageId: z.string().min(1, "Stage is required"),
+  estimatedValue: z.number().optional(),
+  expectedCloseDate: z.date().optional().nullable(),
+  notes: z.string().optional(),
+});
+
+export const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
+  const notification = usePageNotifications();
+  const queryClient = useQueryClient();
+
+  const form = useForm({
+    initialValues: {
+      customerId: "",
+      stageId: "",
+      estimatedValue: undefined,
+      expectedCloseDate: null,
+      notes: "",
+    },
+    validate: zodResolver(formSchema),
+    validateInputOnChange: true,
+  });
+
+  const addLeadMutation = useMutation({
+    mutationFn: (values: any) => callApi.post("/pipeline/leads", values),
+    onSuccess: () => {
+      notification.success("Lead added successfully");
+      queryClient.invalidateQueries({ queryKey: ["pipeline-leads"] });
+      onClose();
+      form.reset();
+    },
+    onError: (error: any) => {
+      notification.error(error?.data?.message || "Failed to add lead");
+    },
+  });
+
+  const handleSubmit = (values: typeof form.values) => {
+    addLeadMutation.mutate(values);
+  };
+
+  return (
+    <Modal opened={opened} onClose={onClose} title="Add New Lead" size="md">
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Stack gap="md">
+          <Select
+            label="Choose Client"
+            placeholder="Search Clients..."
+            data={getClients?.data}
+            searchable
+            clearable
+            w=""
+            {...form.getInputProps("customerId")}
+            rightSection={<IconSearch size={16} color="gray" />}
+            withAsterisk
+          />
+          <Select
+            label="Stage"
+            placeholder="Select a stage"
+            data={getStages?.data || []}
+            {...form.getInputProps("stageId")}
+            withAsterisk
+          />
+          <NumberInput
+            label="Estimated Value"
+            placeholder="Enter estimated value"
+            {...form.getInputProps("estimatedValue")}
+          />
+          <DatePickerInput
+            label="Expected Close Date"
+            placeholder="Select a date"
+            {...form.getInputProps("expectedCloseDate")}
+          />
+          <Textarea
+            label="Notes"
+            placeholder="Enter any relevant notes"
+            rows={3}
+            {...form.getInputProps("notes")}
+          />
+
+          <Group justify="flex-end" mt="md">
+            <Button variant="default" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              loading={addLeadMutation.isPending}
+              disabled={!form.isValid()}
+            >
+              Add Lead
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Modal>
+  );
+};
