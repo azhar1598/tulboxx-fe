@@ -103,7 +103,7 @@ const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
     form.setFieldValue("user_id", user?.id);
   }, [user]);
 
-  console.log(form.values);
+  console.log("form--->", form.values, user);
 
   const payload = {
     projectName: "Missouri Drainage System",
@@ -141,7 +141,10 @@ const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
                 const newFormValues = structuredClone(form.values);
                 // const formData: any = objectToFormData(newFormValues);
 
-                generateEstimation.mutate(newFormValues);
+                generateEstimation.mutate({
+                  ...newFormValues,
+                  user_id: user?.id,
+                });
               })}
             >
               <Stepper

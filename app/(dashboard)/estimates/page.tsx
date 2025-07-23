@@ -177,18 +177,24 @@ function Estimates() {
 
       render: (record: any) => (
         <Group>
-          {/* <Button
-            style={{ fontSize: "12px" }}
-            variant="table-btn-primary"
-            leftSection={<IconEdit size={16} />}
-          >
-            Edit
-          </Button> */}
+          {/* */}
 
+          <Link
+            href={`/estimates/preview/${record.id}`}
+            style={{ color: "blue", textDecoration: "underline" }}
+          >
+            <Button
+              style={{ fontSize: "12px" }}
+              variant="table-btn-primary"
+              // leftSection={<IconEdit size={16} />}
+            >
+              Edit
+            </Button>
+          </Link>
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
-            leftSection={<IconTrash size={16} />}
+            // leftSection={<IconTrash size={16} />}
             onClick={() => deletEstimateMutation.mutate(record.id)}
             loading={
               record.id === deletEstimateId && deletEstimateMutation.isPending

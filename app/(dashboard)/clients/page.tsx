@@ -143,7 +143,7 @@ function Clients() {
 
     {
       accessor: "actions",
-      title: <Box mr={6}>Row actions</Box>,
+      title: <Box mr={6}>Actions</Box>,
       textAlign: "left",
       width: "20%",
       render: (record) => (
@@ -151,7 +151,7 @@ function Clients() {
           <Button
             style={{ fontSize: "12px" }}
             variant="table-btn-primary"
-            leftSection={<IconEdit size={16} />}
+            // leftSection={<IconEdit size={16} />}
           >
             Edit
           </Button>
