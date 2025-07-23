@@ -24,6 +24,7 @@ import {
   IconHome,
   IconDeviceAnalytics,
   IconTrendingUp,
+  IconCalendar,
 } from "@tabler/icons-react";
 
 export const sidebarItems = [
@@ -31,6 +32,7 @@ export const sidebarItems = [
   { label: "Dashboard", icon: IconDeviceAnalytics, link: "/" },
   { label: "Clients", icon: IconUser, link: "/clients" },
   { label: "Pipeline", icon: IconTrendingUp, link: "/pipeline" },
+  { label: "Calendar", icon: IconCalendar, link: "/calendar" },
   { label: "Jobs", icon: IconBriefcase, link: "/jobs" },
   { label: "Estimates", icon: IconFileTime, link: "/estimates" },
   { label: "Invoices", icon: IconInvoice, link: "/invoices" },

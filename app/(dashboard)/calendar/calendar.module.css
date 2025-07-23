@@ -1,0 +1,20 @@
+.calendar-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+}
+
+.unscheduled-jobs {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background-color: white;
+  height: fit-content;
+}
+
+.calendar-view {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background-color: white;
+  padding: 1.5rem;
+}

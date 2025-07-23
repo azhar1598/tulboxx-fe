@@ -24,9 +24,10 @@ body {
 .main-content {
   margin-left: calc(250px + 0rem);
   margin-top: 100px;
+  /* position: fixed; */
   padding-left: 30px;
   padding-right: 30px;
-  /* padding: 100px; */
+  width: calc(100vw - 250px);
 }
 
 .header {
@@ -48,6 +49,7 @@ body {
     margin-left: 0px;
     padding-left: 10px;
     padding-right: 10px;
+    width: 100%;
     /* padding: 10px; */
   }
   .header {
