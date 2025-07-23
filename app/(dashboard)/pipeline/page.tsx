@@ -121,6 +121,16 @@ export default function PipelinePage() {
     return null;
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveLead(findLead(active.id as string));
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    // This function is intentionally left blank.
+    // State updates during drag are handled in onDragEnd.
+  };
+
   const findLeadColumnId = (leadId: string) => {
     for (const columnId in columns) {
       if (columns[columnId].leads.some((lead) => lead.id === leadId)) {
@@ -130,63 +140,29 @@ export default function PipelinePage() {
     return null;
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    setActiveLead(findLead(active.id as string));
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id;
-    const overId = over.id;
-
-    if (activeId === overId) return;
-
-    const isActiveALead = active.data.current?.type === "Lead";
-    const isOverAColumn = over.data.current?.type === "column";
-
-    // Dropping a Lead over a column
-    if (isActiveALead && isOverAColumn) {
-      setColumns((currentColumns) => {
-        const activeContainerId = findLeadColumnId(activeId as string);
-        const overContainerId = overId as string;
-
-        if (
-          activeContainerId &&
-          overContainerId &&
-          activeContainerId !== overContainerId
-        ) {
-          const newColumns = { ...currentColumns };
-          const activeColumn = newColumns[activeContainerId];
-          const overColumn = newColumns[overContainerId];
-          const activeIndex = activeColumn.leads.findIndex(
-            (l) => l.id === activeId
-          );
-
-          if (activeIndex !== -1) {
-            const [movedItem] = activeColumn.leads.splice(activeIndex, 1);
-            overColumn.leads.push(movedItem);
-            return newColumns;
-          }
-        }
-        return currentColumns;
-      });
-    }
-  };
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveLead(null);
+
     if (!over) {
-      setActiveLead(null);
       return;
     }
 
-    if (active.id !== over.id) {
-      const activeContainerId = findLeadColumnId(active.id as string);
-      const overContainerId = findLeadColumnId(over.id as string);
+    if (active.id === over.id) {
+      return;
+    }
 
+    const activeContainerId = findLeadColumnId(active.id as string);
+    const overId = over.id as string;
+    const overIsColumn = over.data.current?.type === "column";
+    const overContainerId = overIsColumn ? overId : findLeadColumnId(overId);
+
+    if (
+      !activeContainerId ||
+      !overContainerId ||
+      activeContainerId === overContainerId
+    ) {
+      // Handle reordering within the same column
       if (
         activeContainerId &&
         overContainerId &&
@@ -199,7 +175,6 @@ export default function PipelinePage() {
 
           if (oldIndex !== -1 && newIndex !== -1) {
             const newLeads = arrayMove(column.leads, oldIndex, newIndex);
-
             return {
               ...currentColumns,
               [activeContainerId]: {
@@ -211,8 +186,34 @@ export default function PipelinePage() {
           return currentColumns;
         });
       }
+      return;
     }
-    setActiveLead(null);
+
+    // Handle moving to a different column
+    setColumns((currentColumns) => {
+      const newColumns = { ...currentColumns };
+      const activeColumn = newColumns[activeContainerId];
+      const overColumn = newColumns[overContainerId];
+      const activeIndex = activeColumn.leads.findIndex(
+        (l) => l.id === active.id
+      );
+
+      if (activeIndex !== -1) {
+        const [movedItem] = activeColumn.leads.splice(activeIndex, 1);
+        if (overIsColumn) {
+          overColumn.leads.push(movedItem);
+        } else {
+          const overIndex = overColumn.leads.findIndex((l) => l.id === overId);
+          if (overIndex !== -1) {
+            overColumn.leads.splice(overIndex, 0, movedItem);
+          } else {
+            // Failsafe if over lead isn't found
+            overColumn.leads.push(movedItem);
+          }
+        }
+      }
+      return newColumns;
+    });
   };
 
   const getClients = useQuery({

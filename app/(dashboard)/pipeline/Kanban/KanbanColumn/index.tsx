@@ -35,6 +35,8 @@ export const KanbanColumn = ({ column }) => {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  console.log("column", column);
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <Paper
