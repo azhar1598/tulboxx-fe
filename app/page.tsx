@@ -143,6 +143,45 @@ const RevenueChart = ({ data, isLoading }) => (
   </Paper>
 );
 
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
+
+const CustomPieChart = ({ data, title, isLoading }) => (
+  <Paper withBorder radius="md" p="lg" shadow="md" style={{ height: "100%" }}>
+    <Title order={5} mb="md">
+      {title}
+    </Title>
+    {isLoading ? (
+      <Skeleton height={350} />
+    ) : (
+      <ResponsiveContainer width="100%" height={350}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            outerRadius={100}
+            fill="#8884d8"
+            dataKey="value"
+            label={({ name, percent }) =>
+              percent > 0 ? `${name} ${(percent * 100).toFixed(0)}%` : ""
+            }
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    )}
+  </Paper>
+);
+
 const ActionFeed = ({ overdue, estimates, isLoading }) => {
   const theme = useMantineTheme();
   return (
@@ -242,6 +281,8 @@ function DashboardPage() {
     overdueAmount,
     monthlyChartData,
     overdueInvoices,
+    invoiceStatusData,
+    estimateTypeData,
   } = useMemo(() => {
     if (!invoices || !estimates) return {};
 
@@ -287,6 +328,37 @@ function DashboardPage() {
       .map((month) => ({ name: month, ...monthlyData[month] }))
       .slice(-12);
 
+    const invoiceStatusCounts = invoices.reduce(
+      (acc, invoice) => {
+        const status = (invoice.status || "draft").toLowerCase();
+        if (acc.hasOwnProperty(status)) {
+          acc[status]++;
+        }
+        return acc;
+      },
+      { paid: 0, unpaid: 0, pending: 0, draft: 0 }
+    );
+
+    const invoiceStatusData = Object.keys(invoiceStatusCounts)
+      .map((name) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        value: invoiceStatusCounts[name],
+      }))
+      .filter((d) => d.value > 0);
+
+    const estimateTypeCounts = estimates.reduce((acc, estimate) => {
+      const type = (estimate.type || "N/A").toLowerCase();
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+
+    const estimateTypeData = Object.keys(estimateTypeCounts)
+      .map((name) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        value: estimateTypeCounts[name],
+      }))
+      .filter((d) => d.value > 0);
+
     return {
       totalRevenue,
       conversionRate,
@@ -294,6 +366,8 @@ function DashboardPage() {
       overdueAmount,
       monthlyChartData,
       overdueInvoices,
+      invoiceStatusData,
+      estimateTypeData,
     };
   }, [invoices, estimates]);
 
@@ -363,6 +437,22 @@ function DashboardPage() {
           <ActionFeed
             overdue={overdueInvoices}
             estimates={estimates}
+            isLoading={isLoading}
+          />
+        </Grid.Col>
+      </Grid>
+      <Grid>
+        <Grid.Col span={{ base: 12, lg: 6 }}>
+          <CustomPieChart
+            data={invoiceStatusData}
+            title="Invoices by Status"
+            isLoading={isLoading}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, lg: 6 }}>
+          <CustomPieChart
+            data={estimateTypeData}
+            title="Estimates by Type"
             isLoading={isLoading}
           />
         </Grid.Col>
