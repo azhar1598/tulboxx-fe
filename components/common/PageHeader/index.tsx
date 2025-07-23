@@ -17,11 +17,9 @@ export const PageHeader = ({ title, rightSection, leftSection }: PropType) => {
     <Group justify="space-between">
       <Group>
         <Button
-          variant="subtle"
           leftSection={<IconChevronLeft size={36} stroke={3} />}
           px={0}
           onClick={() => router.back()}
-          bg={"#f36726"}
           color="white"
         />
 

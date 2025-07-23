@@ -32,6 +32,7 @@ import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useContext, useEffect } from "react";
 import { UserContext } from "@/app/layout";
 import { DateInput } from "@mantine/dates";
+import { DollarSignIcon } from "lucide-react";
 
 // Define the validation schema using zod
 const formSchema = z.object({
@@ -203,6 +204,7 @@ const JobForm = () => {
             placeholder="Enter amount"
             {...form.getInputProps("amount")}
             withAsterisk
+            leftSection={<DollarSignIcon size={16} />}
             hideControls
             allowDecimal={false}
             allowNegative={false}

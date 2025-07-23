@@ -43,6 +43,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import StatisticsCards from "./StatisticsCards";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus, extractAndParseJson } from "@/lib/constants";
@@ -58,34 +59,16 @@ function Clients() {
   const [state, setState] = useState({
     sortOrder: "",
     sortedColumn: "",
+    allRecords: 0,
     metaData: {
       totalRecords: 0,
     },
+    data: null,
   });
 
   const pageSize = 10;
 
-  // const getClientsQuery: any = useQuery({
-  //   queryKey: ["get-clients", search, page, pageSize, state],
-  //   queryFn: () => {
-  //     const params = new URLSearchParams();
-  //     params.append("page", page.toString());
-  //     params.append("pageSize", pageSize.toString());
-  //     params.append("search", search);
-  //     params.append("sortBy", `${state.sortedColumn}:${state.sortOrder}`);
-  //     const response = callApi.get("clients", {
-  //       params,
-  //     });
-
-  //     return response;
-  //   },
-  //   select: (data) => {
-  //     return {
-  //       data: data?.data?.data,
-  //       metadata: data?.data?.metadata,
-  //     };
-  //   },
-  // });
+  console.log("state", state);
 
   let columns = [
     {
@@ -183,18 +166,32 @@ function Clients() {
 
     {
       accessor: "actions",
-      title: <Box mr={6}>Row actions</Box>,
+      title: <Box mr={6}>Actions</Box>,
       textAlign: "left",
+      width: "250px",
       render: (record) => (
-        <Link href={`/jobs/edit/${record.id}`}>
+        <Flex gap={5}>
+          <Link href={`/jobs/edit/${record.id}`}>
+            <Button
+              style={{ fontSize: "12px" }}
+              variant="table-btn-primary"
+              // leftSection={<IconEdit size={16} />}
+            >
+              EDIT
+            </Button>
+          </Link>
           <Button
             style={{ fontSize: "12px" }}
-            variant="table-btn-primary"
-            leftSection={<IconEdit size={16} />}
+            variant="table-btn-danger"
+            // leftSection={<IconTrash size={16} />}
+            // onClick={() => deletEstimateMutation.mutate(record.id)}
+            // loading={
+            //   record.id === deletEstimateId && deletEstimateMutation.isPending
+            // }
           >
-            Edit
+            DELETE
           </Button>
-        </Link>
+        </Flex>
       ),
     },
   ];
@@ -205,16 +202,6 @@ function Clients() {
 
   const handleRecordsPerPage = () => {};
 
-  const filters = [
-    // {
-    //   id: "type",
-    //   label: "Merchants",
-    //   options: [{ value: "1", label: "Type 1" }],
-    //   // onChange: (value) => handleTypeChange(value),
-    // },
-    // ... more filters
-  ];
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -224,7 +211,7 @@ function Clients() {
     <>
       <div className="mb-4">
         <PageHeader
-          title={`Jobs (${state?.metaData?.totalRecords || 0})`}
+          title={`Jobs (${state?.allRecords || 0})`}
           rightSection={
             <Group>
               <Link href={"/jobs/add"}>
@@ -234,31 +221,23 @@ function Clients() {
           }
         />
       </div>
+      <StatisticsCards jobs={state.data} />
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
-          filters={filters}
+          // filters={filters}
           onSearch={handleSearch}
           searchable={false}
-          // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          // getStoresQuery?.tableData ||
           url={"/jobs"}
-          // records={getClientsQuery?.data?.data || []}
           search={search}
-          // filters={filters}
-          // operators={operators}
           columns={columns}
           pagination={true}
-          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
-          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
-          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
-          // onPageChange={handlePageChange}
-          // isLoading={getClientsQuery.isLoading}
           sortable
           defaultSortedColumn={"name"}
           defaultSortedColumnDirection={"asc"}
           setMetaData={setState}
+          setState={setState}
           state={state}
         />
       </Stack>

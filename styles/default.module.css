@@ -102,12 +102,16 @@
   &[data-variant="primary"] {
     background-color: #dfff5d !important;
   }
+
+  &[data-variant="primary"] {
+    background-color: #dfff5d !important;
+  }
   &[data-variant="table-btn-primary"] {
     height: 30px !important;
     font-size: 12px !important;
     padding: 0px !important;
     padding: 0px 10px 0px 10px !important;
-    min-width: 100px;
+    min-width: 82px;
   }
   &[data-variant="table-btn-danger"] {
     height: 30px !important;
@@ -115,7 +119,7 @@
     padding: 0px !important;
     padding: 0px 10px 0px 10px !important;
     background-color: #c8102e !important;
-    min-width: 100px;
+    min-width: 82px;
   }
   &[data-variant="primary-theme"] {
     background: #1a2a6c; /* fallback for old browsers */

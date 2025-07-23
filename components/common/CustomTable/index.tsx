@@ -285,7 +285,10 @@ const CustomDataTable = <T extends BaseRecord>({
     if (!setState) return;
     setState({
       allRecords: tablePageInfo?.totalRecords ?? 0,
+      data: tableData?.data ?? [],
     });
+
+    console.log("tableDtaa", tableData);
   }, [tableData]);
 
   useEffect(() => {
@@ -361,6 +364,7 @@ const CustomDataTable = <T extends BaseRecord>({
         paddingBottom: "20px",
       }),
     },
+
     styles: {
       header: {
         backgroundColor: "#f8f9fa",
@@ -398,7 +402,7 @@ const CustomDataTable = <T extends BaseRecord>({
         {showPreviousBorder && (
           <Group gap={8} className={classes.previouslySharedBadge}>
             <Box w={6} h={16} style={{ borderRadius: 2 }} bg={"#6271DD"} />
-            <Text size="sm" c={"#182A4D"} fw={500}>
+            <Text size="sm" c={"#5464"} fw={500}>
               Previously Shared
             </Text>
           </Group>

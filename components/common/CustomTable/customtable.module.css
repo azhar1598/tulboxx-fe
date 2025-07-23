@@ -65,3 +65,8 @@
   border-radius: 20px;
   border: 1px solid rgba(98, 113, 221, 0.2);
 }
+
+.pagination :global(.mantine-Select-input) {
+  background-color: #c8102e !important;
+  color: white !important;
+}
