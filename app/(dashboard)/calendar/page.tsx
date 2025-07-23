@@ -2,12 +2,10 @@
 import React, { useState } from "react";
 import styles from "./calendar.module.css";
 import UnscheduledJobs from "./UnScheduledJobs";
-// import CalendarView from "./CalendarView";
 import { PageHeader } from "@/components/common/PageHeader";
-import { Button, Flex, Group, Text } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import { Button, Flex, Group } from "@mantine/core";
 import Link from "next/link";
-import { IconCalendar, IconPlus } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { ScheduleJobModal } from "./ScheduleJobModal";
 import { useQuery } from "@tanstack/react-query";
@@ -33,7 +31,6 @@ function Calendar() {
     },
     select(data) {
       console.log("data", data);
-
       return data?.data;
     },
   });
@@ -47,15 +44,6 @@ function Calendar() {
           title={`Calendar`}
           rightSection={
             <Group>
-              <Flex align="center" gap={10}>
-                {/* <DatePickerInput
-                  size="sm"
-                  value={selectedDate}
-                  onChange={setSelectedDate}
-                  placeholder="Pick a date"
-                  leftSection={<IconCalendar size={16} />}
-                /> */}
-              </Flex>
               <Button
                 leftSection={<IconPlus size={16} />}
                 onClick={openAddStage}
@@ -68,7 +56,10 @@ function Calendar() {
       </div>
       <div className={styles["calendar-container"]}>
         <UnscheduledJobs />
-        <CalendarView selectedDate={selectedDate} />
+        <CalendarView
+          selectedDate={selectedDate}
+          getJobs={getJobsQuery?.data || []}
+        />
         <ScheduleJobModal
           opened={openScheduleJobModal}
           onClose={closeAddStage}

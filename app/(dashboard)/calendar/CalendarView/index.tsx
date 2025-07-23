@@ -1,9 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Badge, Card, Text } from "@mantine/core";
+import { JobDetailsModal } from "../JobDetailsModal";
 
-const CalendarView = () => {
+interface Job {
+  id: string;
+  name: string;
+  type: string;
+  amount: number;
+  date: string;
+  hours: number;
+  notes: string;
+  client: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
+interface CalendarViewProps {
+  getJobs?: Job[];
+  selectedDate?: Date | null;
+}
+
+interface DayInfo {
+  day: number;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+}
+
+const CalendarView: React.FC<CalendarViewProps> = ({
+  getJobs = [],
+  selectedDate,
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 23)); // July 23, 2025
   const [currentView, setCurrentView] = useState("month"); // Add this state
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const monthNames = [
     "January",
@@ -22,7 +54,7 @@ const CalendarView = () => {
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  const getDaysInMonth = (date) => {
+  const getDaysInMonth = (date: Date): DayInfo[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -30,7 +62,7 @@ const CalendarView = () => {
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const days = [];
+    const days: DayInfo[] = [];
 
     // Add previous month's trailing days
     const prevMonth = new Date(year, month - 1, 0);
@@ -110,6 +142,44 @@ const CalendarView = () => {
     }
   };
 
+  const getJobsForDate = (date: Date) => {
+    return getJobs.filter((job) => {
+      const jobDate = new Date(job.date);
+      return (
+        jobDate.getDate() === date.getDate() &&
+        jobDate.getMonth() === date.getMonth() &&
+        jobDate.getFullYear() === date.getFullYear()
+      );
+    });
+  };
+
+  const JobCard = ({ job }: { job: Job }) => (
+    <Card
+      withBorder
+      shadow="sm"
+      radius="sm"
+      className="mb-2 p-2"
+      style={{ backgroundColor: "#f8f9fa" }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedJob(job);
+      }}
+    >
+      <Text size="sm" fw={500} truncate>
+        {job.name}
+      </Text>
+      <Badge size="sm" variant="light" color="blue" className="mb-1">
+        {job.type}
+      </Badge>
+      <Text size="xs" c="dimmed">
+        {job.client.name}
+      </Text>
+      <Text size="xs" c="dimmed">
+        ${job.amount}
+      </Text>
+    </Card>
+  );
+
   // Add view rendering functions
   const renderDayView = () => {
     return (
@@ -179,16 +249,21 @@ const CalendarView = () => {
 
         {/* Week content area */}
         <div className="grid grid-cols-7 border rounded-lg mt-4">
-          {weekDays.map((day, index) => (
-            <div
-              key={index}
-              className={`min-h-[500px] border-r last:border-r-0 ${
-                day.getDate() === currentDate.getDate() ? "bg-blue-50" : ""
-              }`}
-            >
-              {/* You can add event rendering here */}
-            </div>
-          ))}
+          {weekDays.map((day, index) => {
+            const dayJobs = getJobsForDate(day);
+            return (
+              <div
+                key={index}
+                className={`min-h-[500px] border-r last:border-r-0 p-2 overflow-y-auto ${
+                  day.getDate() === currentDate.getDate() ? "bg-blue-50" : ""
+                }`}
+              >
+                {dayJobs.map((job) => (
+                  <JobCard key={job.id} job={job} />
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -301,30 +376,63 @@ const CalendarView = () => {
 
           {/* Calendar Days Grid */}
           <div className="grid grid-cols-7 gap-px bg-gray-200">
-            {days.map((dayInfo, index) => (
-              <div
-                key={index}
-                className={`
-                  h-32 bg-white border border-gray-200 p-2 hover:bg-gray-50 transition-colors cursor-pointer
-                  ${dayInfo.isToday ? "bg-blue-50 border-blue-200" : ""}
-                `}
-              >
-                <span
+            {days.map((dayInfo, index) => {
+              const currentDayDate = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                dayInfo.day
+              );
+              const dayJobs = dayInfo.isCurrentMonth
+                ? getJobsForDate(currentDayDate)
+                : [];
+
+              return (
+                <div
+                  key={index}
                   className={`
-                    text-sm font-medium
-                    ${
-                      dayInfo.isCurrentMonth ? "text-gray-900" : "text-gray-400"
-                    }
-                    ${dayInfo.isToday ? "text-blue-600 font-semibold" : ""}
+                    h-40 bg-white border border-gray-200 p-2 hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
+                    ${dayInfo.isToday ? "bg-blue-50 border-blue-200" : ""}
                   `}
                 >
-                  {dayInfo.day}
-                </span>
-              </div>
-            ))}
+                  <div className="flex justify-between items-center mb-2">
+                    <span
+                      className={`
+                        text-sm font-medium
+                        ${
+                          dayInfo.isCurrentMonth
+                            ? "text-gray-900"
+                            : "text-gray-400"
+                        }
+                        ${dayInfo.isToday ? "text-blue-600 font-semibold" : ""}
+                      `}
+                    >
+                      {dayInfo.day}
+                    </span>
+                    {dayInfo.isCurrentMonth && dayJobs.length >= 2 && (
+                      <span className="text-red-500 font-semibold text-sm">
+                        {dayJobs.length}
+                      </span>
+                    )}
+                  </div>
+                  {dayInfo.isCurrentMonth && dayJobs.length > 0 && (
+                    <>
+                      {dayJobs.map((job) => (
+                        <JobCard key={job.id} job={job} />
+                      ))}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
+
+      <JobDetailsModal
+        job={selectedJob}
+        opened={selectedJob !== null}
+        onClose={() => setSelectedJob(null)}
+      />
     </div>
   );
 };
