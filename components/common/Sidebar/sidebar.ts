@@ -36,7 +36,7 @@ export const sidebarItems = [
   { label: "Jobs", icon: IconBriefcase, link: "/jobs" },
   { label: "Estimates", icon: IconFileTime, link: "/estimates" },
   { label: "Invoices", icon: IconInvoice, link: "/invoices" },
-  { label: "Content", icon: IconNews, link: "/content" },
+  // { label: "Content", icon: IconNews, link: "/content" },
 
   // { label: "Clients", icon: IconUser, link: "/clients" },
 

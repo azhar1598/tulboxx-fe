@@ -3,6 +3,7 @@ import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
 import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
+import StatisticsCards from "./StatisticsCards";
 import callApi from "@/services/apiService";
 import QRCode from "react-qr-code";
 
@@ -41,6 +42,7 @@ import React, { useEffect, useState } from "react";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
+import { useLeadsQuery } from "@/lib/hooks/useLeadsQuery";
 
 function Clients() {
   const [search, setSearch] = useState("");
@@ -55,29 +57,31 @@ function Clients() {
     },
   });
 
+  const leads = useLeadsQuery();
+
   const pageSize = 10;
 
-  // const getClientsQuery: any = useQuery({
-  //   queryKey: ["get-clients", search, page, pageSize, state],
-  //   queryFn: () => {
-  //     const params = new URLSearchParams();
-  //     params.append("page", page.toString());
-  //     params.append("pageSize", pageSize.toString());
-  //     params.append("search", search);
-  //     params.append("sortBy", `${state.sortedColumn}:${state.sortOrder}`);
-  //     const response = callApi.get("clients", {
-  //       params,
-  //     });
+  const getClientsQuery: any = useQuery({
+    queryKey: ["get-clients", search, page, pageSize, state],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("pageSize", pageSize.toString());
+      params.append("search", search);
+      params.append("sortBy", `${state.sortedColumn}:${state.sortOrder}`);
+      const response = callApi.get("clients", {
+        params,
+      });
 
-  //     return response;
-  //   },
-  //   select: (data) => {
-  //     return {
-  //       data: data?.data?.data,
-  //       metadata: data?.data?.metadata,
-  //     };
-  //   },
-  // });
+      return response;
+    },
+    select: (data) => {
+      return {
+        data: data?.data?.data,
+        metadata: data?.data?.metadata,
+      };
+    },
+  });
 
   let columns = [
     {
@@ -195,6 +199,10 @@ function Clients() {
           }
         />
       </div>
+      <StatisticsCards
+        clients={getClientsQuery?.data?.data || []}
+        leads={leads}
+      />
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
           filters={filters}
