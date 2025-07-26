@@ -57,7 +57,8 @@ function Clients() {
     },
   });
 
-  const leads = useLeadsQuery();
+  const leads = [];
+  // useLeadsQuery();
 
   const pageSize = 10;
 
@@ -211,19 +212,10 @@ function Clients() {
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
         <CustomTable
-          // getStoresQuery?.tableData ||
           url={"/clients"}
-          // records={getClientsQuery?.data?.data || []}
           search={search}
-          // filters={filters}
-          // operators={operators}
           columns={columns}
           pagination={true}
-          // totalRecords={getClientsQuery?.data?.metadata?.totalRecords || 0}
-          // currentPage={getClientsQuery?.data?.metadata?.currentPage || 0}
-          // pageSize={getClientsQuery?.data?.metadata?.recordsPerPage || 0}
-          // onPageChange={handlePageChange}
-          // isLoading={getClientsQuery.isLoading}
           sortable
           defaultSortedColumn={"name"}
           defaultSortedColumnDirection={"asc"}

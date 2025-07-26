@@ -1,28 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  DataTable,
-  DataTableSortStatus,
-  DataTableColumn,
-  DataTableProps as MantineDataTableProps,
-  reorderRecords,
-} from "mantine-datatable";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { useDebouncedState } from "@mantine/hooks";
-import { Group, Text, Radio, TableTd, Stack, Box } from "@mantine/core";
-import classes from "./customtable.module.css";
-
-import Image from "next/image";
-
-// import classes from "./CustomDataTable.module.css";
-// import asc from "@public/icons/ps-icon-sort.svg";
-// import dsc from "@public/icons/ps-icon-sort.svg";
-// import psIconGrabSort from "@public/icons/ps-icon-grab-sort.svg";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
-import { SortAsc, SortDesc } from "lucide-react";
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  Inbox,
+} from "lucide-react";
+
+export interface DataTableSortStatus<T> {
+  columnAccessor: keyof T | string;
+  direction: "asc" | "desc";
+}
+
+export interface DataTableColumn<T> {
+  accessor: keyof T | string;
+  title?: React.ReactNode;
+  render?: (record: T, index: number) => React.ReactNode;
+  sortable?: boolean;
+  textAlign?: "left" | "center" | "right";
+  width?: string | number;
+}
 
 interface BaseRecord {
-  id?: number;
+  id?: number | string;
   sequenceOrder?: number;
   Motifs?: any[];
 }
@@ -34,41 +39,23 @@ interface SelectableProps<T> {
 }
 
 interface DataTableProps<T extends BaseRecord> {
-  disabledRowClass?: string;
   queryKey?: QueryKey;
   url?: string;
-  data?: T[];
-  columns: any[];
+  columns: DataTableColumn<T>[];
   sortable?: boolean;
   pagination?: boolean;
-  draggable?: boolean | { draggableUrl: string };
   height?: string | number;
   search?: string;
-  filters?: { [key: string]: string[] };
+  filters?: { [key: string]: string[] | string };
   operators?: { [key: string]: string };
   defaultSortedColumn?: string;
   defaultSortedColumnDirection?: "asc" | "desc";
   recordsPerPage?: number;
   noRecordsText?: string;
-  toolTiplabel?: string;
-  isRecordSelectable?: (record: T) => boolean;
-  rowColor?: any;
-  rowClassName?: any;
-  rowStyle?: any;
   selectable?: SelectableProps<T>;
-  withCheckboxes?: boolean;
-  checkedRecords?: BaseRecord[];
-  onCheckedRecordsChange?: (records: BaseRecord[]) => void;
-  isCheckboxDisabled?: (record: BaseRecord) => boolean;
-  withRadio?: boolean;
-  keyName?: string | undefined;
-  showPreviousBorder?: boolean;
   refetchInterval?: number;
-  selectedRecord?: T | null;
-  onSelectedRecordChange?: (record: T | null) => void;
-  setState?: (state: any) => void;
   onRowClick?: (params: {
-    event: React.MouseEvent;
+    event: React.MouseEvent<HTMLTableRowElement>;
     record: T;
     index: number;
   }) => void;
@@ -76,6 +63,7 @@ interface DataTableProps<T extends BaseRecord> {
   minHeight?: number | null;
   setMetaData?: any;
   state?: any;
+  setState?: (state: any) => void;
 }
 
 export interface TablePageInfo {
@@ -88,32 +76,24 @@ export interface TablePageInfo {
 }
 
 const CustomDataTable = <T extends BaseRecord>({
-  isRecordSelectable,
-  rowColor,
   queryKey: _queryKey,
   url,
   columns,
   sortable = false,
   pagination = false,
-  height,
   search = "",
   filters = {},
   operators = {},
   defaultSortedColumn,
   defaultSortedColumnDirection,
-  showPreviousBorder,
   recordsPerPage = 10,
-  noRecordsText,
-  rowClassName,
+  noRecordsText = "No records found",
   selectable,
   refetchInterval,
-  toolTiplabel: toolTipLabel,
-  minHeight = 600,
-  rowStyle,
   onRowClick,
-  setState,
   onTotalCountChange,
   setMetaData,
+  setState,
   state,
 }: DataTableProps<T>) => {
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus<T>>({
@@ -122,7 +102,6 @@ const CustomDataTable = <T extends BaseRecord>({
   });
 
   const [data, setData] = useState<T[]>([]);
-
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(recordsPerPage);
 
@@ -134,17 +113,14 @@ const CustomDataTable = <T extends BaseRecord>({
 
   const getSortByParam = useCallback(
     (sortStatus: DataTableSortStatus<T>): string[] => {
-      if (!sortable) return null;
+      if (!sortable || !sortStatus.columnAccessor) return null;
       const { columnAccessor, direction } = sortStatus;
-      const accessor = String(columnAccessor);
-      return [`${accessor}:${direction.toUpperCase()}`];
+      return [`${String(columnAccessor)}:${direction.toUpperCase()}`];
     },
     [sortable]
   );
 
-  const [debouncedSearch, setDebouncedSearch] = useDebouncedState(search, 200, {
-    leading: true,
-  });
+  const [debouncedSearch, setDebouncedSearch] = useDebouncedState(search, 300);
 
   useEffect(() => {
     setDebouncedSearch(search);
@@ -176,58 +152,34 @@ const CustomDataTable = <T extends BaseRecord>({
     ]
   );
 
-  function getFilter(rawFilter: string): string {
-    const arr = rawFilter.split(":");
-
-    let filter = arr.pop() as string;
-    const operator = arr.join(":"); // in case of chained filters
-
-    if (filter.startsWith("$")) return operator + filter;
-
-    return operator + ":" + filter;
-  }
-
-  function constructFilterParams(
+  const constructFilterParams = (
     filters: { [key: string]: string[] | string },
     operators: { [key: string]: string }
-  ) {
-    const filterParams: Record<string, string> = {};
-
+  ) => {
+    const params = new URLSearchParams();
     for (const key in filters) {
-      let filter = filters[key];
-      let operator = operators[key] || "$eq";
+      const filterValue = filters[key];
+      const operator = operators[key] || "$eq";
 
-      if (!filter?.length) continue;
-
-      if (Array.isArray(filter)) {
-        const hasCustomOperator = filter.some((value) => value.startsWith("$"));
-
-        if (!hasCustomOperator) {
-          if (filter.length > 1) {
-            operator = "$in";
-          }
-
-          filterParams[`filter.${key}`] = `${operator}:${filter.join(",")}`;
-          continue;
-        }
-
-        filter.forEach((val, index) => {
-          filterParams[`filter.${key}[${index}]`] = `$or:${getFilter(val)}`;
-        });
-
+      if (
+        !filterValue ||
+        (Array.isArray(filterValue) && filterValue.length === 0)
+      ) {
         continue;
       }
 
-      const hasCustomOperator =
-        filter.startsWith("$") && filter.split(":").length > 1;
-
-      filterParams[`filter.${key}`] = hasCustomOperator
-        ? getFilter(filter)
-        : filter;
+      if (Array.isArray(filterValue)) {
+        params.append(`filter.${key}`, `${operator}:${filterValue.join(",")}`);
+      } else if (typeof filterValue === "string") {
+        if (filterValue.startsWith("$")) {
+          params.append(`filter.${key}`, filterValue);
+        } else {
+          params.append(`filter.${key}`, `${operator}:${filterValue}`);
+        }
+      }
     }
-
-    return filterParams;
-  }
+    return params;
+  };
 
   const {
     data: queryData,
@@ -237,60 +189,47 @@ const CustomDataTable = <T extends BaseRecord>({
     queryKey: queryKey,
     queryFn: () => {
       const params = new URLSearchParams();
-
       params.append("page", page.toString());
       params.append("limit", limit.toString());
-      params.append("search", search);
-      params.append(
-        "sortBy",
-        `${String(sortStatus.columnAccessor)}:${sortStatus.direction}`
-      );
-      const response = callApi.get(`${url}`, {
-        params,
-      });
-      console.log("response", response);
-      return response;
+      params.append("search", debouncedSearch);
+      if (sortStatus.columnAccessor) {
+        params.append(
+          "sortBy",
+          `${String(sortStatus.columnAccessor)}:${sortStatus.direction}`
+        );
+      }
+
+      const filterParams = constructFilterParams(filters, operators);
+      for (const [key, value] of filterParams.entries()) {
+        params.append(key, value);
+      }
+
+      return callApi.get(`${url}`, { params });
     },
     refetchInterval,
-
-    // callApi
-    //   .get(`/${url}`, {
-    //     params: {
-    //       page,
-    //       limit: recordsPerPage,
-    //       // sortBy: getSortByParam(sortStatus),
-    //       search: search.includes("%")
-    //         ? encodeURIComponent(search.trimStart())
-    //         : search.trimStart(),
-    //       ...constructFilterParams(filters, operators),
-    //     },
-    //   })
   });
 
-  const tableData = useMemo(() => {
-    return queryData?.data ?? [];
-  }, [queryData]);
+  const tableData = useMemo(() => queryData?.data ?? [], [queryData]);
   const tablePageInfo: TablePageInfo = queryData?.data?.metadata;
 
   useEffect(() => {
     if (isError) {
-      notification.error(`something went wrong`);
+      notification.error(`Something went wrong`);
     }
-  }, [isError, limit, debouncedSearch]);
-
-  console.log("tablePageInfo", tableData, tablePageInfo);
+  }, [isError, notification]);
 
   useEffect(() => {
     setData(tableData?.data ?? []);
-    setMetaData({ ...state, metaData: tableData?.metadata ?? {} });
-    if (!setState) return;
-    setState({
-      allRecords: tablePageInfo?.totalRecords ?? 0,
-      data: tableData?.data ?? [],
-    });
-
-    console.log("tableDtaa", tableData);
-  }, [tableData]);
+    if (setMetaData) {
+      setMetaData({ ...state, metaData: tableData?.metadata ?? {} });
+    }
+    if (setState) {
+      setState({
+        allRecords: tablePageInfo?.totalRecords ?? 0,
+        data: tableData?.data ?? [],
+      });
+    }
+  }, [tableData, tablePageInfo, setMetaData, setState, state]);
 
   useEffect(() => {
     if (onTotalCountChange && tablePageInfo?.totalRecords !== undefined) {
@@ -298,143 +237,262 @@ const CustomDataTable = <T extends BaseRecord>({
     }
   }, [onTotalCountChange, tablePageInfo?.totalRecords]);
 
-  const sortableProps = sortable
-    ? {
-        sortStatus: sortStatus,
-        onSortStatusChange: (status: DataTableSortStatus<T>) => {
-          setPage(1);
-          setSortStatus(status);
-        },
-      }
-    : {};
-
-  const selectableProps = selectable
-    ? {
-        selectedRecords: selectable.selectedRecords,
-        onSelectedRecordsChange: selectable.onSelectedRecordsChange,
-        idAccessor: selectable.idAccessor,
-      }
-    : {};
-
-  const defaultRecordText = (() => {
-    const filteredKeys = Object.keys(filters).filter(
-      (key) => typeof filters[key] !== "string"
-    );
-
-    const areOtherFiltersEmpty = filteredKeys.every((key) =>
-      Array.isArray(filters[key]) ? filters[key].length === 0 : !filters[key]
-    );
-
-    return areOtherFiltersEmpty && search === ""
-      ? noRecordsText
-      : "No Records Found.";
-  })();
-
-  const tableColumns = useMemo(() => {
-    return columns as DataTableColumn<T>[];
-  }, [columns]);
-
-  console.log("data", data);
-
-  const tableProps: MantineDataTableProps<T> = {
-    ...sortableProps,
-    ...selectableProps,
-    records: data,
-    fetching: isLoading,
-    minHeight: minHeight,
-    striped: true,
-    highlightOnHover: true,
-    rowClassName: rowClassName,
-    withTableBorder: true,
-    columns: tableColumns,
-    onRowClick: onRowClick,
-    height: height ?? "100% !important",
-    classNames: {
-      table: classes.table,
-      header: classes.header,
-      footer: classes.footer,
-      pagination: classes.pagination,
-      recordsPerPageSelector: classes.recordsPerPageSelector,
-      recordsPerPageSelectorLabel: classes.recordsPerPageSelectorLabel,
-    },
-    defaultColumnProps: {
-      textAlign: "left",
-      noWrap: false,
-      titleStyle: () => ({
-        color: "#8898a9",
-        fontSize: "13px",
-        paddingTop: "20px",
-        paddingBottom: "20px",
-      }),
-    },
-
-    styles: {
-      header: {
-        backgroundColor: "#f8f9fa",
-        color: "#495057",
-        padding: "16px 20px",
-        fontSize: "14px",
-        fontWeight: 600,
-        borderBottom: "2px solid #dee2e6",
-      },
-      footer: {
-        backgroundColor: "#ffffff",
-        borderTop: "1px solid #e9ecef",
-        borderRadius: "0 0 8px 8px",
-      },
-      table: {
-        tableLayout: "fixed",
-        width: "100%",
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-      },
-    },
+  const handleSelectAll = (checked: boolean) => {
+    selectable?.onSelectedRecordsChange(checked ? data : []);
   };
 
-  if (pagination) {
-    tableProps.totalRecords = tablePageInfo?.totalRecords ?? 0;
-    tableProps.recordsPerPage = limit;
-    tableProps.page = page;
-    tableProps.onPageChange = (pageNo: number) => {
-      if (pageNo > 0) setPage(pageNo);
-    };
-    tableProps.paginationSize = "md";
-    tableProps.paginationText = ({ from, to, totalRecords }) => (
-      <div className={classes.paginationInfo}>
-        {showPreviousBorder && (
-          <Group gap={8} className={classes.previouslySharedBadge}>
-            <Box w={6} h={16} style={{ borderRadius: 2 }} bg={"#6271DD"} />
-            <Text size="sm" c={"#5464"} fw={500}>
-              Previously Shared
-            </Text>
-          </Group>
-        )}
-        <Group gap={12} align="center">
-          <div className={classes.recordsInfo}>
-            <Text size="sm" c={"#495057"} fw={500}>
-              {from}-{to} of {totalRecords.toLocaleString()} records
-            </Text>
-          </div>
-          {totalRecords > limit && (
-            <Text size="xs" c={"#6c757d"}>
-              Page {page} of {Math.ceil(totalRecords / limit)}
-            </Text>
-          )}
-        </Group>
-      </div>
+  const handleSelectRow = (record: T, checked: boolean) => {
+    selectable?.onSelectedRecordsChange(
+      checked
+        ? [...selectable.selectedRecords, record]
+        : selectable.selectedRecords.filter((r) => r.id !== record.id)
     );
-    tableProps.recordsPerPageOptions = [10, 20, 50, 100];
-    tableProps.onRecordsPerPageChange = (newLimit: number) => {
-      setPage(1);
-      setLimit(newLimit);
-    };
-  }
+  };
+
+  const isAllSelected =
+    selectable &&
+    selectable.selectedRecords.length === data.length &&
+    data.length > 0;
+  const isIndeterminate =
+    selectable && selectable.selectedRecords.length > 0 && !isAllSelected;
+
+  const defaultRecordText =
+    Object.values(filters).every((f) => !f?.length) && search === ""
+      ? noRecordsText
+      : "No Records Found.";
 
   return (
-    <Box className="data-table">
-      <DataTable {...tableProps} />
-    </Box>
+    <div className="bg-slate-50/70 p-1 sm:p-2 lg:p-4 rounded-xl">
+      <div className="overflow-x-auto">
+        <table
+          className="w-full text-sm border-separate"
+          style={{ borderSpacing: "0 1rem" }}
+        >
+          <thead className="hidden md:table-header-group">
+            <tr>
+              {selectable && (
+                <th className="p-4 w-4 text-left">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-[#182a4d] focus:ring-[#182a4d] cursor-pointer"
+                    checked={isAllSelected}
+                    ref={(el) => el && (el.indeterminate = isIndeterminate)}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                  />
+                </th>
+              )}
+              {columns.map((column) => (
+                <th
+                  key={String(column.accessor)}
+                  className={`px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider ${
+                    sortable && column.sortable
+                      ? "cursor-pointer hover:text-gray-700 transition-colors"
+                      : ""
+                  }`}
+                  style={{ width: column.width }}
+                  onClick={() => {
+                    if (sortable && column.sortable) {
+                      const direction =
+                        sortStatus.columnAccessor === column.accessor &&
+                        sortStatus.direction === "asc"
+                          ? "desc"
+                          : "asc";
+                      setSortStatus({
+                        columnAccessor: String(column.accessor),
+                        direction,
+                      });
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    {column.title}
+                    {sortable && column.sortable && (
+                      <span className="text-gray-400">
+                        {sortStatus.columnAccessor === column.accessor ? (
+                          sortStatus.direction === "asc" ? (
+                            <ArrowUp size={14} className="text-gray-800" />
+                          ) : (
+                            <ArrowDown size={14} className="text-gray-800" />
+                          )
+                        ) : (
+                          <ArrowUpDown size={14} />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              Array.from({ length: limit }).map((_, i) => (
+                <tr key={i} className="bg-white rounded-xl shadow-sm">
+                  <td className="px-6 py-4 rounded-l-xl">
+                    <div className="h-5 w-5 bg-gray-200 rounded-md animate-pulse"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                  </td>
+                  <td className="px-6 py-4 rounded-r-xl">
+                    <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+                  </td>
+                </tr>
+              ))
+            ) : data.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length + (selectable ? 1 : 0)}
+                  className="text-center p-16"
+                >
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="bg-[#182a4d] p-4 rounded-full">
+                      <Inbox
+                        className="h-10 w-10 text-[#182a4d]"
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                    <span className="text-gray-600 font-medium text-base">
+                      {defaultRecordText}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data.map((record, index) => (
+                <tr
+                  key={record.id ?? index}
+                  className={`bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out border border-transparent hover:shadow-lg hover:ring-offset-slate-50 ${
+                    onRowClick ? "cursor-pointer" : ""
+                  }`}
+                  onClick={(e) => onRowClick?.({ event: e, record, index })}
+                >
+                  {selectable && (
+                    <td className="px-4 py-5 rounded-l-xl align-middle">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-[#182a4d] focus:ring-[#182a4d] cursor-pointer"
+                        checked={selectable.selectedRecords.some(
+                          (r) => r.id === record.id
+                        )}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleSelectRow(record, e.target.checked);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </td>
+                  )}
+                  {columns.map((column, colIndex) => (
+                    <td
+                      key={String(column.accessor)}
+                      className={`px-6 py-5 align-middle ${
+                        colIndex === columns.length - 1 ? "rounded-r-xl" : ""
+                      } ${colIndex === 0 && !selectable ? "rounded-l-xl" : ""}`}
+                    >
+                      <div className="md:hidden text-xs font-semibold text-gray-400 uppercase mb-1">
+                        {column.title as string}
+                      </div>
+                      <div
+                        className={
+                          colIndex === 0
+                            ? "text-base font-semibold text-gray-900"
+                            : "text-sm text-gray-600"
+                        }
+                      >
+                        {column.render
+                          ? column.render(record, index)
+                          : (record[column.accessor] as React.ReactNode)}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {pagination && tablePageInfo && tablePageInfo.totalRecords > 0 && (
+        <div className="p-4 flex items-center justify-between flex-wrap gap-4">
+          <div className="text-sm text-gray-600">
+            Showing{" "}
+            <span className="font-semibold text-gray-800">
+              {tablePageInfo.totalRecords > 0 ? (page - 1) * limit + 1 : 0}
+            </span>{" "}
+            to{" "}
+            <span className="font-semibold text-gray-800">
+              {Math.min(page * limit, tablePageInfo.totalRecords)}
+            </span>{" "}
+            of{" "}
+            <span className="font-semibold text-gray-800">
+              {tablePageInfo.totalRecords}
+            </span>{" "}
+            results
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows:</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="bg-white border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:ring-2 focus:ring-[#182a4d] focus:border-[#182a4d] shadow-sm transition-all"
+              >
+                {[10, 20, 50, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+                className="p-2 border border-gray-300 rounded-md text-sm font-medium bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from(
+                  { length: tablePageInfo.totalPages },
+                  (_, i) => i + 1
+                )
+                  .map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-9 h-9 rounded-md text-sm font-semibold transition-all duration-200 ${
+                        p === page
+                          ? "bg-gradient-to-br from-[#182a4d]-500 to-[#182a4d] text-white shadow-lg scale-105"
+                          : "bg-white hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-300 hover:border-gray-400"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))
+                  .slice(
+                    Math.max(0, page - 3),
+                    Math.min(page + 2, tablePageInfo.totalPages)
+                  )}
+              </div>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={
+                  page === tablePageInfo.totalPages ||
+                  tablePageInfo.totalRecords === 0
+                }
+                className="p-2 border border-gray-300 rounded-md text-sm font-medium bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
