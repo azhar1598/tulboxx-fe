@@ -67,7 +67,7 @@ import SearchAndFilter from "./SearchAndFilter";
 import StatisticsCards from "./StatisticsCards";
 import Kanban from "./Kanban";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { useEffect } from "react";
 import AddStageModal from "./AddStageModal";
@@ -104,6 +104,17 @@ export default function PipelinePage() {
     useDisclosure(false);
   const [addStageOpened, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
+
+  const queryClient = useQueryClient();
+
+  const updateLeadMutation = useMutation({
+    mutationFn: ({ leadId, stageId }: { leadId: string; stageId: string }) => {
+      return callApi.patch(`/pipeline/leads/${leadId}`, { stageId: stageId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-leads"] });
+    },
+  });
 
   // Calculate statistics
 
@@ -189,6 +200,11 @@ export default function PipelinePage() {
       }
       return;
     }
+
+    updateLeadMutation.mutate({
+      leadId: active.id as string,
+      stageId: overContainerId,
+    });
 
     // Handle moving to a different column
     setColumns((currentColumns) => {
