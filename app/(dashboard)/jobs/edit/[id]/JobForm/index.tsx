@@ -23,6 +23,8 @@ import {
   IconBrandX,
   IconSend,
   IconUserPlus,
+  IconCurrencyDollar,
+  IconClock,
 } from "@tabler/icons-react";
 import { useRouter, useParams } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
@@ -37,19 +39,19 @@ import { DollarSignIcon } from "lucide-react";
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(1, "Job title is required"),
-  type: z.string().min(1, "Job type is required"),
-  customer: z.string().min(1, "Customer is required"),
-  description: z.string().min(1, "Description is required"),
-  date: z.date(),
-  amount: z.number().min(0, "Amount must be a positive number"),
-  hours: z.number().min(0, "Hours must be a positive number"),
+  type: z.string().optional(),
+  customer: z.string().optional(),
+  description: z.string().optional(),
+  date: z.date().nullable().optional(),
+  amount: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
+  hours: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
   notes: z.string().optional(),
 });
 
 interface JobFormValues {
   name: string;
   type: string;
-  customer: string;
+  customer: string | null;
   description: string;
   date: Date | null;
   amount: number | "";
@@ -96,7 +98,11 @@ const JobForm = () => {
 
   const getClientsQuery = useDropdownOptions(queryFilters);
 
-  console.log("getClientsQuery", getClientsQuery);
+  console.log(
+    "getClientsQuery",
+    getClientsQuery,
+    formSchema.safeParse(form.values)
+  );
 
   // const { data: clientOptions, isPending: isClientsLoading } =
   //   useDropdownOptions(queryFilters);
@@ -114,7 +120,7 @@ const JobForm = () => {
       form.setValues({
         name,
         type,
-        customer: client_id,
+        customer: client_id || "",
         description,
         date: date ? new Date(date) : null,
         amount: Number(amount),
@@ -158,13 +164,10 @@ const JobForm = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Select
+          <TextInput
             label="Job Type"
             placeholder="Select a job type"
-            data={["Plumbing", "Electrical", "HVAC", "Other"]}
             {...form.getInputProps("type")}
-            withAsterisk
-            searchable
           />
         </Grid.Col>
 
@@ -175,8 +178,8 @@ const JobForm = () => {
             data={getClientsQuery ?? []}
             {...form.getInputProps("customer")}
             // disabled={isClientsLoading}
-            withAsterisk
             searchable
+            clearable
           />
         </Grid.Col>
 
@@ -185,7 +188,6 @@ const JobForm = () => {
             {...form.getInputProps("date")}
             label="Scheduled Date"
             placeholder="Select a date"
-            withAsterisk
             valueFormat="DD-MM-YYYY"
           />
         </Grid.Col>
@@ -194,7 +196,6 @@ const JobForm = () => {
             label="Description"
             placeholder="Start typing..."
             {...form.getInputProps("description")}
-            withAsterisk
           />
         </Grid.Col>
 
@@ -203,8 +204,7 @@ const JobForm = () => {
             label="Amount"
             placeholder="Enter amount"
             {...form.getInputProps("amount")}
-            withAsterisk
-            leftSection={<DollarSignIcon size={16} />}
+            leftSection={<IconCurrencyDollar size={16} />}
             hideControls
             allowDecimal={false}
             allowNegative={false}
@@ -215,10 +215,10 @@ const JobForm = () => {
             label="Hours"
             placeholder="Enter estimated hours"
             {...form.getInputProps("hours")}
-            withAsterisk
             hideControls
             allowDecimal={false}
             allowNegative={false}
+            leftSection={<IconClock size={16} />}
           />
         </Grid.Col>
 

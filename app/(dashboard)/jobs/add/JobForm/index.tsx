@@ -39,12 +39,12 @@ import { DateInput } from "@mantine/dates";
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(1, "Job title is required"),
-  type: z.string().min(1, "Job type is required"),
-  customer: z.string().min(1, "Customer is required"),
-  description: z.string().min(1, "Description is required"),
-  date: z.date(),
-  amount: z.number().min(0, "Amount must be a positive number"),
-  hours: z.number().min(0, "Hours must be a positive number"),
+  type: z.string().optional(),
+  customer: z.string().optional(),
+  description: z.string().optional(),
+  date: z.date().nullable().optional(),
+  amount: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
+  hours: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
   notes: z.string().optional(),
 });
 
@@ -53,7 +53,7 @@ interface JobFormValues {
   type: string;
   customer: string;
   description: string;
-  date: Date;
+  date: Date | null;
   amount: number | "";
   hours: number | "";
   notes: string;
@@ -137,13 +137,10 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: md }}>
-          <Select
+          <TextInput
             label="Job Type"
-            placeholder="Select a job type"
-            data={["Plumbing", "Electrical", "HVAC", "Other"]}
+            placeholder="Plumbing, Electrical, HVAC, Other"
             {...form.getInputProps("type")}
-            withAsterisk
-            searchable
           />
         </Grid.Col>
 
@@ -154,8 +151,8 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             data={getClientsQuery ?? []}
             {...form.getInputProps("customer")}
             // disabled={isClientsLoading}
-            withAsterisk
             searchable
+            clearable
           />
         </Grid.Col>
 
@@ -164,7 +161,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             label="Description"
             placeholder="Start typing..."
             {...form.getInputProps("description")}
-            withAsterisk
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: md }}>
@@ -179,7 +175,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             {...form.getInputProps("date")}
             label="Scheduled Date"
             placeholder="Select a date"
-            withAsterisk
             valueFormat="DD-MM-YYYY"
             leftSection={<IconCalendar size={16} />}
           />
@@ -190,7 +185,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             label="Amount"
             placeholder="Enter amount"
             {...form.getInputProps("amount")}
-            withAsterisk
             hideControls
             leftSection={<IconCurrencyDollar size={16} />}
             allowDecimal={false}
@@ -203,7 +197,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             label="Hours"
             placeholder="Enter estimated hours"
             {...form.getInputProps("hours")}
-            withAsterisk
             hideControls
             allowDecimal={false}
             allowNegative={false}
