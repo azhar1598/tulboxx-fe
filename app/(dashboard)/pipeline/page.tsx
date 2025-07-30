@@ -98,6 +98,7 @@ interface Columns {
 
 export default function PipelinePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStages, setSelectedStages] = useState<string[]>([]);
   const [columns, setColumns] = useState<Columns>({});
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [addLeadOpened, { open: openAddLead, close: closeAddLead }] =
@@ -371,15 +372,29 @@ export default function PipelinePage() {
   ]);
 
   const filteredColumns = useMemo(() => {
+    let tempColumns = { ...columns };
+
+    // Filter by selected stages
+    if (selectedStages.length > 0) {
+      const newColumns: Columns = {};
+      for (const stageId of selectedStages) {
+        if (tempColumns[stageId]) {
+          newColumns[stageId] = tempColumns[stageId];
+        }
+      }
+      tempColumns = newColumns;
+    }
+
+    // Filter by search query
     if (!searchQuery.trim()) {
-      return columns;
+      return tempColumns;
     }
 
     const lowercasedQuery = searchQuery.toLowerCase();
     const newColumns: Columns = {};
 
-    for (const columnId in columns) {
-      const column = columns[columnId];
+    for (const columnId in tempColumns) {
+      const column = tempColumns[columnId];
       const stageMatches = column.title.toLowerCase().includes(lowercasedQuery);
       const matchingLeads = column.leads.filter((lead) =>
         lead.name.toLowerCase().includes(lowercasedQuery)
@@ -393,7 +408,7 @@ export default function PipelinePage() {
       }
     }
     return newColumns;
-  }, [columns, searchQuery]);
+  }, [columns, searchQuery, selectedStages]);
 
   return (
     <DndContext
@@ -440,6 +455,9 @@ export default function PipelinePage() {
           <SearchAndFilter
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
+            stages={getStagesQuery.data}
+            selectedStages={selectedStages}
+            setSelectedStages={setSelectedStages}
           />
           {/* Statistics Cards */}
           <StatisticsCards

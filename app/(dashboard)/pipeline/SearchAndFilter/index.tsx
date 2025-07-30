@@ -1,8 +1,14 @@
 import React from "react";
-import { Paper, Group, TextInput, Button, rem } from "@mantine/core";
+import { Paper, Group, TextInput, MultiSelect, rem } from "@mantine/core";
 import { IconFilter, IconSearch } from "@tabler/icons-react";
 
-function SearchAndFilter({ searchQuery, setSearchQuery }) {
+function SearchAndFilter({
+  searchQuery,
+  setSearchQuery,
+  stages,
+  selectedStages,
+  setSelectedStages,
+}) {
   return (
     <Paper withBorder p="md" radius="md" shadow="sm">
       <Group justify="space-between">
@@ -14,9 +20,15 @@ function SearchAndFilter({ searchQuery, setSearchQuery }) {
           style={{ flex: 1, maxWidth: rem(400) }}
         />
         <Group>
-          <Button leftSection={<IconFilter size={16} />} size="sm">
-            More
-          </Button>
+          <MultiSelect
+            data={stages || []}
+            placeholder="Filter by stages"
+            value={selectedStages}
+            onChange={setSelectedStages}
+            leftSection={<IconFilter size={16} />}
+            style={{ width: rem(250) }}
+            clearable
+          />
         </Group>
       </Group>
     </Paper>
