@@ -48,7 +48,7 @@ const formSchema = z.object({
 interface ClientFormValues {
   name: string;
   email: string;
-  phone: string | number;
+  phone: string | number | null;
   address: string;
   state: string | null;
   city: string | null;
@@ -98,7 +98,7 @@ const ClientForm = () => {
       form.setValues({
         name: name || "",
         email: email || "",
-        phone: phone ? Number(phone) : null,
+        phone: phone ? Number(phone) : "",
         address: address || "",
         city: city || "",
         state: state || "",
