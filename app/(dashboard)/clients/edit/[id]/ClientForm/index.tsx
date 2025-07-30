@@ -161,7 +161,7 @@ const ClientForm = () => {
           <TextInput
             label="Email"
             placeholder="client@email.com"
-            disabled={true}
+            // disabled={true}
             {...form.getInputProps("email")}
           />
         </Grid.Col>
