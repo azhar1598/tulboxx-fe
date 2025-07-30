@@ -1,12 +1,11 @@
+import { useDraggable } from "@dnd-kit/core";
 import React from "react";
 import { Card, Text, Badge, Group } from "@mantine/core";
 import {
   IconGripVertical,
-  IconClock,
   IconUser,
   IconCurrencyDollar,
   IconAlertCircle,
-  IconCalendar,
 } from "@tabler/icons-react";
 import styles from "../calendar.module.css";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +30,62 @@ interface ScheduledJobsProps {
   onJobSelect: (job: Job) => void;
 }
 
+const DraggableJobCard = ({
+  job,
+  onJobSelect,
+}: {
+  job: Job;
+  onJobSelect: (job: Job) => void;
+}) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: job.id,
+    data: { job },
+  });
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        zIndex: 1000,
+        cursor: "grabbing",
+      }
+    : {};
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+      <Card
+        withBorder
+        radius="md"
+        padding="sm"
+        mb="sm"
+        className="cursor-pointer hover:shadow-md transition-shadow"
+        onClick={() => onJobSelect(job)}
+      >
+        <Group>
+          <IconGripVertical size={20} color="gray" />
+          <div style={{ flex: 1 }}>
+            <Group justify="space-between">
+              <Text fw={500}>{job.name}</Text>
+              <Badge color="blue">{job.type}</Badge>
+            </Group>
+            <Group>
+              <IconUser size={16} color="gray" />
+              <Text size="sm" c="dimmed">
+                {job.client?.name}
+              </Text>
+            </Group>
+            <Group>
+              <IconCurrencyDollar size={16} color="gray" />
+              <Text size="sm" c="dimmed">
+                ${job.amount?.toLocaleString()}
+              </Text>
+            </Group>
+          </div>
+        </Group>
+      </Card>
+    </div>
+  );
+};
+
 const ScheduledJobs = ({ onJobSelect }: ScheduledJobsProps) => {
   const getJobsQuery = useQuery({
     queryKey: ["get-jobs"],
@@ -48,86 +103,26 @@ const ScheduledJobs = ({ onJobSelect }: ScheduledJobsProps) => {
   });
 
   const jobs = getJobsQuery.data || [];
-  const sortedJobs = [...jobs].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  const unscheduledJobs = jobs.filter(
+    (job) => !job.date || isNaN(new Date(job.date).getTime())
   );
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   return (
     <div className={styles["unscheduled-jobs"]}>
       <Group justify="space-between" mb="md">
         <Text fw={500} size="lg">
-          Scheduled Jobs
+          Unscheduled Jobs
         </Text>
         <Badge
           variant="filled"
           color="gray"
           leftSection={<IconAlertCircle size={14} />}
         >
-          {jobs.length}
+          {unscheduledJobs.length}
         </Badge>
       </Group>
-      {sortedJobs.map((job) => (
-        <Card
-          withBorder
-          radius="md"
-          padding="sm"
-          key={job.id}
-          mb="sm"
-          className="cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => onJobSelect(job)}
-        >
-          <Group>
-            <IconGripVertical size={20} color="gray" />
-            <div style={{ flex: 1 }}>
-              <Group justify="space-between">
-                <Text fw={500}>{job.name}</Text>
-                <Badge color="blue">{job.type}</Badge>
-              </Group>
-              <Group>
-                <IconUser size={16} color="gray" />
-                <Text size="sm" c="dimmed">
-                  {job.client.name}
-                </Text>
-              </Group>
-              <Group>
-                <IconCalendar size={16} color="gray" />
-                <Text size="sm" c="dimmed">
-                  {formatDate(job.date)}
-                </Text>
-              </Group>
-              <Group>
-                <IconClock size={16} color="gray" />
-                <Text size="sm" c="dimmed">
-                  {formatTime(job.date)} • {job.hours}h
-                </Text>
-              </Group>
-              <Group>
-                <IconCurrencyDollar size={16} color="gray" />
-                <Text size="sm" c="dimmed">
-                  ${job.amount.toLocaleString()}
-                </Text>
-              </Group>
-            </div>
-          </Group>
-        </Card>
+      {unscheduledJobs.map((job) => (
+        <DraggableJobCard key={job.id} job={job} onJobSelect={onJobSelect} />
       ))}
     </div>
   );

@@ -81,12 +81,12 @@ export function JobDetailsModal({
           <Group ml="md">
             <IconUser size={20} />
             <Stack gap={4}>
-              <Text>{job.client.name}</Text>
+              <Text>{job.client?.name}</Text>
               <Text size="sm" c="dimmed">
-                {job.client.email}
+                {job.client?.email}
               </Text>
               <Text size="sm" c="dimmed">
-                {job.client.phone}
+                {job.client?.phone}
               </Text>
             </Stack>
           </Group>

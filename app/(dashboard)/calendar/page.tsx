@@ -6,10 +6,12 @@ import { Button, Group } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { ScheduleJobModal } from "./ScheduleJobModal";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import CalendarView from "./CalendarView";
 import ScheduledJobs from "./ScheduledJobs";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
 interface Job {
   id: string;
@@ -29,7 +31,8 @@ interface Job {
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-
+  const notification = usePageNotifications();
+  const queryClient = useQueryClient();
   const [openScheduleJobModal, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
 
@@ -49,41 +52,48 @@ function Calendar() {
     },
   });
 
+  const updateJobMutation = useMutation({
+    mutationFn: (job: Partial<Job> & { id: string }) =>
+      callApi.put(`/jobs/${job.id}`, job),
+    onSuccess: () => {
+      notification.success("Job scheduled successfully.");
+      queryClient.invalidateQueries({ queryKey: ["get-jobs"] });
+    },
+    onError: (error: any) => {
+      notification.error(error.data.message);
+    },
+  });
+
   const handleJobSelect = (job: Job) => {
     const jobDate = new Date(job.date);
     setSelectedDate(jobDate);
     setSelectedJobId(job.id);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { over, active } = event;
+    if (over && over.data.current) {
+      const newDate = over.data.current.date;
+      const job = active.data.current?.job as Job;
+      updateJobMutation.mutate({ ...job, id: job.id, date: newDate });
+    }
+  };
+
   return (
     <>
       <div className="mb-4">
-        <PageHeader
-          title={`Calendar`}
-          // rightSection={
-          //   <Group>
-          //     <Button
-          //       leftSection={<IconPlus size={16} />}
-          //       onClick={openAddStage}
-          //     >
-          //       Schedule Job
-          //     </Button>
-          //   </Group>
-          // }
-        />
+        <PageHeader title={`Calendar`} />
       </div>
-      <div className={styles["calendar-container"]}>
-        <ScheduledJobs onJobSelect={handleJobSelect} />
-        <CalendarView
-          selectedDate={selectedDate}
-          selectedJobId={selectedJobId}
-          getJobs={getJobsQuery?.data || []}
-        />
-        {/* <ScheduleJobModal
-          opened={openScheduleJobModal}
-          onClose={closeAddStage}
-        /> */}
-      </div>
+      <DndContext onDragEnd={handleDragEnd}>
+        <div className={styles["calendar-container"]}>
+          <ScheduledJobs onJobSelect={handleJobSelect} />
+          <CalendarView
+            selectedDate={selectedDate}
+            selectedJobId={selectedJobId}
+            getJobs={getJobsQuery?.data || []}
+          />
+        </div>
+      </DndContext>
     </>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge, Card, Text } from "@mantine/core";
 import { JobDetailsModal } from "../JobDetailsModal";
+import { useDroppable } from "@dnd-kit/core";
 
 interface Job {
   id: string;
@@ -28,7 +29,33 @@ interface DayInfo {
   day: number;
   isCurrentMonth: boolean;
   isToday: boolean;
+  date: Date;
 }
+const CalendarDay = ({
+  dayInfo,
+  children,
+}: {
+  dayInfo: DayInfo;
+  children: ReactNode;
+}) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: dayInfo.date.toISOString(),
+    data: { date: dayInfo.date },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`
+        h-40 bg-white border hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
+        ${dayInfo.isToday ? "bg-blue-50 border-blue-200" : "border-gray-200"}
+        ${isOver ? "bg-green-100" : ""}
+      `}
+    >
+      {children}
+    </div>
+  );
+};
 
 const CalendarView: React.FC<CalendarViewProps> = ({
   getJobs = [],
@@ -41,7 +68,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const [currentView, setCurrentView] = useState("month");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  // Update currentDate when selectedDate changes
   React.useEffect(() => {
     if (selectedDate) {
       setCurrentDate(selectedDate);
@@ -75,18 +101,18 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
     const days: DayInfo[] = [];
 
-    // Add previous month's trailing days
     const prevMonth = new Date(year, month - 1, 0);
     const prevMonthDays = prevMonth.getDate();
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      const day = prevMonthDays - i;
       days.push({
-        day: prevMonthDays - i,
+        day,
         isCurrentMonth: false,
         isToday: false,
+        date: new Date(year, month - 1, day),
       });
     }
 
-    // Add current month's days
     const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday =
@@ -97,16 +123,17 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         day,
         isCurrentMonth: true,
         isToday,
+        date: new Date(year, month, day),
       });
     }
 
-    // Add next month's leading days to complete the grid
     const remainingDays = 42 - days.length; // 6 rows × 7 days
     for (let day = 1; day <= remainingDays; day++) {
       days.push({
         day,
         isCurrentMonth: false,
         isToday: false,
+        date: new Date(year, month + 1, day),
       });
     }
 
@@ -155,6 +182,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   const getJobsForDate = (date: Date) => {
     return getJobs.filter((job) => {
+      if (!job.date) return false;
       const jobDate = new Date(job.date);
       return (
         jobDate.getDate() === date.getDate() &&
@@ -187,7 +215,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         {job.type}
       </Badge>
       <Text size="xs" c="dimmed">
-        {job.client.name}
+        {job.client?.name}
       </Text>
       <Text size="xs" c="dimmed">
         ${job.amount}
@@ -195,10 +223,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     </Card>
   );
 
-  // Get the days for the current month
   const days = getDaysInMonth(currentDate);
 
-  // Get the week days for week view
   const startOfWeek = new Date(currentDate);
   startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
   const weekDays = Array.from({ length: 7 }).map((_, index) => {
@@ -209,20 +235,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <div className="w-full bg-white">
-      {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        {/* View Toggle Buttons */}
         <div className="flex items-center space-x-1">
-          {/* <button
-            onClick={() => setCurrentView("day")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentView === "day"
-                ? "text-white bg-blue-500 hover:bg-blue-600"
-                : "text-gray-600 bg-gray-100 hover:bg-gray-200"
-            }`}
-          >
-            Day
-          </button> */}
           <button
             onClick={() => setCurrentView("week")}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
@@ -245,7 +259,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
         </div>
 
-        {/* Navigation */}
         <div className="flex items-center space-x-4">
           <button
             onClick={handlePreviousNavigation}
@@ -297,7 +310,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
       {currentView === "month" && (
         <div className="p-6">
-          {/* Days of Week Header */}
           <div className="grid grid-cols-7 mb-2">
             {daysOfWeek.map((day) => (
               <div key={day} className="p-4 text-center">
@@ -306,35 +318,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             ))}
           </div>
 
-          {/* Calendar Days Grid */}
           <div className="grid grid-cols-7 gap-px bg-gray-200">
             {days.map((dayInfo, index) => {
-              const currentDayDate = new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth(),
-                dayInfo.day
-              );
               const dayJobs = dayInfo.isCurrentMonth
-                ? getJobsForDate(currentDayDate)
+                ? getJobsForDate(dayInfo.date)
                 : [];
 
               return (
-                <div
-                  key={index}
-                  className={`
-                    h-40 bg-white border hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
-                    ${
-                      dayInfo.isToday
-                        ? "bg-blue-50 border-blue-200"
-                        : "border-gray-200"
-                    }
-                    ${
-                      dayInfo.isCurrentMonth && dayJobs.length > 0
-                        ? "border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
-                        : ""
-                    }
-                  `}
-                >
+                <CalendarDay key={index} dayInfo={dayInfo}>
                   <div className="flex justify-between items-center mb-2">
                     <span
                       className={`
@@ -362,7 +353,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       ))}
                     </>
                   )}
-                </div>
+                </CalendarDay>
               );
             })}
           </div>
@@ -371,7 +362,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
       {currentView === "week" && (
         <div className="p-6">
-          {/* Week header showing days and dates */}
           <div className="grid grid-cols-7 border-b">
             {weekDays.map((day, index) => (
               <div
@@ -398,7 +388,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             ))}
           </div>
 
-          {/* Week content area */}
           <div className="grid grid-cols-7 border rounded-lg mt-4">
             {weekDays.map((day, index) => {
               const dayJobs = getJobsForDate(day);
