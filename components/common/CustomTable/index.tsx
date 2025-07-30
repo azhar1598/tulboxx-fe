@@ -41,7 +41,7 @@ interface SelectableProps<T> {
 interface DataTableProps<T extends BaseRecord> {
   queryKey?: QueryKey;
   url?: string;
-  columns: DataTableColumn<T>[];
+  columns: any;
   sortable?: boolean;
   pagination?: boolean;
   height?: string | number;
@@ -101,7 +101,6 @@ const CustomDataTable = <T extends BaseRecord>({
     direction: defaultSortedColumnDirection || "asc",
   });
 
-  const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(recordsPerPage);
 
@@ -218,18 +217,31 @@ const CustomDataTable = <T extends BaseRecord>({
     }
   }, [isError, notification]);
 
+  // Fixed: Split the useEffect and optimize dependencies
+  const data = useMemo(() => tableData?.data ?? [], [tableData]);
+
+  // Fixed: Handle setMetaData separately to avoid infinite loop
   useEffect(() => {
-    setData(tableData?.data ?? []);
-    if (setMetaData) {
-      setMetaData({ ...state, metaData: tableData?.metadata ?? {} });
+    if (setMetaData && tableData?.metadata) {
+      const newMetaData = { ...state, metaData: tableData.metadata };
+      // Only update if the metadata actually changed
+      if (
+        JSON.stringify(state?.metaData) !== JSON.stringify(tableData.metadata)
+      ) {
+        setMetaData(newMetaData);
+      }
     }
-    if (setState) {
+  }, [setMetaData, tableData?.metadata]); // Removed 'state' from dependencies
+
+  // Fixed: Handle setState separately
+  useEffect(() => {
+    if (setState && tablePageInfo) {
       setState({
-        allRecords: tablePageInfo?.totalRecords ?? 0,
+        allRecords: tablePageInfo.totalRecords ?? 0,
         data: tableData?.data ?? [],
       });
     }
-  }, [tableData, tablePageInfo, setMetaData, setState, state]);
+  }, [setState, tablePageInfo?.totalRecords, tableData?.data]);
 
   useEffect(() => {
     if (onTotalCountChange && tablePageInfo?.totalRecords !== undefined) {
@@ -270,17 +282,17 @@ const CustomDataTable = <T extends BaseRecord>({
         >
           <thead className="hidden md:table-header-group">
             <tr>
-              {selectable && (
+              {/* {selectable && (
                 <th className="p-4 w-4 text-left">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-[#182a4d] focus:ring-[#182a4d] cursor-pointer"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-800 focus:ring-blue-800 cursor-pointer"
                     checked={isAllSelected}
                     ref={(el) => el && (el.indeterminate = isIndeterminate)}
                     onChange={(e) => handleSelectAll(e.target.checked)}
                   />
                 </th>
-              )}
+              )} */}
               {columns.map((column) => (
                 <th
                   key={String(column.accessor)}
@@ -346,9 +358,9 @@ const CustomDataTable = <T extends BaseRecord>({
                   className="text-center p-16"
                 >
                   <div className="flex flex-col items-center gap-6">
-                    <div className="bg-[#182a4d] p-4 rounded-full">
+                    <div className="bg-blue-800 p-4 rounded-full">
                       <Inbox
-                        className="h-10 w-10 text-[#182a4d]"
+                        className="h-10 w-10 text-blue-800"
                         strokeWidth={1.5}
                       />
                     </div>
@@ -371,7 +383,7 @@ const CustomDataTable = <T extends BaseRecord>({
                     <td className="px-4 py-5 rounded-l-xl align-middle">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-[#182a4d] focus:ring-[#182a4d] cursor-pointer"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-800 focus:ring-blue-800 cursor-pointer"
                         checked={selectable.selectedRecords.some(
                           (r) => r.id === record.id
                         )}
@@ -438,7 +450,7 @@ const CustomDataTable = <T extends BaseRecord>({
                   setLimit(Number(e.target.value));
                   setPage(1);
                 }}
-                className="bg-white border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:ring-2 focus:ring-[#182a4d] focus:border-[#182a4d] shadow-sm transition-all"
+                className="bg-white border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:ring-2 focus:ring-blue-800 focus:border-blue-800 shadow-sm transition-all"
               >
                 {[10, 20, 50, 100].map((size) => (
                   <option key={size} value={size}>
@@ -466,7 +478,7 @@ const CustomDataTable = <T extends BaseRecord>({
                       onClick={() => setPage(p)}
                       className={`w-9 h-9 rounded-md text-sm font-semibold transition-all duration-200 ${
                         p === page
-                          ? "bg-gradient-to-br from-[#182a4d]-500 to-[#182a4d] text-white shadow-lg scale-105"
+                          ? "bg-gradient-to-br from-blue-800-500 to-blue-800 text-white shadow-lg scale-105"
                           : "bg-white hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-300 hover:border-gray-400"
                       }`}
                     >

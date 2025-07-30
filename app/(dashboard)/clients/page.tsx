@@ -57,8 +57,7 @@ function Clients() {
     },
   });
 
-  const leads = [];
-  // useLeadsQuery();
+  const leads = useLeadsQuery();
 
   const pageSize = 10;
 

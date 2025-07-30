@@ -36,12 +36,12 @@ import { USStates } from "@/lib/constants";
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.number().min(10, "Phone number is required"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zip: z.number().min(1, "Zip Code is required"),
+  email: z.string().email("Invalid email address").or(z.literal("")).optional(),
+  phone: z.union([z.string(), z.number()]).optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.union([z.string(), z.number()]).optional(),
   notes: z.string().optional(),
 });
 
@@ -148,7 +148,6 @@ const ClientForm = ({
             label="Email"
             placeholder="client@email.com"
             {...form.getInputProps("email")}
-            withAsterisk
           />
         </Grid.Col>
 
@@ -160,16 +159,25 @@ const ClientForm = ({
             allowNegative={false}
             placeholder="(555) 555-5555"
             {...form.getInputProps("phone")}
-            withAsterisk
           />
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: md }}>
-          <Textarea
-            label="Address"
+          <TextInput
+            label="Street Address"
             placeholder="Start typing..."
             {...form.getInputProps("address")}
-            withAsterisk
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: md }}>
+          <Select
+            label="City"
+            placeholder="Select City"
+            data={cities}
+            {...form.getInputProps("city")}
+            disabled={!form.values.state}
+            allowDeselect={false}
+            searchable
           />
         </Grid.Col>
 
@@ -185,20 +193,6 @@ const ClientForm = ({
               setCities(option?.cities || []);
             }}
             allowDeselect={false}
-            withAsterisk
-            searchable
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: md }}>
-          <Select
-            label="City"
-            placeholder="Select City"
-            data={cities}
-            {...form.getInputProps("city")}
-            disabled={!form.values.state}
-            allowDeselect={false}
-            withAsterisk
             searchable
           />
         </Grid.Col>
@@ -211,7 +205,6 @@ const ClientForm = ({
             allowNegative={false}
             placeholder="12345"
             {...form.getInputProps("zip")}
-            withAsterisk
           />
         </Grid.Col>
 
