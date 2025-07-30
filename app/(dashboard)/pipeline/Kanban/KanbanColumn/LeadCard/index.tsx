@@ -10,7 +10,6 @@ import {
 import { Menu } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import AddLeadModal from "../../../AddLeadModal";
 
 const LeadCard = ({ lead, getClients, getStages }) => {
   const {
@@ -114,13 +113,6 @@ const LeadCard = ({ lead, getClients, getStages }) => {
           </Stack>
         </Stack>
       </Card>
-
-      <AddLeadModal
-        opened={addLeadOpened}
-        onClose={closeAddLead}
-        getClients={getClients}
-        getStages={getStages}
-      />
     </>
   );
 };

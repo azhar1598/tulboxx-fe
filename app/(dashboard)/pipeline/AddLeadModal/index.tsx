@@ -12,8 +12,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
-import { IconSearch } from "@tabler/icons-react";
-import { DatePickerInput } from "@mantine/dates";
+import { IconCurrencyDollar, IconSearch } from "@tabler/icons-react";
+import { DateInput, DatePickerInput } from "@mantine/dates";
 
 const formSchema = z.object({
   customerId: z.string().min(1, "Client is required"),
@@ -83,10 +83,16 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
             label="Estimated Value"
             placeholder="Enter estimated value"
             {...form.getInputProps("estimatedValue")}
+            leftSection={<IconCurrencyDollar size={16} color="gray" />}
+            hideControls
+            allowDecimal={false}
+            allowNegative={false}
           />
-          <DatePickerInput
+
+          <DateInput
+            placeholder="Date input"
             label="Expected Close Date"
-            placeholder="Select a date"
+            {...form.getInputProps("expectedCloseDate")}
             {...form.getInputProps("expectedCloseDate")}
           />
           <Textarea
