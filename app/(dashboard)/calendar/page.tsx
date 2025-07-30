@@ -60,16 +60,16 @@ function Calendar() {
       <div className="mb-4">
         <PageHeader
           title={`Calendar`}
-          rightSection={
-            <Group>
-              <Button
-                leftSection={<IconPlus size={16} />}
-                onClick={openAddStage}
-              >
-                Schedule Job
-              </Button>
-            </Group>
-          }
+          // rightSection={
+          //   <Group>
+          //     <Button
+          //       leftSection={<IconPlus size={16} />}
+          //       onClick={openAddStage}
+          //     >
+          //       Schedule Job
+          //     </Button>
+          //   </Group>
+          // }
         />
       </div>
       <div className={styles["calendar-container"]}>
@@ -79,10 +79,10 @@ function Calendar() {
           selectedJobId={selectedJobId}
           getJobs={getJobsQuery?.data || []}
         />
-        <ScheduleJobModal
+        {/* <ScheduleJobModal
           opened={openScheduleJobModal}
           onClose={closeAddStage}
-        />
+        /> */}
       </div>
     </>
   );

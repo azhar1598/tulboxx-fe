@@ -96,13 +96,13 @@ const ClientForm = () => {
       const { name, email, phone, address, city, state, zip, notes } =
         getClientQuery.data?.data;
       form.setValues({
-        name,
-        email,
-        phone: Number(phone),
-        address,
-        city,
-        state,
-        zip: Number(zip),
+        name: name || "",
+        email: email || "",
+        phone: phone ? Number(phone) : null,
+        address: address || "",
+        city: city || "",
+        state: state || "",
+        zip: zip ? Number(zip) : "",
         notes: notes || "",
       });
       const selectedState = USStates.find((s) => s.value === state);
