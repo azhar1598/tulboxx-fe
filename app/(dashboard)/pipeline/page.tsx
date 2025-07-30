@@ -370,6 +370,31 @@ export default function PipelinePage() {
     getLeadsQuery.data,
   ]);
 
+  const filteredColumns = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return columns;
+    }
+
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const newColumns: Columns = {};
+
+    for (const columnId in columns) {
+      const column = columns[columnId];
+      const stageMatches = column.title.toLowerCase().includes(lowercasedQuery);
+      const matchingLeads = column.leads.filter((lead) =>
+        lead.name.toLowerCase().includes(lowercasedQuery)
+      );
+
+      if (stageMatches || matchingLeads.length > 0) {
+        newColumns[columnId] = {
+          ...column,
+          leads: stageMatches ? column.leads : matchingLeads,
+        };
+      }
+    }
+    return newColumns;
+  }, [columns, searchQuery]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -442,7 +467,7 @@ export default function PipelinePage() {
               }}
             >
               <Kanban
-                columns={columns}
+                columns={filteredColumns}
                 getClients={getClients}
                 getStages={getStagesQuery}
               />
