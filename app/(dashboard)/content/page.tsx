@@ -187,7 +187,7 @@ function Content() {
           searchable={false}
           // onRecordsPerPageChange={handleRecordsPerPage}
         /> */}
-        <CustomTable
+        {/* <CustomTable
           // getStoresQuery?.tableData ||
 
           records={getContentQuery?.data?.data || []}
@@ -197,7 +197,7 @@ function Content() {
           pageSize={getContentQuery?.data?.metadata?.recordsPerPage || 0}
           onPageChange={handlePageChange}
           isLoading={getContentQuery.isLoading}
-        />
+        /> */}
       </Stack>
     </>
   );

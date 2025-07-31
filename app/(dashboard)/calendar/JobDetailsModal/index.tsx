@@ -155,7 +155,10 @@ export function JobDetailsModal({
           <Select
             label="Client"
             placeholder="Select client"
-            data={clients}
+            data={clients.map((client: any) => ({
+              value: client.value,
+              label: client.label,
+            }))}
             {...form.getInputProps("client_id")}
           />
           <NumberInput label="Amount" {...form.getInputProps("amount")} />
