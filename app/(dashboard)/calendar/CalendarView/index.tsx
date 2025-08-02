@@ -3,6 +3,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge, Card, Text } from "@mantine/core";
 import { JobDetailsModal } from "../JobDetailsModal";
 import { useDroppable } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from "@dnd-kit/core";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { JobCard } from "../ScheduledJobs";
 
 interface Job {
   id: string;
@@ -48,8 +56,8 @@ const CalendarDay = ({
     <div
       ref={setNodeRef}
       className={`
-        h-40 bg-white border hover:bg-gray-50 transition-colors cursor-pointer overflow-y-auto relative
-        ${dayInfo.isToday ? "bg-blue-50 border-blue-200" : "border-gray-200"}
+        h-40 bg-white border-t border-l border-gray-200 transition-colors cursor-pointer relative
+        ${!dayInfo.isCurrentMonth ? "bg-gray-50" : ""}
         ${isOver ? "bg-green-100" : ""}
       `}
     >
@@ -209,17 +217,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         setSelectedJob(job);
       }}
     >
-      <Text size="sm" fw={500} truncate>
+      <Text size="xs" fw={500} truncate>
         {job.name}
-      </Text>
-      <Badge size="sm" variant="light" color="blue" className="mb-1">
-        {job.type}
-      </Badge>
-      <Text size="xs" c="dimmed">
-        {job.client?.name}
-      </Text>
-      <Text size="xs" c="dimmed">
-        ${job.amount}
       </Text>
     </Card>
   );
@@ -235,91 +234,62 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   });
 
   return (
-    <div className="w-full bg-white">
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        <div className="flex items-center space-x-1">
-          <button
-            onClick={() => setCurrentView("week")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentView === "week"
-                ? "text-white bg-blue-500 hover:bg-blue-600"
-                : "text-gray-600 bg-gray-100 hover:bg-gray-200"
-            }`}
-          >
-            Week
-          </button>
-          <button
-            onClick={() => setCurrentView("month")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentView === "month"
-                ? "text-white bg-blue-500 hover:bg-blue-600"
-                : "text-gray-600 bg-gray-100 hover:bg-gray-200"
-            }`}
-          >
-            Month
-          </button>
-        </div>
-
+    <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+      <div className="flex items-center justify-between pb-4">
+        <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
+          {`${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
+        </h2>
         <div className="flex items-center space-x-4">
-          <button
-            onClick={handlePreviousNavigation}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous{" "}
-            {currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-          </button>
-
-          <h2 className="text-xl font-semibold text-gray-900">
-            {currentView === "month"
-              ? `${
-                  monthNames[currentDate.getMonth()]
-                } ${currentDate.getFullYear()}`
-              : currentView === "week"
-              ? `${new Date(
-                  currentDate.setDate(
-                    currentDate.getDate() - currentDate.getDay()
-                  )
-                ).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                })} - ${new Date(
-                  currentDate.setDate(
-                    currentDate.getDate() - currentDate.getDay() + 6
-                  )
-                ).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}`
-              : currentDate.toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-          </h2>
-
-          <button
-            onClick={handleNextNavigation}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Next {currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </button>
+          <div className="flex items-center space-x-1 p-1 bg-gray-100 rounded-lg">
+            <button
+              onClick={() => setCurrentView("month")}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                currentView === "month"
+                  ? "text-white bg-gray-800 shadow"
+                  : "text-gray-600 hover:bg-white"
+              }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setCurrentView("week")}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                currentView === "week"
+                  ? "text-white bg-gray-800 shadow"
+                  : "text-gray-600 hover:bg-white"
+              }`}
+            >
+              Week
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={handlePreviousNavigation}
+              className="p-2 text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleNextNavigation}
+              className="p-2 text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 
       {currentView === "month" && (
-        <div className="p-6">
-          <div className="grid grid-cols-7 mb-2">
+        <div>
+          <div className="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
             {daysOfWeek.map((day) => (
-              <div key={day} className="p-4 text-center">
-                <span className="text-sm font-medium text-gray-900">{day}</span>
+              <div key={day} className="py-3">
+                {day}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-px bg-gray-200">
+          <div className="grid grid-cols-7">
             {days.map((dayInfo, index) => {
               const dayJobs = dayInfo.isCurrentMonth
                 ? getJobsForDate(dayInfo.date)
@@ -327,33 +297,31 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
               return (
                 <CalendarDay key={index} dayInfo={dayInfo}>
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="p-2 h-full">
                     <span
                       className={`
-                        text-sm font-medium
+                        text-xs font-semibold
                         ${
                           dayInfo.isCurrentMonth
                             ? "text-gray-900"
                             : "text-gray-400"
                         }
-                        ${dayInfo.isToday ? "text-blue-600 font-semibold" : ""}
+                        ${
+                          dayInfo.isToday
+                            ? "text-white bg-blue-600 rounded-full w-6 h-6 flex items-center justify-center"
+                            : ""
+                        }
                       `}
                     >
                       {dayInfo.day}
                     </span>
-                    {dayInfo.isCurrentMonth && dayJobs.length >= 2 && (
-                      <span className="text-red-500 font-semibold text-sm">
-                        {dayJobs.length}
-                      </span>
-                    )}
+                    <div className="mt-2 space-y-1 overflow-y-auto max-h-24">
+                      {dayInfo.isCurrentMonth &&
+                        dayJobs.map((job) => (
+                          <JobCard key={job.id} job={job} />
+                        ))}
+                    </div>
                   </div>
-                  {dayInfo.isCurrentMonth && dayJobs.length > 0 && (
-                    <>
-                      {dayJobs.map((job) => (
-                        <JobCard key={job.id} job={job} />
-                      ))}
-                    </>
-                  )}
                 </CalendarDay>
               );
             })}
