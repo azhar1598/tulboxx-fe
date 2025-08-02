@@ -40,7 +40,7 @@ import {
   IconUser,
   IconBriefcase,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import StatisticsCards from "./StatisticsCards";
@@ -50,11 +50,16 @@ import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import { Hourglass } from "lucide-react";
 import dayjs from "dayjs";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
-function Clients() {
+function Jobs() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [apiData, setApiData] = useState([]);
+  const [deleteJobId, setDeleteJobId] = useState();
+
+  const notifications = usePageNotifications();
+  const queryClient = useQueryClient();
 
   const [state, setState] = useState({
     sortOrder: "",
@@ -64,6 +69,20 @@ function Clients() {
       totalRecords: 0,
     },
     data: null,
+  });
+
+  const deleteJobMutation = useMutation({
+    mutationFn: (id: any) => {
+      setDeleteJobId(id);
+      return callApi.delete(`/jobs/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-jobs"] });
+      notifications.success("Job deleted successfully");
+    },
+    onError: () => {
+      notifications.error("Failed to delete job");
+    },
   });
 
   const pageSize = 10;
@@ -135,7 +154,7 @@ function Clients() {
       render: ({ date }: any) => (
         <Text size="14px" className="flex items-center gap-2">
           <IconCalendar size={16} />
-          {dayjs(date).format("MM-DD-YYYY")}
+          {date ? dayjs(date).format("MM-DD-YYYY") : "Unscheduled"}
         </Text>
       ),
     },
@@ -184,10 +203,8 @@ function Clients() {
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
             // leftSection={<IconTrash size={16} />}
-            // onClick={() => deletEstimateMutation.mutate(record.id)}
-            // loading={
-            //   record.id === deletEstimateId && deletEstimateMutation.isPending
-            // }
+            onClick={() => deleteJobMutation.mutate(record.id)}
+            loading={record?.id === deleteJobId && deleteJobMutation.isPending}
           >
             DELETE
           </Button>
@@ -230,6 +247,7 @@ function Clients() {
         />
         <CustomTable
           url={"/jobs"}
+          queryKey={["get-jobs"]}
           search={search}
           columns={columns}
           pagination={true}
@@ -245,4 +263,4 @@ function Clients() {
   );
 }
 
-export default Clients;
+export default Jobs;
