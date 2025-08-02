@@ -12,6 +12,10 @@ import { Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import EditLeadModal from "./EditLeadCard";
+import callApi from "@/services/apiService";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
 const LeadCard = ({
   lead,
@@ -44,6 +48,7 @@ const LeadCard = ({
   const [addStageOpened, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
   const [selectedLead, setSelectedLead] = useState(null);
+  const notification = usePageNotifications();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -52,6 +57,19 @@ const LeadCard = ({
   };
 
   console.log("lead", lead);
+
+  const deleteLeadMutation = useMutation({
+    mutationFn: (id: any) => {
+      return callApi.delete(`/pipeline/leads/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-leads"] });
+      notification.success("Lead   deleted successfully");
+    },
+    onError: () => {
+      notification.error("Failed to delete lead");
+    },
+  });
 
   return (
     <>
@@ -112,7 +130,11 @@ const LeadCard = ({
                 >
                   Edit Lead
                 </Menu.Item>
-                <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                <Menu.Item
+                  leftSection={<IconTrash size={14} />}
+                  color="red"
+                  onClick={() => deleteLeadMutation.mutate(lead.id)}
+                >
                   Delete Lead
                 </Menu.Item>
               </Menu.Dropdown>
