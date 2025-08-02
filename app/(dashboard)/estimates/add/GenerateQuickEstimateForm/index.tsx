@@ -82,28 +82,6 @@ function GenerateQuickEstimateForm({
           <Stack gap={10}>
             <Grid>
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <TextInput
-                  label="Project Name"
-                  placeholder="Type here..."
-                  className=""
-                  {...form.getInputProps("projectName")}
-                />
-              </Grid.Col>
-
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <NumberInput
-                  label="Project Estimate"
-                  placeholder="$5,000"
-                  className=""
-                  allowDecimal={false}
-                  allowNegative={false}
-                  hideControls
-                  leftSection={<IconCurrencyDollar stroke={2} size={15} />}
-                  {...form.getInputProps("projectEstimate")}
-                />
-              </Grid.Col>
-
-              <Grid.Col span={{ base: 12, md: 6 }}>
                 <Flex justify="space-between" align="center" className="">
                   <Select
                     label="Choose Client"
@@ -127,6 +105,28 @@ function GenerateQuickEstimateForm({
                     </Text>
                   </Button>
                 </Flex>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput
+                  label="Project Name"
+                  placeholder="Type here..."
+                  className=""
+                  {...form.getInputProps("projectName")}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <NumberInput
+                  label="Project Estimate"
+                  placeholder="$5,000"
+                  className=""
+                  allowDecimal={false}
+                  allowNegative={false}
+                  hideControls
+                  leftSection={<IconCurrencyDollar stroke={2} size={15} />}
+                  {...form.getInputProps("projectEstimate")}
+                />
               </Grid.Col>
 
               <Grid.Col span={{ base: 12, md: 6 }}>

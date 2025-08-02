@@ -46,6 +46,31 @@ function BasicForm({
       <Stack gap={10}>
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
+            <Flex justify="space-between" align="center" className="">
+              <Select
+                label="Choose Client"
+                placeholder="Search Clients..."
+                data={getClients?.data}
+                searchable
+                clearable
+                w="75%"
+                {...form.getInputProps("clientId")}
+                rightSection={<IconSearch size={16} color="gray" />}
+              />
+              <Button
+                size="sm"
+                color="white"
+                mt={25}
+                leftSection={<IconPlus size={16} color="white" />}
+                onClick={() => setClientModalOpened(true)}
+              >
+                <Text size="14px" fw={500}>
+                  New Client
+                </Text>
+              </Button>
+            </Flex>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput
               label="Project Name"
               placeholder="Type here..."
@@ -75,31 +100,6 @@ function BasicForm({
                 />
               </Group>
             </Radio.Group>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
-            <Flex justify="space-between" align="center" className="">
-              <Select
-                label="Choose Client"
-                placeholder="Search Clients..."
-                data={getClients?.data}
-                searchable
-                clearable
-                w="75%"
-                {...form.getInputProps("clientId")}
-                rightSection={<IconSearch size={16} color="gray" />}
-              />
-              <Button
-                size="sm"
-                color="white"
-                mt={25}
-                leftSection={<IconPlus size={16} color="white" />}
-                onClick={() => setClientModalOpened(true)}
-              >
-                <Text size="14px" fw={500}>
-                  New Client
-                </Text>
-              </Button>
-            </Flex>
           </Grid.Col>
         </Grid>
 
