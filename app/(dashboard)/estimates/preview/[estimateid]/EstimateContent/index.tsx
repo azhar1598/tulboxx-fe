@@ -15,7 +15,7 @@ import {
   Upload,
   Image as ImageIcon,
 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { createClient } from "@/utils/supabase/client";
@@ -67,12 +67,21 @@ export const EstimateContent = ({
     setLineItemsState(lineItems || []);
   }, [lineItems]);
 
-  // Load existing logo if available
+  const getUserProfile = useQuery({
+    queryKey: ["get-user-profile"],
+    queryFn: async () => {
+      const response = await callApi.get(`/user-profile`);
+      return response;
+    },
+    select: (data) => data?.data,
+  });
+
+  // Load existing logo from user profile only
   useEffect(() => {
-    if (getEstimateQuery?.data?.companyLogo) {
-      setCompanyLogo(getEstimateQuery.data.companyLogo);
+    if (getUserProfile?.data?.logo) {
+      setCompanyLogo(getUserProfile.data.logo);
     }
-  }, [getEstimateQuery?.data]);
+  }, [getUserProfile?.data]);
 
   // Handle logo file selection (no upload yet)
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,6 +170,8 @@ export const EstimateContent = ({
     }));
   };
 
+  console.log(getUserProfile?.data, "getUserProfile");
+
   // Handle line item changes
   const handleLineItemChange = (id, field, value) => {
     const newLineItems = lineItemsState.map((item) => {
@@ -241,7 +252,7 @@ export const EstimateContent = ({
   const updateUserProfile = useMutation({
     mutationFn: async (values: any) => {
       const formattedData = {
-        logo: values.logo,
+        logo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/user-logo/${values.logo}`,
       };
       const response = await callApi.patch("/user-profile", formattedData);
       return response.data;
