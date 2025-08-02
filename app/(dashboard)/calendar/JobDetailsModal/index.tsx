@@ -24,6 +24,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useEffect, useState } from "react";
+import { DollarSignIcon } from "lucide-react";
 
 interface Client {
   id: string;
@@ -39,11 +40,11 @@ interface Job {
   hours: number;
   notes: string;
   client: {
-    id: string;
     name: string;
     email: string;
     phone: string;
   };
+  client_id?: string;
 }
 
 interface JobDetailsModalProps {
@@ -93,10 +94,12 @@ export function JobDetailsModal({
         hours: job.hours || 0,
         notes: job.notes || "",
         date: job.date ? new Date(job.date) : new Date(),
-        client_id: job.client?.id || "",
+        client_id: job.client_id || "",
       });
     }
   }, [job]);
+
+  console.log("job", job);
 
   const updateJobMutation = useMutation({
     mutationFn: (updatedJob: Partial<Job>) =>
@@ -161,13 +164,22 @@ export function JobDetailsModal({
             }))}
             {...form.getInputProps("client_id")}
           />
-          <NumberInput label="Amount" {...form.getInputProps("amount")} />
-          <NumberInput label="Hours" {...form.getInputProps("hours")} />
+          <NumberInput
+            label="Amount"
+            {...form.getInputProps("amount")}
+            allowDecimal={false}
+            hideControls
+            leftSection={<DollarSignIcon size={16} />}
+          />
+          <NumberInput
+            label="Hours"
+            {...form.getInputProps("hours")}
+            hideControls
+            leftSection={<IconClock size={16} />}
+          />
           <Textarea label="Notes" {...form.getInputProps("notes")} />
           <Group justify="right" mt="md">
-            <Button variant="default" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
+            <Button onClick={() => setIsEditing(false)}>Cancel</Button>
             <Button onClick={handleSave} loading={updateJobMutation.isPending}>
               Save
             </Button>

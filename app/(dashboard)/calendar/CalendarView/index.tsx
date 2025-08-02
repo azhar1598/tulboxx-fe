@@ -402,11 +402,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         ? "bg-blue-50"
                         : ""
                     }
-                    ${
-                      dayJobs.length > 0
-                        ? "border-t-2 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
-                        : ""
-                    }
+                    ${dayJobs.length > 0 ? "" : ""}
                   `}
                 >
                   {dayJobs.map((job) => (
