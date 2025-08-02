@@ -2,7 +2,7 @@ import React, { useState, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge, Card, Text } from "@mantine/core";
 import { JobDetailsModal } from "../JobDetailsModal";
-import { useDroppable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import {
   DndContext,
   DragEndEvent,
@@ -27,6 +27,29 @@ interface Job {
     phone: string;
   };
 }
+
+interface DraggableJobProps {
+  job: Job;
+  children: React.ReactNode;
+}
+
+const DraggableJob = ({ job, children }: DraggableJobProps) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: job.id,
+    data: { job, fromCalendar: true },
+  });
+
+  const style: React.CSSProperties = {
+    opacity: isDragging ? 0.5 : 1,
+    cursor: "grab",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
 
 interface CalendarViewProps {
   getJobs?: Job[];
@@ -318,7 +341,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     <div className="mt-2 space-y-1 overflow-y-auto max-h-24">
                       {dayInfo.isCurrentMonth &&
                         dayJobs.map((job) => (
-                          <JobCard key={job.id} job={job} />
+                          <DraggableJob key={job.id} job={job}>
+                            <JobCard job={job} />
+                          </DraggableJob>
                         ))}
                     </div>
                   </div>
@@ -381,7 +406,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 >
                   <CalendarDay dayInfo={dayInfo}>
                     {dayJobs.map((job) => (
-                      <JobCard key={job.id} job={job} />
+                      <DraggableJob key={job.id} job={job}>
+                        <JobCard job={job} />
+                      </DraggableJob>
                     ))}
                   </CalendarDay>
                 </div>

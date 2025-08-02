@@ -85,9 +85,22 @@ function Calendar() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { over, active } = event;
     if (over && over.data.current) {
-      const newDate = over.data.current.date;
+      const newDate = over.data.current.date as Date;
       const job = active.data.current?.job as Job;
-      updateJobMutation.mutate({ ...job, id: job.id, date: newDate });
+
+      const jobDate = job.date ? new Date(job.date) : null;
+      const isUnscheduled = !jobDate || isNaN(jobDate.getTime());
+
+      if (
+        isUnscheduled ||
+        (jobDate && jobDate.toDateString() !== newDate.toDateString())
+      ) {
+        updateJobMutation.mutate({
+          ...job,
+          id: job.id,
+          date: newDate.toISOString(),
+        });
+      }
     }
     setActiveJob(null);
   };
