@@ -106,7 +106,9 @@ function Calendar() {
             getJobs={getJobsQuery?.data || []}
           />
         </div>
-        <DragOverlay>{activeJob ? <JobCard job={activeJob} /> : null}</DragOverlay>
+        <DragOverlay>
+          {activeJob ? <JobCard job={activeJob} /> : null}
+        </DragOverlay>
       </DndContext>
     </>
   );
