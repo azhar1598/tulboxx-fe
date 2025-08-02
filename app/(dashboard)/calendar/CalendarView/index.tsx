@@ -321,8 +321,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               return (
                 <CalendarDay key={index} dayInfo={dayInfo}>
                   <div className="p-2 h-full">
-                    <span
-                      className={`
+                    <div className="flex justify-between items-start">
+                      <span
+                        className={`
                         text-xs font-semibold
                         ${
                           dayInfo.isCurrentMonth
@@ -335,9 +336,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                             : ""
                         }
                       `}
-                    >
-                      {dayInfo.day}
-                    </span>
+                      >
+                        {dayInfo.day}
+                      </span>
+                      {dayInfo.isCurrentMonth && dayJobs.length > 1 && (
+                        <Badge
+                          variant="light"
+                          color="gray"
+                          size="sm"
+                          radius="sm"
+                        >
+                          {dayJobs.length} Jobs
+                        </Badge>
+                      )}
+                    </div>
                     <div className="mt-2 space-y-1 overflow-y-auto max-h-24">
                       {dayInfo.isCurrentMonth &&
                         dayJobs.map((job) => (
