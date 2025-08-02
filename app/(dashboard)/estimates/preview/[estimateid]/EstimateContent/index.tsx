@@ -54,8 +54,6 @@ export const EstimateContent = ({
     }));
   };
 
-  console.log("getEstimateQuery", getEstimateQuery?.data);
-
   // Handle scope of work item change
   const handleScopeItemChange = (index, value) => {
     if (!Array.isArray(editableDescription?.scopeOfWork)) return;
@@ -137,7 +135,6 @@ export const EstimateContent = ({
 
   const updateEstimate = useMutation({
     mutationFn: ({ data, lineItems }: any) => {
-      console.log("data", data, lineItems);
       const newData = {
         ...getEstimateQuery?.data,
         clientId: getEstimateQuery?.data.client_id,
@@ -145,7 +142,6 @@ export const EstimateContent = ({
         lineItems: lineItems,
         projectEstimate: Number(getEstimateQuery?.data.projectEstimate),
       };
-      console.log("newData", newData);
       return callApi.patch(`/estimates/${getEstimateQuery?.data.id}`, newData);
     },
     onSuccess: async (res) => {
@@ -159,155 +155,186 @@ export const EstimateContent = ({
     },
   });
 
+  const totalAmount =
+    lineItemsState?.reduce((acc, item) => acc + item.totalPrice, 0) || 0;
+
   if (isFullEditor) {
     return null;
   }
 
   return (
-    <Group gap={20} className="md:w-full">
-      <Stack className="w-full">
-        <h2 className="text-xl font-bold">Project Overview</h2>
+    <div
+      className="w-full bg-white"
+      style={{ fontFamily: "Arial, sans-serif" }}
+    >
+      {/* Header Section */}
+      <div className="flex justify-between items-start mb-8">
+        {/* Logo Section */}
+        <div className="w-64 h-32 border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-50">
+          <span className="text-gray-500 text-sm font-medium">
+            PLACEHOLDER FOR
+            <br />
+            COMPANY LOGO
+          </span>
+        </div>
+
+        {/* Prepared For Section */}
+        <div className="text-right">
+          <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-2">
+            PREPARED FOR:
+          </div>
+          <div className="text-sm leading-relaxed">
+            <div className="font-semibold">
+              {getEstimateQuery?.data?.client?.name || "Client Name"}
+            </div>
+            <div>
+              {getEstimateQuery?.data?.client?.email || "client@email.com"}
+            </div>
+            <div>
+              {getEstimateQuery?.data?.client?.address || "Client Address"}
+            </div>
+            <div>{getEstimateQuery?.data?.client?.phone || "Client Phone"}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Project Overview Section */}
+      <div className="mb-8">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
+          PROJECT OVERVIEW:
+        </div>
         {isEditing ? (
-          <div className="mb-4">
-            <Textarea
-              value={editableDescription?.projectOverview || ""}
-              onChange={(e) =>
-                handleTextChange("projectOverview", e.target.value)
-              }
-              minRows={4}
-              className="w-full"
-              rows={3}
-            />
+          <Textarea
+            value={editableDescription?.projectOverview || ""}
+            onChange={(e) =>
+              handleTextChange("projectOverview", e.target.value)
+            }
+            minRows={3}
+            className="w-full text-sm"
+            placeholder="Project overview description..."
+          />
+        ) : (
+          <div className="text-sm leading-relaxed text-justify">
+            {description?.projectOverview || "No project overview available"}
+          </div>
+        )}
+      </div>
+
+      {/* Scope of Work Section */}
+      <div className="mb-8">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
+          SCOPE OF WORK:
+        </div>
+        {isEditing ? (
+          <div>
+            {Array.isArray(editableDescription?.scopeOfWork) ? (
+              <div>
+                {editableDescription.scopeOfWork.map((item, index) => (
+                  <div key={index} className="mb-3 flex items-start gap-2">
+                    <span className="text-sm font-bold mt-1">•</span>
+                    <div className="flex-grow">
+                      <Textarea
+                        value={item}
+                        onChange={(e) =>
+                          handleScopeItemChange(index, e.target.value)
+                        }
+                        className="w-full text-sm"
+                        autosize
+                        minRows={1}
+                      />
+                    </div>
+                    <Button
+                      size="xs"
+                      color="red"
+                      variant="outline"
+                      disabled={editableDescription.scopeOfWork.length <= 1}
+                      onClick={() => removeScopeItem(index)}
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  leftSection={<PlusCircle size={14} />}
+                  onClick={addScopeItem}
+                  className="mt-2"
+                >
+                  Add Item
+                </Button>
+              </div>
+            ) : (
+              <Textarea
+                value={editableDescription?.scopeOfWork || ""}
+                onChange={(e) =>
+                  handleTextChange("scopeOfWork", e.target.value)
+                }
+                minRows={4}
+                className="w-full text-sm"
+                placeholder="Scope of work description..."
+              />
+            )}
           </div>
         ) : (
-          <div
-            dangerouslySetInnerHTML={{ __html: description?.projectOverview }}
-          />
-        )}
-      </Stack>
-
-      <Stack className="w-full">
-        <h2 className="text-xl font-bold">Scope of Work</h2>
-        {isEditing ? (
-          <>
-            <ul className="list-none pl-0">
-              {Array.isArray(editableDescription?.scopeOfWork) ? (
-                editableDescription.scopeOfWork.map((item, index) => (
-                  <li key={index} className="mb-4">
-                    <div className="flex items-start gap-2">
-                      <div className="flex-grow">
-                        <Textarea
-                          value={item}
-                          onChange={(e) =>
-                            handleScopeItemChange(index, e.target.value)
-                          }
-                          className="w-full"
-                        />
-                      </div>
-                      <Button
-                        disabled={editableDescription.scopeOfWork.length <= 1}
-                        className="mt-2"
-                        onClick={() => removeScopeItem(index)}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <div className="mb-4">
-                  <Textarea
-                    value={editableDescription?.scopeOfWork || ""}
-                    onChange={(e) =>
-                      handleTextChange("scopeOfWork", e.target.value)
-                    }
-                    minRows={4}
-                    className="w-full"
-                  />
-                </div>
-              )}
-            </ul>
-            {Array.isArray(editableDescription?.scopeOfWork) && (
-              <Button
-                className="self-start mt-2"
-                leftSection={<PlusCircle size={16} />}
-                onClick={addScopeItem}
-              >
-                Add Item
-              </Button>
-            )}
-          </>
-        ) : (
-          <ul className="list-disc pl-6">
+          <div className="text-sm leading-relaxed">
             {Array.isArray(description?.scopeOfWork) ? (
-              description?.scopeOfWork.map((item, index) => (
-                <li key={index} dangerouslySetInnerHTML={{ __html: item }} />
+              description.scopeOfWork.map((item, index) => (
+                <div key={index} className="mb-2 flex items-start gap-2">
+                  <span className="font-bold">•</span>
+                  <span className="font-bold">{item.split(":")[0]}:</span>
+                  <span>{item.split(":").slice(1).join(":").trim()}</span>
+                </div>
               ))
             ) : typeof description?.scopeOfWork === "string" ? (
-              description?.scopeOfWork
+              description.scopeOfWork
                 .split(/\\n|\\r|\n/)
                 .filter((item) => item.trim())
                 .map((item, index) => (
-                  <li key={index}>{item.replace(/^- /, "")}</li>
+                  <div key={index} className="mb-2 flex items-start gap-2">
+                    <span className="font-bold">•</span>
+                    <span>{item.replace(/^- /, "")}</span>
+                  </div>
                 ))
             ) : (
-              <li>No scope items</li>
+              <div>No scope items available</div>
             )}
-          </ul>
-        )}
-      </Stack>
-
-      <Stack className="w-full">
-        <h2 className="text-xl font-bold">Timeline</h2>
-        {isEditing ? (
-          <div className="mb-4">
-            <Textarea
-              value={editableDescription?.timeline || ""}
-              onChange={(e) => handleTextChange("timeline", e.target.value)}
-              minRows={4}
-              className="w-full"
-            />
           </div>
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: description?.timeline }} />
         )}
-      </Stack>
+      </div>
 
-      <Stack className="w-full">
-        <h2 className="text-xl font-bold">Pricing</h2>
-        {isEditing ? (
-          <div className="mb-4">
-            <Textarea
-              value={editableDescription?.pricing || ""}
-              onChange={(e) => handleTextChange("pricing", e.target.value)}
-              minRows={4}
-              rows={3}
-              className="w-full"
-            />
-          </div>
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: description?.pricing }} />
-        )}
-      </Stack>
+      {/* Cost Breakdown Section */}
+      <div className="mb-8">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
+          COST BREAKDOWN:
+        </div>
 
-      <div className="line-items mt-8 w-full">
-        <h2 className="text-xl font-semibold mb-2">Line Items</h2>
         {isEditing ? (
-          <>
-            <table className="w-full border-collapse">
+          <div>
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border p-2 text-left">Description</th>
-                  <th className="border p-2 text-right">Unit Price</th>
-                  <th className="border p-2 text-right">Quantity</th>
-                  <th className="border p-2 text-right">Total</th>
-                  <th className="border p-2 text-center">Actions</th>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 p-2 text-left font-bold">
+                    DESCRIPTION
+                  </th>
+                  <th className="border border-gray-400 p-2 text-center font-bold">
+                    QUANTITY/UNIT
+                  </th>
+                  <th className="border border-gray-400 p-2 text-center font-bold">
+                    UNIT PRICE
+                  </th>
+                  <th className="border border-gray-400 p-2 text-center font-bold">
+                    LINE TOTAL
+                  </th>
+                  <th className="border border-gray-400 p-2 text-center font-bold">
+                    ACTIONS
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {lineItemsState.map((item) => (
                   <tr key={item.id}>
-                    <td className="border p-2 text-left">
+                    <td className="border border-gray-400 p-2">
                       <TextInput
                         value={item.description}
                         onChange={(e) =>
@@ -317,23 +344,10 @@ export const EstimateContent = ({
                             e.target.value
                           )
                         }
+                        size="sm"
                       />
                     </td>
-                    <td className="border p-2 text-right">
-                      <TextInput
-                        type="number"
-                        value={item.unitPrice}
-                        onChange={(e) =>
-                          handleLineItemChange(
-                            item.id,
-                            "unitPrice",
-                            Number(e.target.value)
-                          )
-                        }
-                        leftSection={<DollarSign size={16} />}
-                      />
-                    </td>
-                    <td className="border p-2 text-right">
+                    <td className="border border-gray-400 p-2 text-center">
                       <TextInput
                         type="number"
                         value={item.quantity}
@@ -344,38 +358,57 @@ export const EstimateContent = ({
                             Number(e.target.value)
                           )
                         }
+                        size="sm"
                       />
                     </td>
-                    <td className="border p-2 text-right">
+                    <td className="border border-gray-400 p-2 text-center">
+                      <TextInput
+                        type="number"
+                        value={item.unitPrice}
+                        onChange={(e) =>
+                          handleLineItemChange(
+                            item.id,
+                            "unitPrice",
+                            Number(e.target.value)
+                          )
+                        }
+                        leftSection={<DollarSign size={14} />}
+                        size="sm"
+                      />
+                    </td>
+                    <td className="border border-gray-400 p-2 text-center font-medium">
                       ${item.totalPrice.toFixed(2)}
                     </td>
-                    <td className="border p-2 text-center">
-                      <Button size="sm" onClick={() => removeLineItem(item.id)}>
-                        <Trash2 size={16} />
+                    <td className="border border-gray-400 p-2 text-center">
+                      <Button
+                        size="xs"
+                        color="red"
+                        onClick={() => removeLineItem(item.id)}
+                      >
+                        <Trash2 size={12} />
                       </Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="flex justify-between mt-4">
+
+            <div className="flex justify-between items-center mt-4">
               <Button
+                leftSection={<PlusCircle size={14} />}
                 onClick={addLineItem}
-                leftSection={<PlusCircle size={16} />}
+                size="sm"
+                variant="outline"
               >
                 Add Line Item
               </Button>
-              <p className="text-right">
-                <span className="font-bold">Grand Total: </span>
-                <span className="font-bold">
-                  $
-                  {lineItemsState
-                    .reduce((acc, item) => acc + item.totalPrice, 0)
-                    .toFixed(2)}
-                </span>
-              </p>
+
+              <div className="bg-gray-800 text-white px-6 py-3 font-bold text-lg">
+                TOTAL: ${totalAmount.toFixed(2)}
+              </div>
             </div>
-            <div className="flex justify-end mt-4">
+
+            <div className="flex justify-end mt-6">
               <Button
                 color="green"
                 onClick={() =>
@@ -390,70 +423,114 @@ export const EstimateContent = ({
                 Save Changes
               </Button>
             </div>
-          </>
+          </div>
         ) : (
-          <>
-            <table className="w-full border-collapse">
+          <div>
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border p-2 text-left">Description</th>
-                  <th className="border p-2 text-right">Unit Price</th>
-                  <th className="border p-2 text-right">Quantity</th>
-                  <th className="border p-2 text-right">Total</th>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 p-3 text-left font-bold">
+                    DESCRIPTION
+                  </th>
+                  <th className="border border-gray-400 p-3 text-center font-bold">
+                    QUANTITY/UNIT
+                  </th>
+                  <th className="border border-gray-400 p-3 text-center font-bold">
+                    UNIT PRICE
+                  </th>
+                  <th className="border border-gray-400 p-3 text-center font-bold">
+                    LINE TOTAL
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {lineItems?.map((item) => (
                   <tr key={item.id}>
-                    <td className="border p-2 text-left">{item.description}</td>
-                    <td className="border p-2 text-right">
+                    <td className="border border-gray-400 p-3">
+                      {item.description}
+                    </td>
+                    <td className="border border-gray-400 p-3 text-center">
+                      {item.quantity}
+                    </td>
+                    <td className="border border-gray-400 p-3 text-center">
                       ${item.unitPrice.toFixed(2)}
                     </td>
-                    <td className="border p-2 text-right">x{item.quantity}</td>
-                    <td className="border p-2 text-right">
+                    <td className="border border-gray-400 p-3 text-center">
                       ${item.totalPrice.toFixed(2)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
             <div className="flex justify-end mt-4">
-              <p className="text-right">
-                <span className="font-bold">Grand Total: </span>
-                <span className="font-bold">
-                  $
-                  {lineItems
-                    ?.reduce((acc, item) => acc + item.totalPrice, 0)
-                    .toFixed(2)}
-                </span>
-              </p>
+              <div className="bg-gray-800 text-white px-6 py-3 font-bold text-lg">
+                TOTAL: ${totalAmount.toFixed(2)}
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      <Stack className="w-full">
-        <h2 className="text-xl font-bold">Additional Notes</h2>
+      {/* Timeline Section */}
+      <div className="mb-8">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
+          TIMELINE:
+        </div>
         {isEditing ? (
-          <div className="mb-4">
-            <Textarea
-              defaultValue="We ensure that all aspects of the project will comply with relevant regulations and standards. Should any unforeseen complications arise during the project, we will notify you immediately and discuss any necessary adjustments. We value your trust and look forward to helping you enhance your home. Please feel free to contact us with any questions or concerns you may have."
-              minRows={4}
-              rows={5}
-              className="w-full"
-            />
-          </div>
+          <Textarea
+            value={editableDescription?.timeline || ""}
+            onChange={(e) => handleTextChange("timeline", e.target.value)}
+            minRows={3}
+            className="w-full text-sm"
+            placeholder="Timeline information..."
+          />
         ) : (
-          <p>
-            We ensure that all aspects of the project will comply with relevant
-            regulations and standards. Should any unforeseen complications arise
-            during the project, we will notify you immediately and discuss any
-            necessary adjustments. We value your trust and look forward to
-            helping you enhance your home. Please feel free to contact us with
-            any questions or concerns you may have.
-          </p>
+          <div className="text-sm leading-relaxed">
+            <div className="mb-2">
+              <span className="font-bold">• Estimated Project Duration:</span>{" "}
+              {description?.timeline || "1 Full work day"}
+            </div>
+            <div className="mb-2">
+              <span className="font-bold">• Start Availability:</span> Can begin
+              within 5 business days of approval
+            </div>
+            <div className="mb-2">
+              <span className="font-bold">• Optional:</span> Add weather buffer
+            </div>
+          </div>
         )}
-      </Stack>
-    </Group>
+      </div>
+
+      {/* Additional Notes Section */}
+      <div className="mb-8">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
+          ADDITIONAL NOTES:
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="border-b border-gray-400 h-6"></div>
+          ))}
+        </div>
+      </div>
+
+      {/* Signature Section */}
+      <div className="mt-12">
+        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-6">
+          SIGNATURE:
+        </div>
+        <div className="flex justify-between">
+          <div className="w-64">
+            <div className="text-sm font-bold mb-2">Approval of Estimate</div>
+            <div className="border-b-2 border-gray-400 h-12 mb-2"></div>
+            <div className="text-sm">
+              <div className="mb-1">Signature: _________________________</div>
+              <div className="mb-1">Printed Name: _____________________</div>
+              <div>Date: ____________________________</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
