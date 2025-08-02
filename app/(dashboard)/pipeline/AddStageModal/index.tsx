@@ -1,8 +1,8 @@
 import {
   Button,
+  ColorInput,
   Group,
   Modal,
-  Select,
   Stack,
   TextInput,
   Textarea,
@@ -47,7 +47,19 @@ const AddStageModal = ({ opened, onClose }) => {
     },
   });
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit = (values: any) => {
+    const stages: any[] | undefined = queryClient.getQueryData(["get-stages"]);
+
+    console.log("stages", stages, values);
+    if (
+      stages &&
+      stages.some(
+        (stage) => stage?.name?.toLowerCase() === values?.name?.toLowerCase()
+      )
+    ) {
+      notification.error("Stage with this name already exists.");
+      return;
+    }
     addStageMutation.mutate(values);
   };
 
@@ -61,17 +73,10 @@ const AddStageModal = ({ opened, onClose }) => {
             {...form.getInputProps("name")}
             withAsterisk
           />
-          <Select
+          <ColorInput
             label="Color"
+            placeholder="Select color"
             {...form.getInputProps("color")}
-            data={[
-              { value: "#10b981", label: "Green" },
-              { value: "#3b82f6", label: "Blue" },
-              { value: "#f59e0b", label: "Yellow" },
-              { value: "#ef4444", label: "Red" },
-              { value: "#8b5cf6", label: "Purple" },
-              { value: "#06b6d4", label: "Cyan" },
-            ]}
             withAsterisk
           />
           {/* <NumberInput
