@@ -53,7 +53,17 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
     },
   });
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit = (values: any) => {
+    const leads: any[] | undefined = queryClient.getQueryData(["get-leads"]);
+
+    console.log("leads", leads, values);
+    if (
+      leads &&
+      leads.some((lead) => lead.client_id.toString() === values.customerId)
+    ) {
+      notification.error("This client is already assigned to a lead.");
+      return;
+    }
     addLeadMutation.mutate(values);
   };
 
