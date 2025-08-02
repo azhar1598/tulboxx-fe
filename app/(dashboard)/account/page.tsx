@@ -75,12 +75,12 @@ function AccountForm() {
             <Tabs.Tab value="personal" leftSection={<IconUser size={14} />}>
               Personal & Company
             </Tabs.Tab>
-            <Tabs.Tab
+            {/* <Tabs.Tab
               value="banking"
               leftSection={<IconBuildingBank size={14} />}
             >
               Banking Details
-            </Tabs.Tab>
+            </Tabs.Tab> */}
             <Tabs.Tab
               value="third-party-setups"
               leftSection={<IconBrandFacebook size={14} />}

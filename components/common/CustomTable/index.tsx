@@ -471,24 +471,19 @@ const CustomDataTable = <T extends BaseRecord>({
                 {Array.from(
                   { length: tablePageInfo.totalPages },
                   (_, i) => i + 1
-                )
-                  .map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`w-9 h-9 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        p === page
-                          ? "bg-gradient-to-br from-blue-800-500 to-blue-800 text-white shadow-lg scale-105"
-                          : "bg-white hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-300 hover:border-gray-400"
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))
-                  .slice(
-                    Math.max(0, page - 3),
-                    Math.min(page + 2, tablePageInfo.totalPages)
-                  )}
+                ).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-9 h-9 rounded-md text-sm font-semibold transition-all duration-200 ${
+                      p === page
+                        ? "bg-[#182a4d] text-white shadow-lg scale-105"
+                        : "bg-white hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-300 hover:border-gray-400"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
               </div>
               <button
                 onClick={() => setPage(page + 1)}
