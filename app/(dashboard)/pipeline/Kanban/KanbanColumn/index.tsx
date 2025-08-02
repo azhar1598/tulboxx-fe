@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Paper,
   Group,
@@ -14,8 +14,22 @@ import { useSortable, SortableContext } from "@dnd-kit/sortable";
 
 import { CSS } from "@dnd-kit/utilities";
 import LeadCard from "./LeadCard";
+import EditStageModal from "./EditStageModal";
+import { useDisclosure } from "@mantine/hooks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
+import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
-export const KanbanColumn = ({ column, getClients, getStages }) => {
+export const KanbanColumn = ({
+  column,
+  getClients,
+  getStages,
+  setCurrentStageSelected,
+  openUpdateStage,
+}) => {
+  const [menuOpened, setMenuOpened] = useState(false);
+  const queryClient = useQueryClient();
+  const notification = usePageNotifications();
   const {
     setNodeRef,
     attributes,
@@ -28,6 +42,7 @@ export const KanbanColumn = ({ column, getClients, getStages }) => {
     data: {
       type: "column",
     },
+    disabled: menuOpened,
   });
 
   const style = {
@@ -37,6 +52,19 @@ export const KanbanColumn = ({ column, getClients, getStages }) => {
   };
 
   console.log("column", column);
+
+  const deleteStageMutation = useMutation({
+    mutationFn: (id: any) => {
+      return callApi.delete(`/pipeline/stages/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-stages"] });
+      notification.success("Stage deleted successfully");
+    },
+    onError: () => {
+      notification.error("Failed to delete stage");
+    },
+  });
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -67,7 +95,12 @@ export const KanbanColumn = ({ column, getClients, getStages }) => {
                 {column.title}
               </Text>
             </Group>
-            <Menu withinPortal position="bottom-end">
+            <Menu
+              withinPortal
+              position="bottom-end"
+              onOpen={() => setMenuOpened(true)}
+              onClose={() => setMenuOpened(false)}
+            >
               <Menu.Target>
                 <ActionIcon
                   variant="subtle"
@@ -78,10 +111,24 @@ export const KanbanColumn = ({ column, getClients, getStages }) => {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item leftSection={<IconEdit size={14} />}>
+                <Menu.Item
+                  leftSection={<IconEdit size={14} />}
+                  onClick={() => {
+                    console.log("cursor", column);
+                    setCurrentStageSelected(column);
+                    openUpdateStage();
+                  }}
+                >
                   Edit Stage
                 </Menu.Item>
-                <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                <Menu.Item
+                  leftSection={<IconTrash size={14} />}
+                  color="red"
+                  onClick={() => {
+                    console.log("cursor");
+                    deleteStageMutation.mutate(column.id);
+                  }}
+                >
                   Delete Stage
                 </Menu.Item>
               </Menu.Dropdown>

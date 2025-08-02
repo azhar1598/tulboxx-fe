@@ -293,7 +293,6 @@ export const USStates = [
       { value: "Juneau", label: "Juneau" },
       { value: "Ketchikan", label: "Ketchikan" },
       { value: "Juneau", label: "Juneau" },
-      { value: "Ketchikan", label: "Ketchikan" },
     ],
   },
   {

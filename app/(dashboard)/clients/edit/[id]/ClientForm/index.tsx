@@ -151,7 +151,7 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Name"
-            placeholder="Type here..."
+            placeholder="John Doe"
             {...form.getInputProps("name")}
             withAsterisk
           />
@@ -180,13 +180,13 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Street Address"
-            placeholder="Start typing..."
+            placeholder="123 Main Street, Apartment 4B"
             {...form.getInputProps("address")}
           />
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Select
+          {/* <Select
             label="City"
             placeholder="Select City"
             data={cities}
@@ -194,6 +194,11 @@ const ClientForm = () => {
             disabled={!form.values.state}
             allowDeselect={false}
             searchable
+          /> */}
+          <TextInput
+            label="City"
+            placeholder="Eg: New York"
+            {...form.getInputProps("city")}
           />
         </Grid.Col>
 

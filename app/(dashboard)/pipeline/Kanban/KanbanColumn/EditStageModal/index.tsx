@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Stage name is required"),
@@ -19,27 +20,44 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-const AddStageModal = ({ opened, onClose }) => {
+const EditStageModal = ({
+  opened,
+  onClose,
+  currentStageSelected,
+  setCurrentStageSelected,
+}) => {
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
 
   const form = useForm({
     initialValues: {
       name: "",
-      color: "#3b82f6",
+      color: "",
       description: "",
     },
     validate: zodResolver(formSchema),
     validateInputOnChange: true,
   });
-  console.log("temmmmm");
-  const addStageMutation = useMutation({
-    mutationFn: (values: any) => callApi.post("/pipeline/stages", values),
+
+  useEffect(() => {
+    if (!currentStageSelected) return;
+    form.setValues({
+      name: currentStageSelected?.title,
+      color: currentStageSelected?.color,
+      description: currentStageSelected?.description || "",
+    });
+    form.resetDirty();
+  }, [currentStageSelected?.id]);
+
+  const updateStageMutation = useMutation({
+    mutationFn: (values: any) =>
+      callApi.put(`/pipeline/stages/${currentStageSelected.id}`, values),
     onSuccess: () => {
-      notification.success("Stage added successfully");
+      notification.success("Stage updated successfully");
       queryClient.invalidateQueries({ queryKey: ["get-leads"] });
       queryClient.invalidateQueries({ queryKey: ["get-stages"] });
       onClose();
+      setCurrentStageSelected(null);
       form.reset();
     },
     onError: (error: any) => {
@@ -48,11 +66,13 @@ const AddStageModal = ({ opened, onClose }) => {
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    addStageMutation.mutate(values);
+    updateStageMutation.mutate(values);
   };
 
+  console.log("form.values", form.values);
+
   return (
-    <Modal opened={opened} onClose={onClose} title="Add New Stage" size="md">
+    <Modal opened={opened} onClose={onClose} title="Update Stage" size="md">
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
@@ -75,16 +95,16 @@ const AddStageModal = ({ opened, onClose }) => {
             withAsterisk
           />
           {/* <NumberInput
-          label="Default Probability (%)"
-          placeholder="Enter default probability"
-          value={form.probability}
-          onChange={(value: number) =>
-            setForm({ ...form, probability: value.toString() })
-          }
-          min={0}
-          max={100}
-          rightSection="%"
-        /> */}
+            label="Default Probability (%)"
+            placeholder="Enter default probability"
+            value={form.probability}
+            onChange={(value: number) =>
+              setForm({ ...form, probability: value.toString() })
+            }
+            min={0}
+            max={100}
+            rightSection="%"
+          /> */}
 
           <Textarea
             rows={2}
@@ -94,13 +114,13 @@ const AddStageModal = ({ opened, onClose }) => {
           />
 
           <Group justify="flex-end" mt="md">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={() => onClose()}>Cancel</Button>
             <Button
               type="submit"
-              loading={addStageMutation.isPending}
-              disabled={!form.isValid()}
+              loading={updateStageMutation.isPending}
+              disabled={!form.isValid() || !form.isDirty()}
             >
-              Add Stage
+              Update Stage
             </Button>
           </Group>
         </Stack>
@@ -109,4 +129,4 @@ const AddStageModal = ({ opened, onClose }) => {
   );
 };
 
-export default AddStageModal;
+export default EditStageModal;
