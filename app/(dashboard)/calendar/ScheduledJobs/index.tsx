@@ -29,6 +29,41 @@ interface ScheduledJobsProps {
   onJobSelect: (job: Job) => void;
 }
 
+export const JobCard = ({ job }: { job: Job }) => {
+  return (
+    <Card
+      withBorder
+      radius="md"
+      padding="sm"
+      mb="sm"
+      className="hover:shadow-lg transition-shadow"
+    >
+      <Stack gap="xs">
+        <Group justify="space-between">
+          <Text fw={500} size="sm">
+            {job.name}
+          </Text>
+          <Badge color="teal" variant="light">
+            {job.type}
+          </Badge>
+        </Group>
+        <Group gap="xs">
+          <IconUser size={16} color="gray" />
+          <Text size="xs" c="dimmed">
+            {job.client?.name}
+          </Text>
+        </Group>
+        <Group gap="xs">
+          <IconCurrencyDollar size={16} color="gray" />
+          <Text size="xs" c="dimmed">
+            ${job.amount?.toLocaleString()}
+          </Text>
+        </Group>
+      </Stack>
+    </Card>
+  );
+};
+
 const DraggableJobCard = ({
   job,
   onJobSelect,
@@ -36,53 +71,25 @@ const DraggableJobCard = ({
   job: Job;
   onJobSelect: (job: Job) => void;
 }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: job.id,
-      data: { job },
-    });
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: job.id,
+    data: { job },
+  });
 
   const style: React.CSSProperties = {
-    cursor: isDragging ? "grabbing" : "grab",
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-      : undefined,
-    zIndex: isDragging ? 1000 : undefined,
+    cursor: "grab",
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <Card
-        withBorder
-        radius="md"
-        padding="sm"
-        mb="sm"
-        className="hover:shadow-lg transition-shadow"
-        onClick={() => onJobSelect(job)}
-      >
-        <Stack gap="xs">
-          <Group justify="space-between">
-            <Text fw={500} size="sm">
-              {job.name}
-            </Text>
-            <Badge color="teal" variant="light">
-              {job.type}
-            </Badge>
-          </Group>
-          <Group gap="xs">
-            <IconUser size={16} color="gray" />
-            <Text size="xs" c="dimmed">
-              {job.client?.name}
-            </Text>
-          </Group>
-          <Group gap="xs">
-            <IconCurrencyDollar size={16} color="gray" />
-            <Text size="xs" c="dimmed">
-              ${job.amount?.toLocaleString()}
-            </Text>
-          </Group>
-        </Stack>
-      </Card>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      onClick={() => onJobSelect(job)}
+    >
+      <JobCard job={job} />
     </div>
   );
 };

@@ -392,6 +392,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           <div className="grid grid-cols-7 border rounded-lg mt-4">
             {weekDays.map((day, index) => {
               const dayJobs = getJobsForDate(day);
+              const dayInfo = {
+                day: day.getDate(),
+                isCurrentMonth: true,
+                isToday: day.toDateString() === new Date().toDateString(),
+                date: day,
+              };
+
               return (
                 <div
                   key={index}
@@ -402,12 +409,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         ? "bg-blue-50"
                         : ""
                     }
-                    ${dayJobs.length > 0 ? "" : ""}
                   `}
                 >
-                  {dayJobs.map((job) => (
-                    <JobCard key={job.id} job={job} />
-                  ))}
+                  <CalendarDay dayInfo={dayInfo}>
+                    {dayJobs.map((job) => (
+                      <JobCard key={job.id} job={job} />
+                    ))}
+                  </CalendarDay>
                 </div>
               );
             })}

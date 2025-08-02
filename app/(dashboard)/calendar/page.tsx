@@ -9,8 +9,13 @@ import { ScheduleJobModal } from "./ScheduleJobModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import CalendarView from "./CalendarView";
-import ScheduledJobs from "./ScheduledJobs";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import ScheduledJobs, { JobCard } from "./ScheduledJobs";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
 interface Job {
@@ -31,6 +36,7 @@ interface Job {
 function Calendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [activeJob, setActiveJob] = useState<Job | null>(null);
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
   const [openScheduleJobModal, { open: openAddStage, close: closeAddStage }] =
@@ -70,6 +76,12 @@ function Calendar() {
     setSelectedJobId(job.id);
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    if (event.active.data.current?.job) {
+      setActiveJob(event.active.data.current.job as Job);
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { over, active } = event;
     if (over && over.data.current) {
@@ -77,6 +89,7 @@ function Calendar() {
       const job = active.data.current?.job as Job;
       updateJobMutation.mutate({ ...job, id: job.id, date: newDate });
     }
+    setActiveJob(null);
   };
 
   return (
@@ -84,7 +97,7 @@ function Calendar() {
       <div className="mb-4">
         <PageHeader title={`Calendar`} />
       </div>
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className={styles["calendar-container"]}>
           <ScheduledJobs onJobSelect={handleJobSelect} />
           <CalendarView
@@ -93,6 +106,7 @@ function Calendar() {
             getJobs={getJobsQuery?.data || []}
           />
         </div>
+        <DragOverlay>{activeJob ? <JobCard job={activeJob} /> : null}</DragOverlay>
       </DndContext>
     </>
   );
