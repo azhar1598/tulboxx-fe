@@ -128,7 +128,7 @@ function Clients() {
 
     {
       accessor: "location",
-      title: "Location",
+      title: "Address",
       textAlign: "left",
       sortable: true,
       width: "20%",

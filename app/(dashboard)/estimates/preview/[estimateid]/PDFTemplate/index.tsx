@@ -235,19 +235,7 @@ export const generatePDFTemplate = (estimateData, aiContent) => {
               }</p>
             </div>
             
-            <div class="signatures">
-              <div class="signature-block">
-                <p><strong>Client Signature</strong></p>
-                <div class="signature-line"></div>
-                <p>Date: _________________</p>
-              </div>
-              <div class="signature-block">
-                <p><strong>Company Representative</strong></p>
-                <div class="signature-line"></div>
-                <p>Date: _________________</p>
-              </div>
-            </div>
-            
+        
             <div class="footer">
               <p>Thank you for your business!</p>
               <p style="font-size: 10px; margin-top: 5px; color: #95a5a6;">Powered by Tulboxx</p>

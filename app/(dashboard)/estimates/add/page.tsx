@@ -27,6 +27,7 @@ import {
   rem,
   Tabs,
   FloatingIndicator,
+  Modal,
 } from "@mantine/core";
 import {
   IconBuilding,
@@ -56,6 +57,7 @@ import GenerateQuickEstimateForm from "./GenerateQuickEstimateForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import ClientForm from "../../clients/add/ClientForm";
 
 const quickEstimationSchema = z
   .object({
@@ -107,6 +109,7 @@ const detailedEstimationSchema = z.object({
 
 const StoreRegistrationContent = () => {
   const [activeTab, setActiveTab] = useState<string | null>("quick");
+  const [clientModalOpened, setClientModalOpened] = useState(false);
   const router = useRouter();
   const notification = usePageNotifications();
   const form = useForm({
@@ -267,7 +270,7 @@ const StoreRegistrationContent = () => {
               active={activeTab}
               nextStep={() => {}}
               prevStep={() => {}}
-              setClientModalOpened={() => {}}
+              setClientModalOpened={setClientModalOpened}
               getClients={getClients}
               generateEstimation={generateEstimation}
             />
@@ -302,6 +305,18 @@ const StoreRegistrationContent = () => {
           </Flex>
         </SimpleGrid>
       </div> */}
+      <Modal
+        opened={clientModalOpened}
+        onClose={() => setClientModalOpened(false)}
+        title="Add New Client"
+      >
+        <ClientForm
+          setClientModalOpened={setClientModalOpened}
+          getClients={getClients}
+          estimateForm={form}
+          invoiceForm={form}
+        />
+      </Modal>
     </Stack>
   );
 };

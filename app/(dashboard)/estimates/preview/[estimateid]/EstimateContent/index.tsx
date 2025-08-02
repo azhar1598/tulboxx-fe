@@ -748,7 +748,7 @@ export const EstimateContent = ({
       </div>
 
       {/* Additional Notes Section */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-4">
           ADDITIONAL NOTES:
         </div>
@@ -757,10 +757,10 @@ export const EstimateContent = ({
             <div key={i} className="border-b border-gray-400 h-6"></div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Signature Section */}
-      <div className="mt-12">
+      {/* <div className="mt-12">
         <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-6">
           SIGNATURE:
         </div>
@@ -775,7 +775,7 @@ export const EstimateContent = ({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

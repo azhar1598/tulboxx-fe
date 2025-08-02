@@ -151,7 +151,7 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Name"
-            placeholder="John Doe"
+            placeholder="Enter client's full name"
             {...form.getInputProps("name")}
             withAsterisk
           />
@@ -160,7 +160,7 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Email"
-            placeholder="client@email.com"
+            placeholder="Enter email address"
             // disabled={true}
             {...form.getInputProps("email")}
           />
@@ -172,7 +172,7 @@ const ClientForm = () => {
             allowDecimal={false}
             hideControls
             allowNegative={false}
-            placeholder="(555) 555-5555"
+            placeholder="Enter phone number"
             {...form.getInputProps("phone")}
           />
         </Grid.Col>
@@ -180,7 +180,7 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Street Address"
-            placeholder="123 Main Street, Apartment 4B"
+            placeholder="Enter street address"
             {...form.getInputProps("address")}
           />
         </Grid.Col>
@@ -197,7 +197,7 @@ const ClientForm = () => {
           /> */}
           <TextInput
             label="City"
-            placeholder="Eg: New York"
+            placeholder="Enter city"
             {...form.getInputProps("city")}
           />
         </Grid.Col>
@@ -224,7 +224,7 @@ const ClientForm = () => {
             allowDecimal={false}
             hideControls
             allowNegative={false}
-            placeholder="12345"
+            placeholder="Enter ZIP code"
             {...form.getInputProps("zip")}
           />
         </Grid.Col>
@@ -232,7 +232,7 @@ const ClientForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Textarea
             label="Additional Notes"
-            placeholder="Start typing..."
+            placeholder="Add any relevant notes here"
             {...form.getInputProps("notes")}
           />
         </Grid.Col>

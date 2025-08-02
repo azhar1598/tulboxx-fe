@@ -10,13 +10,17 @@ import {
   Group,
   Modal,
   NumberInput,
+  Paper,
   Radio,
+  ScrollArea,
   Select,
   Stack,
   Text,
   TextInput,
   Textarea,
+  UnstyledButton,
 } from "@mantine/core";
+import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import {
   IconBuilding,
   IconHome,
@@ -24,7 +28,108 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+const CustomClientSelect = ({
+  form,
+  getClients,
+  setClientModalOpened,
+}: {
+  form: any;
+  getClients: any;
+  setClientModalOpened: (opened: boolean) => void;
+}) => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [search, setSearch] = useState("");
+  const ref = useClickOutside(() => close());
+
+  useEffect(() => {
+    const selectedClient = getClients?.data?.find(
+      (c) => c.value === form.values.clientId
+    );
+    if (selectedClient) {
+      setSearch(selectedClient.label);
+    } else if (!opened) {
+      setSearch("");
+    }
+  }, [form.values.clientId, getClients?.data, opened]);
+
+  const filteredClients = (getClients?.data || []).filter((client) =>
+    client.label.toLowerCase().includes(search.toLowerCase().trim())
+  );
+
+  const items = filteredClients.map((item) => (
+    <UnstyledButton
+      key={item.value}
+      p="xs"
+      onClick={() => {
+        form.setFieldValue("clientId", item.value);
+        close();
+      }}
+      style={{ borderRadius: "var(--mantine-radius-sm)" }}
+      className="hover:bg-gray-100 w-full"
+    >
+      <Text size="sm">{item.label}</Text>
+    </UnstyledButton>
+  ));
+
+  return (
+    <Box ref={ref} style={{ position: "relative" }}>
+      <TextInput
+        label="Choose Client"
+        placeholder="Search Clients..."
+        value={search}
+        onChange={(event) => {
+          setSearch(event.currentTarget.value);
+          form.setFieldValue("clientId", null); // Clear selection when searching
+          open();
+        }}
+        onFocus={open}
+        rightSection={<IconSearch size={16} color="gray" />}
+      />
+
+      {opened && (
+        <Paper
+          shadow="md"
+          withBorder
+          p="md"
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            marginTop: 4,
+          }}
+        >
+          <Button
+            fullWidth
+            leftSection={<IconPlus size={16} />}
+            onMouseDown={(e) => {
+              // e.preventDefault();
+              console.log("hello");
+              setClientModalOpened(true);
+              // close();
+            }}
+            mb="sm"
+          >
+            Add New Client
+          </Button>
+
+          <ScrollArea.Autosize mah={200}>
+            {items.length > 0 ? (
+              items
+            ) : (
+              <Text c="dimmed" ta="center" size="sm">
+                Nothing found
+              </Text>
+            )}
+          </ScrollArea.Autosize>
+        </Paper>
+      )}
+    </Box>
+  );
+};
 
 function BasicForm({
   form,
@@ -46,8 +151,8 @@ function BasicForm({
       <Stack gap={10}>
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Flex justify="space-between" align="center" className="">
-              <Select
+            {/* <Flex justify="space-between" align="center" className=""> */}
+            {/* <Select
                 label="Choose Client"
                 placeholder="Search Clients..."
                 data={getClients?.data}
@@ -67,8 +172,13 @@ function BasicForm({
                 <Text size="14px" fw={500}>
                   New Client
                 </Text>
-              </Button>
-            </Flex>
+              </Button> */}
+            <CustomClientSelect
+              form={form}
+              getClients={getClients}
+              setClientModalOpened={setClientModalOpened}
+            />
+            {/* </Flex> */}
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput

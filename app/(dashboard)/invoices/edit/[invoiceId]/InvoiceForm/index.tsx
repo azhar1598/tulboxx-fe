@@ -405,7 +405,7 @@ function InvoiceForm({
                 </Stack>
               </Grid.Col>
             )}
-            <Grid.Col span={{ base: 12, md: 6 }}>
+            {/* <Grid.Col span={{ base: 12, md: 6 }}>
               <Text fw={500} size="sm" mb="md">
                 Remit Payment To
               </Text>
@@ -442,13 +442,8 @@ function InvoiceForm({
                     disabled
                   />
                 </Grid.Col>
-                {/* <Grid.Col span={12}>
-                  <Link href="/account" className="underline text-blue-600">
-                    Edit
-                  </Link>
-                </Grid.Col> */}
               </Grid>
-            </Grid.Col>
+            </Grid.Col> */}
           </Grid>
         </Grid.Col>
       </Grid>
