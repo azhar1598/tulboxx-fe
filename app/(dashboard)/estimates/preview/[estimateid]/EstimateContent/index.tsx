@@ -341,7 +341,13 @@ export const EstimateContent = ({
       {/* Header Section */}
       <div className="flex justify-between items-start mb-8">
         {/* Logo Section */}
-        <div className="w-64 h-32 border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-50 relative overflow-hidden">
+        <div
+          className={`w-64 h-32 flex items-center justify-center relative overflow-hidden ${
+            companyLogo || logoPreviewUrl
+              ? "bg-white"
+              : "border-2 border-dashed border-gray-400 bg-gray-50"
+          }`}
+        >
           {companyLogo || logoPreviewUrl ? (
             <div className="relative w-full h-full">
               <img
