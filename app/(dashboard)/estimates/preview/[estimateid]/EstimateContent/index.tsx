@@ -51,6 +51,8 @@ export const EstimateContent = ({
     useState<GeneratedDescription>();
   const [lineItemsState, setLineItemsState] = useState(lineItems || []);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null); // New state for file
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null); // New state for preview
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notification = usePageNotifications();
 
@@ -72,10 +74,8 @@ export const EstimateContent = ({
     }
   }, [getEstimateQuery?.data]);
 
-  // Handle logo upload - Modified to use Supabase storage
-  const handleLogoUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  // Handle logo file selection (no upload yet)
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -91,44 +91,22 @@ export const EstimateContent = ({
       return;
     }
 
-    try {
-      // Sanitize filename
-      const sanitizedFileName = file.name
-        .replace(/\s+/g, "_") // replace spaces with underscores
-        .replace(/[^a-zA-Z0-9._-]/g, ""); // remove special chars except . _ -
+    // Store the file and create preview URL
+    setSelectedLogoFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setLogoPreviewUrl(previewUrl);
 
-      // Create unique file path
-      const filePath = `user-logo/${Date.now()}_${sanitizedFileName}`;
-
-      // Upload to Supabase storage
-      const { data, error } = await supabase.storage
-        .from("user-logo") // You can change this bucket name as needed
-        .upload(filePath, file);
-
-      if (error) {
-        notification.error("Image upload failed: " + error.message);
-        return;
-      }
-
-      // Get public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("user-logo")
-        .getPublicUrl(filePath);
-
-      const imageUrl = publicUrlData.publicUrl;
-
-      // Set the public URL as the logo
-      setCompanyLogo(imageUrl);
-      notification.success("Logo uploaded successfully!");
-    } catch (error) {
-      console.error("Upload error:", error);
-      notification.error("Failed to upload logo. Please try again.");
-    }
+    notification.success("Logo selected! Click 'Save Changes' to upload.");
   };
 
   // Remove logo
   const handleRemoveLogo = () => {
     setCompanyLogo(null);
+    setSelectedLogoFile(null);
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl); // Clean up preview URL
+      setLogoPreviewUrl(null);
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -226,19 +204,107 @@ export const EstimateContent = ({
     setLineItemsState(lineItemsState.filter((item) => item.id !== id));
   };
 
+  // Helper function to upload file to Supabase and get Key
+  const uploadLogoToSupabase = async (
+    file: File
+  ): Promise<{ key: string; id: string }> => {
+    try {
+      // Sanitize filename
+      const sanitizedFileName = file.name
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+      // Create unique file path
+      const filePath = `user-logo/${Date.now()}_${sanitizedFileName}`;
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from("user-logo")
+        .upload(filePath, file);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Return the key and generate an ID (or get from your API response)
+      return {
+        key: filePath, // This is the "Key" from your example
+        id: crypto.randomUUID(), // Generate ID or get from API response
+      };
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
+
+  // Update user profile mutation
+  const updateUserProfile = useMutation({
+    mutationFn: async (values: any) => {
+      const formattedData = {
+        logo: values.logo,
+      };
+      const response = await callApi.patch("/user-profile", formattedData);
+      return response.data;
+    },
+    onSuccess: () => {
+      notification.success("User profile updated successfully");
+      // getUserProfile.refetch(); // Uncomment if you have this query
+    },
+    onError: () => {
+      notification.error("User profile update failed");
+      console.log("error");
+    },
+  });
+
   const updateEstimate = useMutation({
-    mutationFn: ({ data, lineItems, logo }: any) => {
+    mutationFn: async ({ data, lineItems, logo }: any) => {
+      let finalLogoUrl = logo;
+      let logoKey = null;
+
+      // Upload new logo if file is selected
+      if (selectedLogoFile) {
+        try {
+          // Step 1: Upload image and get Key
+          const uploadResult = await uploadLogoToSupabase(selectedLogoFile);
+          logoKey = uploadResult.key;
+
+          // Step 2: Update user profile with logo key
+          await updateUserProfile.mutateAsync({ logo: logoKey });
+
+          // Step 3: Get public URL for display
+          const { data: publicUrlData } = supabase.storage
+            .from("user-logo")
+            .getPublicUrl(logoKey);
+
+          finalLogoUrl = publicUrlData.publicUrl;
+        } catch (error) {
+          throw new Error(
+            `Logo upload or profile update failed: ${error.message}`
+          );
+        }
+      }
+
       const newData = {
         ...getEstimateQuery?.data,
         clientId: getEstimateQuery?.data.client_id,
         ai_generated_estimate: JSON.stringify(data),
         lineItems: lineItems,
-        companyLogo: logo,
+        companyLogo: finalLogoUrl,
         projectEstimate: Number(getEstimateQuery?.data.projectEstimate),
       };
       return callApi.patch(`/estimates/${getEstimateQuery?.data.id}`, newData);
     },
     onSuccess: async (res) => {
+      // Update the logo state with the uploaded URL
+      if (selectedLogoFile && logoPreviewUrl) {
+        // Get the final URL from the response or construct it
+        const finalUrl = res.data?.companyLogo || logoPreviewUrl;
+        setCompanyLogo(finalUrl);
+        setSelectedLogoFile(null);
+        URL.revokeObjectURL(logoPreviewUrl); // Clean up preview URL
+        setLogoPreviewUrl(null);
+      }
+
       setIsEditing(false);
       notification.success(`Estimate updated successfully`);
       getEstimateQuery.refetch();
@@ -265,13 +331,19 @@ export const EstimateContent = ({
       <div className="flex justify-between items-start mb-8">
         {/* Logo Section */}
         <div className="w-64 h-32 border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-50 relative overflow-hidden">
-          {companyLogo ? (
+          {companyLogo || logoPreviewUrl ? (
             <div className="relative w-full h-full">
               <img
-                src={companyLogo}
+                src={logoPreviewUrl || companyLogo}
                 alt="Company Logo"
                 className="w-full h-full object-contain"
               />
+              {/* Show indicator for unsaved logo */}
+              {logoPreviewUrl && (
+                <div className="absolute top-1 right-1 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
+                  Unsaved
+                </div>
+              )}
               {isEditing && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                   <div className="flex gap-2">
@@ -570,7 +642,7 @@ export const EstimateContent = ({
                   updateEstimate.mutate({
                     data: editableDescription,
                     lineItems: lineItemsState,
-                    logo: companyLogo,
+                    logo: companyLogo, // Pass current logo URL, file upload is handled in mutation
                   })
                 }
                 loading={updateEstimate.isPending}
