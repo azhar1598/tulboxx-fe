@@ -98,12 +98,15 @@ function Clients() {
       textAlign: "left",
       sortable: true,
       width: "30%",
-      render: ({ email, phone }: any) => (
-        <Text size="14px" className="flex items-center gap-3">
-          <IconMail size={16} />
-          {email}
-        </Text>
-      ),
+      render: ({ email }: any) =>
+        email ? (
+          <Text size="14px" className="flex items-center gap-3">
+            <IconMail size={16} />
+            {email}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
 
     {
@@ -112,12 +115,15 @@ function Clients() {
       textAlign: "left",
       sortable: true,
       width: "20%",
-      render: ({ phone }: any) => (
-        <Text size="14px" className="flex items-center gap-2">
-          <IconPhone size={16} />
-          {phone}
-        </Text>
-      ),
+      render: ({ phone }: any) =>
+        phone ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconPhone size={16} />
+            {phone}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
 
     {
@@ -126,12 +132,18 @@ function Clients() {
       textAlign: "left",
       sortable: true,
       width: "20%",
-      render: ({ city, state, zip }: any) => (
-        <Text size="14px" className="flex items-center gap-2">
-          <IconMapPin size={16} />
-          {city}, {state}, {zip}
-        </Text>
-      ),
+      render: ({ city, state, zip }: any) => {
+        const locationParts = [city, state, zip].filter(Boolean);
+        if (locationParts.length === 0) {
+          return <Text size="14px">N/A</Text>;
+        }
+        return (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconMapPin size={16} />
+            {locationParts.join(", ")}
+          </Text>
+        );
+      },
     },
 
     // {
