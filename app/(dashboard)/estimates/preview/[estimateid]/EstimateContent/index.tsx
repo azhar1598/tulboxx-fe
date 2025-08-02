@@ -303,7 +303,10 @@ export const EstimateContent = ({
         companyLogo: finalLogoUrl,
         projectEstimate: Number(getEstimateQuery?.data.projectEstimate),
       };
-      return callApi.patch(`/estimates/${getEstimateQuery?.data.id}`, newData);
+      return callApi.patch(
+        `/estimates/${getEstimateQuery?.data.id}?type=detailed`,
+        newData
+      );
     },
     onSuccess: async (res) => {
       // Update the logo state with the uploaded URL
