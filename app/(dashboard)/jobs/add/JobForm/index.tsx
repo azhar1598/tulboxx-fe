@@ -128,6 +128,17 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
     >
       <Grid>
         <Grid.Col span={{ base: 12, md: md }}>
+          <Select
+            label="Client"
+            placeholder="Select a client"
+            data={getClientsQuery ?? []}
+            {...form.getInputProps("customer")}
+            // disabled={isClientsLoading}
+            searchable
+            clearable
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: md }}>
           <TextInput
             label="Job Name"
             placeholder="Type here..."
@@ -141,18 +152,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             label="Job Type"
             placeholder="Plumbing, Electrical, HVAC, Other"
             {...form.getInputProps("type")}
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: md }}>
-          <Select
-            label="Client"
-            placeholder="Select a client"
-            data={getClientsQuery ?? []}
-            {...form.getInputProps("customer")}
-            // disabled={isClientsLoading}
-            searchable
-            clearable
           />
         </Grid.Col>
 
