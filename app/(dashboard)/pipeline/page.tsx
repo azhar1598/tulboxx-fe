@@ -81,6 +81,11 @@ interface Lead {
   value: number;
   date: string;
   avatar: string;
+  stageId: string;
+  customerId: string;
+  estimatedValue: number;
+  expectedCloseDate: string;
+  notes: string;
 }
 
 interface Column {
@@ -356,6 +361,11 @@ export default function PipelinePage() {
             value: leadValue,
             date: formatDate(lead.expected_close_date),
             avatar: getInitials(lead.client?.name),
+            stageId: lead.stage_id,
+            customerId: lead.client_id,
+            estimatedValue: lead.estimated_value,
+            expectedCloseDate: lead.expected_close_date,
+            notes: lead.notes,
           });
 
           columnsData[lead.stage_id].value += leadValue;
@@ -407,6 +417,7 @@ export default function PipelinePage() {
         };
       }
     }
+    console.log("newColumns", newColumns);
     return newColumns;
   }, [columns, searchQuery, selectedStages]);
 

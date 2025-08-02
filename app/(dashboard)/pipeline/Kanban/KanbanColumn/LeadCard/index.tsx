@@ -10,8 +10,19 @@ import {
 import { Menu } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
+import EditLeadModal from "./EditLeadCard";
 
-const LeadCard = ({ lead, getClients, getStages }) => {
+const LeadCard = ({
+  lead,
+  getClients,
+  getStages,
+}: {
+  lead: any;
+  getClients: any;
+  getStages: any;
+}) => {
+  const [menuOpened, setMenuOpened] = useState(false);
   const {
     attributes,
     listeners,
@@ -25,12 +36,14 @@ const LeadCard = ({ lead, getClients, getStages }) => {
       type: "Lead",
       lead,
     },
+    disabled: menuOpened,
   });
 
   const [addLeadOpened, { open: openAddLead, close: closeAddLead }] =
     useDisclosure(false);
   const [addStageOpened, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
+  const [selectedLead, setSelectedLead] = useState(null);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -38,8 +51,17 @@ const LeadCard = ({ lead, getClients, getStages }) => {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  console.log("lead", lead);
+
   return (
     <>
+      <EditLeadModal
+        opened={addLeadOpened}
+        onClose={closeAddLead}
+        getClients={getClients}
+        getStages={getStages}
+        selectedLead={selectedLead}
+      />
       <Card
         ref={setNodeRef}
         style={style}
@@ -65,7 +87,12 @@ const LeadCard = ({ lead, getClients, getStages }) => {
                 </Text> */}
               </Box>
             </Group>
-            <Menu withinPortal position="bottom-end">
+            <Menu
+              withinPortal
+              position="bottom-end"
+              onOpen={() => setMenuOpened(true)}
+              onClose={() => setMenuOpened(false)}
+            >
               <Menu.Target>
                 <ActionIcon
                   variant="subtle"
@@ -79,9 +106,8 @@ const LeadCard = ({ lead, getClients, getStages }) => {
                 <Menu.Item
                   leftSection={<IconEdit size={14} />}
                   onClick={(e) => {
-                    console.log("edit lead");
-                    e.stopPropagation();
-                    openAddLead;
+                    setSelectedLead(lead);
+                    openAddLead();
                   }}
                 >
                   Edit Lead

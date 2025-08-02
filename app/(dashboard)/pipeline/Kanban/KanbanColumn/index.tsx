@@ -67,7 +67,7 @@ export const KanbanColumn = ({
   });
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style}>
       <Paper
         withBorder
         radius="md"
@@ -81,7 +81,12 @@ export const KanbanColumn = ({
         }}
       >
         <Stack gap="md">
-          <Group justify="space-between" align="center">
+          <Group
+            justify="space-between"
+            align="center"
+            {...attributes}
+            {...listeners}
+          >
             <Group gap="xs">
               <div
                 style={{
