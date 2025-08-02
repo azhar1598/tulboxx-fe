@@ -1,9 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Button, Group, Stack, Textarea, TextInput } from "@mantine/core";
-import { PlusCircle, Trash2, Save, DollarSign } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Button,
+  Group,
+  Stack,
+  Textarea,
+  TextInput,
+  FileInput,
+} from "@mantine/core";
+import {
+  PlusCircle,
+  Trash2,
+  Save,
+  DollarSign,
+  Upload,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { createClient } from "@/utils/supabase/client";
 
 interface GeneratedDescription {
   projectOverview: string;
@@ -35,7 +50,11 @@ export const EstimateContent = ({
   const [editableDescription, setEditableDescription] =
     useState<GeneratedDescription>();
   const [lineItemsState, setLineItemsState] = useState(lineItems || []);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const notification = usePageNotifications();
+
+  const supabase = createClient();
 
   useEffect(() => {
     setDescription(processedDescription);
@@ -45,6 +64,80 @@ export const EstimateContent = ({
   useEffect(() => {
     setLineItemsState(lineItems || []);
   }, [lineItems]);
+
+  // Load existing logo if available
+  useEffect(() => {
+    if (getEstimateQuery?.data?.companyLogo) {
+      setCompanyLogo(getEstimateQuery.data.companyLogo);
+    }
+  }, [getEstimateQuery?.data]);
+
+  // Handle logo upload - Modified to use Supabase storage
+  const handleLogoUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      notification.error("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      notification.error("Image size should be less than 5MB");
+      return;
+    }
+
+    try {
+      // Sanitize filename
+      const sanitizedFileName = file.name
+        .replace(/\s+/g, "_") // replace spaces with underscores
+        .replace(/[^a-zA-Z0-9._-]/g, ""); // remove special chars except . _ -
+
+      // Create unique file path
+      const filePath = `user-logo/${Date.now()}_${sanitizedFileName}`;
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from("user-logo") // You can change this bucket name as needed
+        .upload(filePath, file);
+
+      if (error) {
+        notification.error("Image upload failed: " + error.message);
+        return;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("user-logo")
+        .getPublicUrl(filePath);
+
+      const imageUrl = publicUrlData.publicUrl;
+
+      // Set the public URL as the logo
+      setCompanyLogo(imageUrl);
+      notification.success("Logo uploaded successfully!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      notification.error("Failed to upload logo. Please try again.");
+    }
+  };
+
+  // Remove logo
+  const handleRemoveLogo = () => {
+    setCompanyLogo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Trigger file input
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   // Handle input changes
   const handleTextChange = (field, value) => {
@@ -134,12 +227,13 @@ export const EstimateContent = ({
   };
 
   const updateEstimate = useMutation({
-    mutationFn: ({ data, lineItems }: any) => {
+    mutationFn: ({ data, lineItems, logo }: any) => {
       const newData = {
         ...getEstimateQuery?.data,
         clientId: getEstimateQuery?.data.client_id,
         ai_generated_estimate: JSON.stringify(data),
         lineItems: lineItems,
+        companyLogo: logo,
         projectEstimate: Number(getEstimateQuery?.data.projectEstimate),
       };
       return callApi.patch(`/estimates/${getEstimateQuery?.data.id}`, newData);
@@ -170,12 +264,71 @@ export const EstimateContent = ({
       {/* Header Section */}
       <div className="flex justify-between items-start mb-8">
         {/* Logo Section */}
-        <div className="w-64 h-32 border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-50">
-          <span className="text-gray-500 text-sm font-medium">
-            PLACEHOLDER FOR
-            <br />
-            COMPANY LOGO
-          </span>
+        <div className="w-64 h-32 border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-50 relative overflow-hidden">
+          {companyLogo ? (
+            <div className="relative w-full h-full">
+              <img
+                src={companyLogo}
+                alt="Company Logo"
+                className="w-full h-full object-contain"
+              />
+              {isEditing && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <div className="flex gap-2">
+                    <Button
+                      size="xs"
+                      variant="white"
+                      onClick={triggerFileInput}
+                    >
+                      <Upload size={12} />
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="white"
+                      color="red"
+                      onClick={handleRemoveLogo}
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center">
+              {isEditing ? (
+                <div className="flex flex-col items-center gap-2">
+                  <ImageIcon size={24} className="text-gray-400" />
+                  <Button
+                    size="sm"
+                    // variant="outline"
+                    onClick={triggerFileInput}
+                    leftSection={<Upload size={14} />}
+                  >
+                    Upload Logo
+                  </Button>
+                  <span className="text-gray-400 text-xs">
+                    Max 5MB, JPG/PNG
+                  </span>
+                </div>
+              ) : (
+                <span className="text-gray-500 text-sm font-medium">
+                  PLACEHOLDER FOR
+                  <br />
+                  COMPANY LOGO
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+          />
         </div>
 
         {/* Prepared For Section */}
@@ -185,15 +338,17 @@ export const EstimateContent = ({
           </div>
           <div className="text-sm leading-relaxed">
             <div className="font-semibold">
-              {getEstimateQuery?.data?.client?.name || "Client Name"}
+              {getEstimateQuery?.data?.clients?.name || "Client Name"}
             </div>
             <div>
-              {getEstimateQuery?.data?.client?.email || "client@email.com"}
+              {getEstimateQuery?.data?.clients?.email || "client@email.com"}
             </div>
             <div>
-              {getEstimateQuery?.data?.client?.address || "Client Address"}
+              {getEstimateQuery?.data?.clients?.address || "Client Address"}
             </div>
-            <div>{getEstimateQuery?.data?.client?.phone || "Client Phone"}</div>
+            <div>
+              {getEstimateQuery?.data?.clients?.phone || "Client Phone"}
+            </div>
           </div>
         </div>
       </div>
@@ -246,7 +401,7 @@ export const EstimateContent = ({
                     <Button
                       size="xs"
                       color="red"
-                      variant="outline"
+                      // // variant="outline"
                       disabled={editableDescription.scopeOfWork.length <= 1}
                       onClick={() => removeScopeItem(index)}
                     >
@@ -256,7 +411,7 @@ export const EstimateContent = ({
                 ))}
                 <Button
                   size="sm"
-                  variant="outline"
+                  // // variant="outline"
                   leftSection={<PlusCircle size={14} />}
                   onClick={addScopeItem}
                   className="mt-2"
@@ -398,7 +553,7 @@ export const EstimateContent = ({
                 leftSection={<PlusCircle size={14} />}
                 onClick={addLineItem}
                 size="sm"
-                variant="outline"
+                // // variant="outline"
               >
                 Add Line Item
               </Button>
@@ -415,6 +570,7 @@ export const EstimateContent = ({
                   updateEstimate.mutate({
                     data: editableDescription,
                     lineItems: lineItemsState,
+                    logo: companyLogo,
                   })
                 }
                 loading={updateEstimate.isPending}
