@@ -95,24 +95,30 @@ function Jobs() {
       title: "Job Name",
       textAlign: "left",
       sortable: true,
-      render: ({ name }: any) => (
-        <Text size="14px" className="flex items-center gap-3">
-          <IconBriefcase size={16} />
-          {name}
-        </Text>
-      ),
+      render: ({ name }: any) =>
+        name ? (
+          <Text size="14px" className="flex items-center gap-3">
+            <IconBriefcase size={16} />
+            {name}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
     {
       accessor: "client",
       title: "Client",
       textAlign: "left",
       sortable: true,
-      render: ({ client }: any) => (
-        <Text size="14px" className="flex items-center gap-3">
-          <IconUser size={16} />
-          {client?.name}
-        </Text>
-      ),
+      render: ({ client }: any) =>
+        client?.name ? (
+          <Text size="14px" className="flex items-center gap-3">
+            <IconUser size={16} />
+            {client?.name}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
     // {
     //   accessor: "client",
@@ -125,12 +131,15 @@ function Jobs() {
       title: "Hours",
       textAlign: "left",
       sortable: true,
-      render: ({ hours }: any) => (
-        <Text size="14px" className="flex items-center gap-3">
-          <Hourglass size={16} />
-          {hours}
-        </Text>
-      ),
+      render: ({ hours }: any) =>
+        hours ? (
+          <Text size="14px" className="flex items-center gap-3">
+            <Hourglass size={16} />
+            {hours}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
 
     {
@@ -138,12 +147,15 @@ function Jobs() {
       title: "Type",
       textAlign: "left",
       sortable: true,
-      render: ({ type }: any) => (
-        <Text size="14px" className="flex items-center gap-3">
-          <IconCategory size={16} />
-          {type}
-        </Text>
-      ),
+      render: ({ type }: any) =>
+        type ? (
+          <Text size="14px" className="flex items-center gap-3">
+            <IconCategory size={16} />
+            {type}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
 
     {
@@ -151,12 +163,15 @@ function Jobs() {
       title: "Date",
       textAlign: "left",
       sortable: true,
-      render: ({ date }: any) => (
-        <Text size="14px" className="flex items-center gap-2">
-          <IconCalendar size={16} />
-          {date ? dayjs(date).format("MM-DD-YYYY") : "Unscheduled"}
-        </Text>
-      ),
+      render: ({ date }: any) =>
+        date ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconCalendar size={16} />
+            {dayjs(date).format("MM-DD-YYYY")}
+          </Text>
+        ) : (
+          <Text size="14px">N/A</Text>
+        ),
     },
 
     // {
