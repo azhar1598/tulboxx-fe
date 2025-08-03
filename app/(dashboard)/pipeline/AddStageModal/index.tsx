@@ -2,7 +2,6 @@ import {
   Button,
   ColorInput,
   Group,
-  Modal,
   Stack,
   TextInput,
   Textarea,
@@ -12,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   name: z.string().min(1, "Stage name is required"),
@@ -64,7 +64,12 @@ const AddStageModal = ({ opened, onClose }) => {
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Add New Stage" size="md">
+    <CustomModal
+      opened={opened}
+      onClose={onClose}
+      title="ADD NEW STAGE"
+      size="md"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
@@ -99,18 +104,22 @@ const AddStageModal = ({ opened, onClose }) => {
           />
 
           <Group justify="flex-end" mt="md">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="filled" color="gray" onClick={onClose} w={110}>
+              Cancel
+            </Button>
             <Button
               type="submit"
               loading={addStageMutation.isPending}
               disabled={!form.isValid()}
+              w={110}
+              color="blue"
             >
               Add Stage
             </Button>
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 
