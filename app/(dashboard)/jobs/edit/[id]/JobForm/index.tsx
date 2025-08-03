@@ -25,6 +25,7 @@ import {
   IconUserPlus,
   IconCurrencyDollar,
   IconClock,
+  IconCalendar,
 } from "@tabler/icons-react";
 import { useRouter, useParams } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
@@ -123,8 +124,8 @@ const JobForm = () => {
         customer: client_id || "",
         description,
         date: date ? new Date(date) : null,
-        amount: Number(amount),
-        hours: Number(hours),
+        amount: Number(amount) || "",
+        hours: Number(hours) || "",
         notes: notes || "",
       });
       form.resetDirty();
@@ -155,6 +156,17 @@ const JobForm = () => {
     >
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
+          <Select
+            label="Client"
+            placeholder="Select a client"
+            data={getClientsQuery ?? []}
+            {...form.getInputProps("customer")}
+            // disabled={isClientsLoading}
+            searchable
+            clearable
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Job Name"
             placeholder="Type here..."
@@ -166,31 +178,11 @@ const JobForm = () => {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Job Type"
-            placeholder="Select a job type"
+            placeholder="Plumbing, Electrical, HVAC, Other"
             {...form.getInputProps("type")}
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <Select
-            label="Client"
-            placeholder="Select a client"
-            data={getClientsQuery ?? []}
-            {...form.getInputProps("customer")}
-            // disabled={isClientsLoading}
-            searchable
-            clearable
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <DateInput
-            {...form.getInputProps("date")}
-            label="Scheduled Date"
-            placeholder="Select a date"
-            valueFormat="DD-MM-YYYY"
-          />
-        </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Textarea
             label="Description"
@@ -198,7 +190,15 @@ const JobForm = () => {
             {...form.getInputProps("description")}
           />
         </Grid.Col>
-
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <DateInput
+            {...form.getInputProps("date")}
+            label="Scheduled Date"
+            placeholder="Select a date"
+            valueFormat="DD-MM-YYYY"
+            leftSection={<IconCalendar size={16} />}
+          />
+        </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <NumberInput
             label="Amount"
