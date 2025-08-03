@@ -374,7 +374,7 @@ function DashboardPage() {
   const isLoading = invoicesLoading || estimatesLoading;
 
   return (
-    <Stack gap="xl" w="78vw">
+    <Stack gap="xl">
       <Paper withBorder p="lg" radius="md" shadow="md">
         <Group>
           <ThemeIcon color="teal" size={48} radius="md">
