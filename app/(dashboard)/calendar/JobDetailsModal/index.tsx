@@ -78,8 +78,8 @@ export function JobDetailsModal({
     initialValues: {
       name: "",
       type: "",
-      amount: 0,
-      hours: 0,
+      amount: null,
+      hours: null,
       notes: "",
       date: new Date(),
       client_id: "",
@@ -91,8 +91,8 @@ export function JobDetailsModal({
       form.setValues({
         name: job.name || "",
         type: job.type || "",
-        amount: job.amount || 0,
-        hours: job.hours || 0,
+        amount: job.amount || null,
+        hours: job.hours || null,
         notes: job.notes || "",
         date: job.date ? new Date(job.date) : new Date(),
         client_id: job.client_id || "",
@@ -149,7 +149,10 @@ export function JobDetailsModal({
 
     <CustomModal
       opened={opened}
-      onClose={onClose}
+      onClose={() => {
+        setIsEditing(false);
+        onClose();
+      }}
       title={"Job Details"}
       size="md"
     >
@@ -198,9 +201,11 @@ export function JobDetailsModal({
             <Text fw={600} size="lg">
               {job.name}
             </Text>
-            <Badge size="lg" variant="light" color="blue">
-              {job.type}
-            </Badge>
+            {job.type && (
+              <Badge size="lg" variant="light" color="blue">
+                {job.type}
+              </Badge>
+            )}
             <Button
               leftSection={<IconPencil size={14} />}
               onClick={() => setIsEditing(true)}
@@ -213,31 +218,37 @@ export function JobDetailsModal({
             <Text>{formattedDate}</Text>
           </Group>
 
-          <Group>
-            <IconClock size={20} />
-            <Text>{job.hours} hours</Text>
-          </Group>
-
-          <Group>
-            <IconCurrencyDollar size={20} />
-            <Text>${job.amount}</Text>
-          </Group>
-
-          <Stack gap="xs">
-            <Text fw={500}>Client Details</Text>
-            <Group ml="md">
-              <IconUser size={20} />
-              <Stack gap={4}>
-                <Text>{job.client?.name}</Text>
-                <Text size="sm" c="dimmed">
-                  {job.client?.email}
-                </Text>
-                <Text size="sm" c="dimmed">
-                  {job.client?.phone}
-                </Text>
-              </Stack>
+          {job.hours && (
+            <Group>
+              <IconClock size={20} />
+              <Text>{job.hours} hours</Text>
             </Group>
-          </Stack>
+          )}
+
+          {job.amount && (
+            <Group>
+              <IconCurrencyDollar size={20} />
+              <Text>${job.amount}</Text>
+            </Group>
+          )}
+
+          {job.client && (
+            <Stack gap="xs">
+              <Text fw={500}>Client Details</Text>
+              <Group ml="md">
+                <IconUser size={20} />
+                <Stack gap={4}>
+                  <Text>{job.client.name}</Text>
+                  <Text size="sm" c="dimmed">
+                    {job.client.email}
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {job.client.phone}
+                  </Text>
+                </Stack>
+              </Group>
+            </Stack>
+          )}
 
           {job.notes && (
             <Stack gap="xs">
