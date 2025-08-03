@@ -30,6 +30,7 @@ import { extractEstimateJson1 } from "@/lib/constants";
 import { generatePDFTemplate } from "./PDFTemplate";
 import { FullDocumentEditor, sectionsToFullDocument } from "./Editors";
 import { EstimateContent } from "./EstimateContent";
+import dayjs from "dayjs";
 
 interface EstimateData {
   projectName: string;
@@ -65,12 +66,22 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
     select: (data) => data.data,
   });
 
+  const getUserProfile = useQuery({
+    queryKey: ["get-user-profile"],
+    queryFn: async () => {
+      const response = await callApi.get(`/user-profile`);
+      return response;
+    },
+    select: (data) => data?.data,
+  });
+
   const [isEditing, setIsEditing] = useState(false);
   const [isFullEditor, setIsFullEditor] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [aiContent, setAiContent] = useState();
   const [fullDocumentHtml, setFullDocumentHtml] = useState("");
   const [pdfContent, setPdfContent] = useState("");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const pdfRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
@@ -85,31 +96,55 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   }, [getEstimateQuery?.data]);
 
   useEffect(() => {
-    if (getEstimateQuery?.data && aiContent) {
+    if (getEstimateQuery?.data && aiContent && getUserProfile?.data) {
       const htmlContent = generatePDFTemplate(
-        getEstimateQuery?.data,
-        aiContent
+        getEstimateQuery.data,
+        aiContent,
+        getUserProfile?.data
       );
       setPdfContent(htmlContent);
     }
-  }, [getEstimateQuery?.data, aiContent]);
+  }, [getEstimateQuery?.data, aiContent, getUserProfile?.data]);
 
   const componentRef = useRef(null);
 
-  const handlePrintPDF = () => {
-    const printWindow = window.open("", "_blank");
+  const handlePrintPDF = async () => {
+    if (!pdfContent) {
+      console.error("No PDF content to generate.");
+      return;
+    }
 
-    printWindow.document.write(pdfContent);
-
-    printWindow.document.addEventListener("DOMContentLoaded", () => {
-      printWindow.print();
-
-      printWindow.addEventListener("afterprint", () => {
-        printWindow.close();
+    setIsGeneratingPdf(true);
+    try {
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ htmlContent: pdfContent }),
       });
-    });
 
-    printWindow.document.close();
+      if (!response.ok) {
+        throw new Error(`PDF generation failed: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Estimate-${
+        getEstimateQuery.data?.projectName || estimateid
+      }.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      // You could add a user-facing notification here
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   // const handleSaveEstimate = async (data) => {
@@ -184,6 +219,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                   leftSection={<PrinterIcon size={16} />}
                   onClick={handlePrintPDF}
                   color="teal"
+                  loading={isGeneratingPdf}
                 >
                   Download PDF
                 </Button>
