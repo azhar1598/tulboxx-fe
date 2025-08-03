@@ -25,6 +25,7 @@ import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useEffect, useState } from "react";
 import { DollarSignIcon } from "lucide-react";
+import CustomModal from "@/components/common/CustomMoodal";
 
 interface Client {
   id: string;
@@ -133,17 +134,23 @@ export function JobDetailsModal({
   });
 
   return (
-    <Modal
+    // <Modal
+    //   opened={opened}
+    //   onClose={() => {
+    //     setIsEditing(false);
+    //     onClose();
+    //   }}
+    //   title={
+    //     <Text fw={600} size="lg">
+    //       {job.name}
+    //     </Text>
+    //   }
+    //   size="md"
+
+    <CustomModal
       opened={opened}
-      onClose={() => {
-        setIsEditing(false);
-        onClose();
-      }}
-      title={
-        <Text fw={600} size="lg">
-          {job.name}
-        </Text>
-      }
+      onClose={onClose}
+      title="ADD NEW STAGE"
       size="md"
     >
       {isEditing ? (
@@ -240,6 +247,6 @@ export function JobDetailsModal({
           )}
         </Stack>
       )}
-    </Modal>
+    </CustomModal>
   );
 }

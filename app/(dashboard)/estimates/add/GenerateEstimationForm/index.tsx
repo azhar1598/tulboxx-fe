@@ -61,7 +61,7 @@ import axios from "axios";
 import { UserContext } from "@/app/layout";
 import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
 
-const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
+const GenerateEstimationForm = ({ form, generateEstimation }) => {
   const [clientModalOpened, setClientModalOpened] = useState(false);
 
   const [active, setActive] = useState(0);
@@ -164,7 +164,6 @@ const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
                     form={form}
                     active={active}
                     setClientModalOpened={setClientModalOpened}
-                    getClients={getClients}
                     nextStep={nextStep}
                     prevStep={prevStep}
                   />
@@ -199,19 +198,6 @@ const GenerateEstimationForm = ({ form, getClients, generateEstimation }) => {
                 </Stepper.Completed>
               </Stepper>
             </form>
-            <Modal
-              opened={clientModalOpened}
-              onClose={() => setClientModalOpened(false)}
-              title="Create New Client"
-              size="md"
-            >
-              <ClientForm
-                md={12}
-                setClientModalOpened={setClientModalOpened}
-                getClients={getClients}
-                estimateForm={form}
-              />
-            </Modal>
           </Stack>
         </Paper>
       </div>

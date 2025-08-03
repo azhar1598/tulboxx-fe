@@ -58,6 +58,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import ClientForm from "../../clients/add/ClientForm";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const quickEstimationSchema = z
   .object({
@@ -109,7 +110,7 @@ const detailedEstimationSchema = z.object({
 
 const StoreRegistrationContent = () => {
   const [activeTab, setActiveTab] = useState<string | null>("quick");
-  const [clientModalOpened, setClientModalOpened] = useState(false);
+
   const router = useRouter();
   const notification = usePageNotifications();
   const form = useForm({
@@ -181,30 +182,6 @@ const StoreRegistrationContent = () => {
     setControlsRefs(controlsRefs);
   };
 
-  const getClients = useQuery({
-    queryKey: ["get-clients"],
-    queryFn: async () => {
-      const response = await callApi.get(`/clients`, {
-        params: {
-          limit: -1,
-        },
-      });
-
-      return response.data;
-    },
-    select(data) {
-      console.log("data", data);
-      const options = data?.data?.map((option) => ({
-        label: `${option.name} - ${option.email}`,
-        value: option.id.toString(),
-      }));
-
-      console.log("options", options);
-
-      return options;
-    },
-  });
-
   const generateEstimation = useMutation({
     mutationFn: (formData: FormData) =>
       callApi.post(`/estimates?type=${activeTab}`, formData),
@@ -270,53 +247,17 @@ const StoreRegistrationContent = () => {
               active={activeTab}
               nextStep={() => {}}
               prevStep={() => {}}
-              setClientModalOpened={setClientModalOpened}
-              getClients={getClients}
               generateEstimation={generateEstimation}
             />
           </Tabs.Panel>
           <Tabs.Panel value="detailed" pt="xs">
             <GenerateEstimationForm
               form={form}
-              getClients={getClients}
               generateEstimation={generateEstimation}
             />
           </Tabs.Panel>
         </Tabs>
       </div>
-      {/* <div className="md:hidden block">
-        <SimpleGrid cols={1}>
-          <AddStoreForm form={form} />
-          <Flex direction={"column"}>
-            <Tabs defaultValue="qr">
-              <Tabs.List mb={10}>
-                <Tabs.Tab value="qr">Preview QR</Tabs.Tab>
-                <Tabs.Tab value="website">Preview Website</Tabs.Tab>
-              </Tabs.List>
-              <Tabs.Panel value="qr" pb="xs">
-                <PreviewQR storeInfo={form.values} />
-              </Tabs.Panel>
-              <Tabs.Panel value="website" pb="xs">
-                <div className="relative">
-                  <WebPreview storeInfo={form.values} />
-                </div>
-              </Tabs.Panel>
-            </Tabs>
-          </Flex>
-        </SimpleGrid>
-      </div> */}
-      <Modal
-        opened={clientModalOpened}
-        onClose={() => setClientModalOpened(false)}
-        title="Add New Client"
-      >
-        <ClientForm
-          setClientModalOpened={setClientModalOpened}
-          getClients={getClients}
-          estimateForm={form}
-          invoiceForm={form}
-        />
-      </Modal>
     </Stack>
   );
 };
