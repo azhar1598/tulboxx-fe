@@ -36,6 +36,7 @@ import { checkStatus } from "@/lib/constants";
 import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useRouter } from "next/navigation";
 import StatisticsCards from "./StatisticsCards";
+import CustomModal from "@/components/common/CustomMoodal";
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -222,7 +223,7 @@ function Estimates() {
 
       <StatisticsCards invoices={invoicesData || []} />
 
-      <Modal
+      <CustomModal
         opened={projectModalOpened}
         onClose={closeProjectModal}
         title="Select Project"
@@ -247,6 +248,7 @@ function Estimates() {
               }
             }}
             allowDeselect={false}
+            searchable
           />
           <Button
             leftSection={<IconPlus size={16} />}
@@ -271,7 +273,7 @@ function Estimates() {
             Create Standalone Invoice
           </Button>
         </Stack>
-      </Modal>
+      </CustomModal>
 
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout

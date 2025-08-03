@@ -1,4 +1,5 @@
 import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
+import CustomClientSelect from "@/components/common/CustomClientSelect";
 import callApi from "@/services/apiService";
 import {
   Box,
@@ -111,6 +112,29 @@ function InvoiceForm({
 
   return (
     <Box p={10}>
+      <Stack mb={20}>
+        {id === "standalone" && (
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <CustomClientSelect form={form} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <NumberInput
+                label="Invoice Total Amount"
+                placeholder="5,000"
+                allowDecimal={false}
+                leftSection={<IconCurrencyDollar stroke={2} size={15} />}
+                allowNegative={false}
+                {...form.getInputProps("invoiceTotalAmount")}
+                onChange={(e) => {
+                  form.getInputProps(`invoiceTotalAmount`).onChange(Number(e));
+                }}
+                hideControls
+              />
+            </Grid.Col>
+          </Grid>
+        )}
+      </Stack>
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <DateInput
@@ -129,21 +153,6 @@ function InvoiceForm({
             icon={<IconCalendar size="1rem" />}
             {...form.getInputProps("dueDate")}
             minDate={form.values.issueDate}
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <NumberInput
-            label="Invoice Total Amount"
-            placeholder="5,000"
-            allowDecimal={false}
-            leftSection={<IconCurrencyDollar stroke={2} size={15} />}
-            allowNegative={false}
-            {...form.getInputProps("invoiceTotalAmount")}
-            onChange={(e) => {
-              form.getInputProps(`invoiceTotalAmount`).onChange(Number(e));
-            }}
-            hideControls
           />
         </Grid.Col>
 
@@ -298,101 +307,6 @@ function InvoiceForm({
             minRows={3}
             {...form.getInputProps("invoiceSummary")}
           />
-        </Grid.Col>
-
-        <Grid.Col span={12}>
-          <Grid>
-            {id === "standalone" && (
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Text fw={500} size="sm" mb="md">
-                  Customer Information
-                </Text>
-                {/* <Grid>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Customer Name"
-                      placeholder="Enter customer name"
-                      {...form.getInputProps("customerName")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Email"
-                      placeholder="customer@email.com"
-                      {...form.getInputProps("email")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Phone"
-                      placeholder="(555) 555-5555"
-                      {...form.getInputProps("phone")}
-                    />
-                  </Grid.Col>
-                </Grid> */}
-                <Stack>
-                  <Select
-                    label="Choose Client"
-                    placeholder="Search Clients..."
-                    data={getClients?.data}
-                    searchable
-                    clearable
-                    {...form.getInputProps("clientId")}
-                    rightSection={<IconSearch size={16} color="gray" />}
-                  />
-                  <Button
-                    size="sm"
-                    color="white"
-                    leftSection={<IconPlus size={16} color="white" />}
-                    onClick={() => setClientModalOpened(true)}
-                  >
-                    <Text size="14px" fw={500}>
-                      New Client
-                    </Text>
-                  </Button>
-                </Stack>
-              </Grid.Col>
-            )}
-            {/* <Grid.Col span={{ base: 12, md: 6 }}>
-              <Text fw={500} size="sm" mb="md">
-                Remit Payment To
-              </Text>
-              <Grid>
-                <Grid.Col span={12}>
-                  <TextInput
-                    label="Account Name"
-                    placeholder="Type here..."
-                    {...form.getInputProps("remitPayment.accountName")}
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={12}>
-                  <TextInput
-                    label="Account Number"
-                    placeholder="Type here..."
-                    {...form.getInputProps("remitPayment.accountNumber")}
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={12}>
-                  <TextInput
-                    label="Routing Number"
-                    placeholder="Type here..."
-                    {...form.getInputProps("remitPayment.routingNumber")}
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={12}>
-                  <TextInput
-                    label="Tax Id No."
-                    placeholder="Type here..."
-                    {...form.getInputProps("remitPayment.taxId")}
-                    disabled
-                  />
-                </Grid.Col>
-              </Grid>
-            </Grid.Col> */}
-          </Grid>
         </Grid.Col>
       </Grid>
 

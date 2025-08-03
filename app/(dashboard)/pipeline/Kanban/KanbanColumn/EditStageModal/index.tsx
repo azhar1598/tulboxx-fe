@@ -13,6 +13,7 @@ import { z } from "zod";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
 import { useEffect } from "react";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   name: z.string().min(1, "Stage name is required"),
@@ -72,7 +73,12 @@ const EditStageModal = ({
   console.log("form.values", form.values);
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Update Stage" size="md">
+    <CustomModal
+      opened={opened}
+      onClose={onClose}
+      title="Update Stage"
+      size="md"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
@@ -125,7 +131,7 @@ const EditStageModal = ({
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 

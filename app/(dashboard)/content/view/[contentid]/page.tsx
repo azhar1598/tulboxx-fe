@@ -28,6 +28,7 @@ import {
   IconShare,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
+import CustomModal from "@/components/common/CustomMoodal";
 
 function page() {
   const { contentid } = useParams();
@@ -139,7 +140,7 @@ function page() {
       />
 
       {/* Share Modal */}
-      <Modal
+      <CustomModal
         opened={shareModalOpened}
         onClose={closeShareModal}
         title="Share Content"
@@ -164,7 +165,7 @@ function page() {
             Share to Instagram
           </Button>
         </Stack>
-      </Modal>
+      </CustomModal>
 
       <PageMainWrapper w="full">
         {getContentQuery?.isLoading && (

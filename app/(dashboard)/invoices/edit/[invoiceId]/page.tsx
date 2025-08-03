@@ -255,18 +255,6 @@ const InvoiceFormPage = () => {
             id={id}
           />
         </form>
-        <Modal
-          opened={clientModalOpened}
-          onClose={() => setClientModalOpened(false)}
-          title="Create New Client"
-          size="md"
-        >
-          <ClientForm
-            md={12}
-            setClientModalOpened={setClientModalOpened}
-            invoiceForm={form}
-          />
-        </Modal>
       </PageMainWrapper>
     </Stack>
   );

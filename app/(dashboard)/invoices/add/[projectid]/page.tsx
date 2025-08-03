@@ -84,7 +84,7 @@ const InvoiceFormPage = () => {
     initialValues: {
       issueDate: new Date(),
       dueDate: new Date(),
-      invoiceTotalAmount: 0,
+      invoiceTotalAmount: "",
       lineItems: [
         {
           id: 1,
@@ -215,18 +215,6 @@ const InvoiceFormPage = () => {
           />
         </form>
       </PageMainWrapper>
-      <Modal
-        opened={clientModalOpened}
-        onClose={() => setClientModalOpened(false)}
-        title="Create New Client"
-        size="md"
-      >
-        <ClientForm
-          md={12}
-          setClientModalOpened={setClientModalOpened}
-          invoiceForm={form}
-        />
-      </Modal>
     </Stack>
   );
 };

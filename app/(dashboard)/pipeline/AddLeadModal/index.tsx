@@ -14,6 +14,7 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
 import { IconCurrencyDollar, IconSearch } from "@tabler/icons-react";
 import { DateInput, DatePickerInput } from "@mantine/dates";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   customerId: z.string().min(1, "Client is required"),
@@ -68,7 +69,12 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Add New Lead" size="md">
+    <CustomModal
+      opened={opened}
+      onClose={onClose}
+      title="Add New Lead"
+      size="md"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <Select
@@ -124,7 +130,7 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 

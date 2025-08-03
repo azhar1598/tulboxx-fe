@@ -1,4 +1,5 @@
 import ClientForm from "@/app/(dashboard)/clients/add/ClientForm";
+import CustomClientSelect from "@/components/common/CustomClientSelect";
 import callApi from "@/services/apiService";
 import {
   Box,
@@ -383,7 +384,7 @@ function InvoiceForm({
                   </Grid.Col>
                 </Grid> */}
                 <Stack>
-                  <Select
+                  {/* <Select
                     label="Choose Client"
                     placeholder="Search Clients..."
                     data={getClients?.data}
@@ -401,7 +402,8 @@ function InvoiceForm({
                     <Text size="14px" fw={500}>
                       New Client
                     </Text>
-                  </Button>
+                  </Button> */}
+                  <CustomClientSelect form={form} />
                 </Stack>
               </Grid.Col>
             )}

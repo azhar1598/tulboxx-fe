@@ -15,6 +15,7 @@ import callApi from "@/services/apiService";
 import { IconSearch } from "@tabler/icons-react";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   jobId: z.string().min(1, "Job selection is required"),
@@ -106,7 +107,12 @@ export const ScheduleJobModal: React.FC<{
   console.log("form----->", form.values);
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Schedule Job" size="md">
+    <CustomModal
+      opened={opened}
+      onClose={onClose}
+      title="Schedule Job"
+      size="md"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <Select
@@ -149,6 +155,6 @@ export const ScheduleJobModal: React.FC<{
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };

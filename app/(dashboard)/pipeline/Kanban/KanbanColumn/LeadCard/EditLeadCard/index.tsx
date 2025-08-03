@@ -15,6 +15,7 @@ import callApi from "@/services/apiService";
 import { IconCurrencyDollar, IconSearch } from "@tabler/icons-react";
 import { DateInput, DatePickerInput } from "@mantine/dates";
 import { useEffect } from "react";
+import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   customerId: z.string().min(1, "Client is required"),
@@ -92,7 +93,7 @@ const EditLeadModal = ({
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Add New Lead" size="md">
+    <CustomModal opened={opened} onClose={onClose} title="Edit Lead" size="md">
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <Select
@@ -147,7 +148,7 @@ const EditLeadModal = ({
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 
