@@ -143,18 +143,18 @@ function Estimates() {
     {
       accessor: "type",
       textAlign: "left",
-      title: "Project Type",
+      title: "Estimation Type",
       sortable: true,
       render: ({ type }: any) => (
         <Flex gap={4} align="center">
-          {type === "home" ? (
+          {/* {type === "home" ? (
             <IconHome size={16} />
           ) : type === "commercial" ? (
             <IconBuilding size={16} />
           ) : (
             <IconHome size={16} />
-          )}
-          <Text size="14px">{type || "N/A"}</Text>
+          )} */}
+          <Text size="14px">{type === "detailed" ? "Detailed" : "Quick"}</Text>
         </Flex>
       ),
     },
@@ -187,6 +187,7 @@ function Estimates() {
               style={{ fontSize: "12px" }}
               variant="table-btn-primary"
               // leftSection={<IconEdit size={16} />}
+              disabled={record.type !== "detailed"}
             >
               Edit
             </Button>

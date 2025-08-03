@@ -86,7 +86,7 @@ const detailedEstimationSchema = z.object({
   projectEstimate: z.coerce.number().min(1, "Project estimate is required"),
   projectStartDate: z.date(),
   projectEndDate: z.date(),
-  type: z.string().min(1, "Type is required"),
+  type: z.string().optional(),
   lineItems: z
     .array(
       z.object({
@@ -141,7 +141,7 @@ const StoreRegistrationContent = () => {
       solutionDescription: "",
       projectEstimate: "",
       projectStartDate: "",
-      type: "residential",
+      projectType: "residential",
       projectEndDate: "",
       lineItems: [
         {

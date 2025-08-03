@@ -82,7 +82,7 @@ function BasicForm({ form, active, nextStep, prevStep, setClientModalOpened }) {
               Project Type
             </Text>
             <Radio.Group
-              {...form.getInputProps("type")}
+              {...form.getInputProps("projectType")}
               defaultValue="residential"
               mt={12}
             >

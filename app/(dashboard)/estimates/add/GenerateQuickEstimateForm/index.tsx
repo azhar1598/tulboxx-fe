@@ -11,6 +11,7 @@ import {
   Modal,
   NumberInput,
   Paper,
+  Radio,
   ScrollArea,
   Stack,
   Text,
@@ -104,6 +105,30 @@ function GenerateQuickEstimateForm({
                   leftSection={<IconCurrencyDollar stroke={2} size={15} />}
                   {...form.getInputProps("projectEstimate")}
                 />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Text size="14px" fw={500} mt={7}>
+                  Project Type
+                </Text>
+                <Radio.Group
+                  {...form.getInputProps("projectType")}
+                  defaultValue="residential"
+                  mt={12}
+                >
+                  <Group>
+                    <Radio
+                      value="residential"
+                      label="Residential"
+                      // leftSection={<IconHome size={16} />}
+                    />
+                    <Radio
+                      value="commercial"
+                      label="Commercial"
+                      // leftSection={<IconBuilding size={16} />}
+                    />
+                  </Group>
+                </Radio.Group>
               </Grid.Col>
 
               <Grid.Col span={{ base: 12, md: 6 }}>
