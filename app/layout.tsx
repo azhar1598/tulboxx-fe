@@ -20,6 +20,7 @@ import "@mantine/carousel/styles.css";
 import "@mantine/dates/styles.css";
 import { createClient } from "@/utils/supabase/client";
 import { createContext, useEffect, useState } from "react";
+import MobileViewMessage from "@/components/common/MobileViewMessage";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export default function RootLayout({
   const supabase = createClient();
 
   const [user, setUser] = useState<any>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   useEffect(() => {
     if (pathname === "/login" || pathname === "/signup") return;
@@ -56,38 +58,52 @@ export default function RootLayout({
     fetchUser();
   }, [supabase]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Check on initial load
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <html lang="en">
       <body className={`${poppins.variable} antialiased `}>
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={theme}>
-            <Notifications position="top-center" />
-            <Provider store={store}>
-              <UserContext.Provider value={user}>
-                <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
-                  {pathname !== "/login" &&
-                    pathname !== "/test" &&
-                    pathname !== "/signup" &&
-                    pathname != "/story-editor" && <Sidebar />}
-
-                  {/* {pathname != "/story-editor" &&
-                      pathname !== "/login" &&
-                      pathname !== "/signup" && <Header />} */}
-                  <Stack>
+        {isMobileView && <MobileViewMessage />}
+        {!isMobileView && (
+          <QueryClientProvider client={queryClient}>
+            <MantineProvider theme={theme}>
+              <Notifications position="top-center" />
+              <Provider store={store}>
+                <UserContext.Provider value={user}>
+                  <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
                     {pathname !== "/login" &&
                       pathname !== "/test" &&
-                      pathname !== "/signup" && <Header />}
-                    <div
-                      className={`${pathname === "/" ? "main-content" : ""}`}
-                    >
-                      {children}
-                    </div>
-                  </Stack>
-                </Flex>
-              </UserContext.Provider>
-            </Provider>
-          </MantineProvider>
-        </QueryClientProvider>
+                      pathname !== "/signup" &&
+                      pathname != "/story-editor" && <Sidebar />}
+
+                    {/* {pathname != "/story-editor" &&
+                      pathname !== "/login" &&
+                      pathname !== "/signup" && <Header />} */}
+                    <Stack>
+                      {pathname !== "/login" &&
+                        pathname !== "/test" &&
+                        pathname !== "/signup" && <Header />}
+                      <div
+                        className={`${pathname === "/" ? "main-content" : ""}`}
+                      >
+                        {children}
+                      </div>
+                    </Stack>
+                  </Flex>
+                </UserContext.Provider>
+              </Provider>
+            </MantineProvider>
+          </QueryClientProvider>
+        )}
       </body>
     </html>
   );

@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   table: {
-    display: "table",
+    display: "flex",
     width: "100%",
     borderCollapse: "collapse",
     marginTop: 8,

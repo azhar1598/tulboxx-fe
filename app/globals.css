@@ -89,3 +89,19 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* styles/mobileViewMessage.module.css */
+.mobile-view-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f4f8; /* Light background color */
+  color: #333; /* Dark text color for contrast */
+  font-size: 1.5rem; /* Larger font size for readability */
+  font-weight: bold; /* Bold text for emphasis */
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
