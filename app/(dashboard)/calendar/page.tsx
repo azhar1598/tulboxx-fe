@@ -15,6 +15,9 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 
@@ -41,6 +44,14 @@ function Calendar() {
   const queryClient = useQueryClient();
   const [openScheduleJobModal, { open: openAddStage, close: closeAddStage }] =
     useDisclosure(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const getJobsQuery = useQuery({
     queryKey: ["get-jobs"],
@@ -110,7 +121,11 @@ function Calendar() {
       <div className="mb-4">
         <PageHeader title={`Calendar`} />
       </div>
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <div className={styles["calendar-container"]}>
           <ScheduledJobs onJobSelect={handleJobSelect} />
           <CalendarView

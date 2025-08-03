@@ -150,7 +150,7 @@ export function JobDetailsModal({
     <CustomModal
       opened={opened}
       onClose={onClose}
-      title="ADD NEW STAGE"
+      title={"Job Details"}
       size="md"
     >
       {isEditing ? (
@@ -195,6 +195,9 @@ export function JobDetailsModal({
       ) : (
         <Stack gap="md">
           <Group justify="space-between">
+            <Text fw={600} size="lg">
+              {job.name}
+            </Text>
             <Badge size="lg" variant="light" color="blue">
               {job.type}
             </Badge>
