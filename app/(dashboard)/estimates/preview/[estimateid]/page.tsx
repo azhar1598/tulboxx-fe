@@ -31,6 +31,8 @@ import { generatePDFTemplate } from "./PDFTemplate";
 import { FullDocumentEditor, sectionsToFullDocument } from "./Editors";
 import { EstimateContent } from "./EstimateContent";
 import dayjs from "dayjs";
+import { pdf } from "@react-pdf/renderer";
+import { EstimatePDFDocument } from "./PDFDocument"; // Your PDF document component
 
 interface EstimateData {
   projectName: string;
@@ -109,27 +111,22 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
   const componentRef = useRef(null);
 
   const handlePrintPDF = async () => {
-    if (!pdfContent) {
-      console.error("No PDF content to generate.");
+    if (!getEstimateQuery?.data || !aiContent || !getUserProfile?.data) {
+      console.error("Missing data for PDF generation");
       return;
     }
 
     setIsGeneratingPdf(true);
     try {
-      const response = await fetch("/api/generate-pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ htmlContent: pdfContent }),
-      });
+      const blob = await pdf(
+        <EstimatePDFDocument
+          estimateData={getEstimateQuery.data}
+          aiContent={aiContent}
+          userProfile={getUserProfile.data}
+        />
+      ).toBlob();
 
-      if (!response.ok) {
-        throw new Error(`PDF generation failed: ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `Estimate-${
@@ -140,8 +137,7 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading PDF:", error);
-      // You could add a user-facing notification here
+      console.error("Error generating PDF:", error);
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -196,6 +192,19 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
       );
       // Or you could implement a modal with multiple sharing options
     }
+  };
+
+  const handleViewPDF = async () => {
+    const blob = await pdf(
+      <EstimatePDFDocument
+        estimateData={getEstimateQuery?.data}
+        aiContent={aiContent}
+        userProfile={getUserProfile?.data}
+      />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
   };
 
   return (

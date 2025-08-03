@@ -1,62 +1,47 @@
-import { NextResponse } from "next/server";
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+// import { NextResponse } from "next/server";
+// import { renderToStream } from "@react-pdf/renderer";
+// import { EstimatePDFDocument } from "../../../app/(dashboard)/estimates/preview/[estimateid]/PDFDocument";
 
-export async function POST(request: Request) {
-  try {
-    const { htmlContent } = await request.json();
+// export async function POST(request: Request) {
+//   try {
+//     const { estimateData, aiContent, userProfile } = await request.json();
 
-    if (!htmlContent) {
-      return new NextResponse("Bad Request: htmlContent is required", {
-        status: 400,
-      });
-    }
+//     if (!estimateData || !aiContent || !userProfile) {
+//       return new NextResponse("Bad Request: Missing required data", {
+//         status: 400,
+//       });
+//     }
 
-    const executablePath =
-      process.env.NODE_ENV === "development"
-        ? "/opt/homebrew/bin/chromium"
-        : await chromium.executablePath();
+//     // Create the PDF document
+//     const pdfDocument = EstimatePDFDocument({
+//       estimateData,
+//       aiContent,
+//       userProfile,
+//     });
 
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: { width: 1280, height: 720 },
-      executablePath,
-      //   headless: "new",
-    });
+//     // Generate PDF stream
+//     const stream = await renderToStream(pdfDocument);
 
-    const page = await browser.newPage();
+//     // Convert stream to buffer
+//     const chunks: Buffer[] = [];
+//     for await (const chunk of stream) {
+//       chunks.push(chunk);
+//     }
+//     const pdfBuffer = Buffer.concat(chunks);
 
-    // Set the HTML content of the page
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true, // Crucial for including background colors/images from CSS
-      margin: {
-        top: "40px",
-        right: "40px",
-        bottom: "40px",
-        left: "40px",
-      },
-    });
-
-    await browser.close();
-
-    // Return the PDF
-    return new NextResponse(pdfBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="estimate.pdf"`,
-      },
-    });
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return new NextResponse(`Error generating PDF: ${errorMessage}`, {
-      status: 500,
-    });
-  }
-}
+//     return new NextResponse(pdfBuffer, {
+//       status: 200,
+//       headers: {
+//         "Content-Type": "application/pdf",
+//         "Content-Disposition": `attachment; filename="estimate.pdf"`,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error generating PDF:", error);
+//     const errorMessage =
+//       error instanceof Error ? error.message : "Unknown error";
+//     return new NextResponse(`Error generating PDF: ${errorMessage}`, {
+//       status: 500,
+//     });
+//   }
+// }
