@@ -182,9 +182,9 @@ export const EstimatePDFDocument = ({
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Logo Section */}
-        {estimateData?.companyLogo && (
+        {userProfile?.logo && (
           <View style={styles.logoSection}>
-            <Image style={styles.logo} src={estimateData.companyLogo} />
+            <Image style={styles.logo} src={userProfile.logo} />
           </View>
         )}
 

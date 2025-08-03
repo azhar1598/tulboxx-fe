@@ -77,6 +77,8 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
     select: (data) => data?.data,
   });
 
+  console.log("userProfile", getUserProfile?.data);
+
   const [isEditing, setIsEditing] = useState(false);
   const [isFullEditor, setIsFullEditor] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
