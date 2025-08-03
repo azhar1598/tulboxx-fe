@@ -268,10 +268,19 @@ const CustomDataTable = <T extends BaseRecord>({
   const isIndeterminate =
     selectable && selectable.selectedRecords.length > 0 && !isAllSelected;
 
-  const defaultRecordText =
-    Object.values(filters).every((f) => !f?.length) && search === ""
-      ? noRecordsText
-      : "No Records Found.";
+  const defaultRecordText = useMemo(() => {
+    if (isLoading) {
+      return "Loading...";
+    }
+    if (data.length === 0) {
+      if (Object.values(filters).every((f) => !f?.length) && search === "") {
+        return "No data available.";
+      } else {
+        return "No records found.";
+      }
+    }
+    return "";
+  }, [filters, search, data.length, isLoading]);
 
   return (
     <div className="bg-slate-50/70 p-1 sm:p-2 lg:p-4 rounded-xl">
@@ -358,12 +367,11 @@ const CustomDataTable = <T extends BaseRecord>({
                   className="text-center p-16"
                 >
                   <div className="flex flex-col items-center gap-6">
-                    <div className="bg-blue-800 p-4 rounded-full">
-                      <Inbox
-                        className="h-10 w-10 text-blue-800"
-                        strokeWidth={1.5}
-                      />
-                    </div>
+                    <img
+                      src="/assets/no-data.svg"
+                      alt="No records illustration"
+                      className="w-40 h-40"
+                    />
                     <span className="text-gray-600 font-medium text-base">
                       {defaultRecordText}
                     </span>

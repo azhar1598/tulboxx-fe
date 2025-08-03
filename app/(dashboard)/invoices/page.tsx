@@ -277,7 +277,7 @@ function Estimates() {
 
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
-          filters={filters}
+          // filters={filters}
           searchable={false}
           onSearch={handleSearch}
         />

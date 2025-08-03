@@ -170,7 +170,7 @@ function Jobs() {
             {dayjs(date).format("MM-DD-YYYY")}
           </Text>
         ) : (
-          <Text size="14px">N/A</Text>
+          <Text size="14px">Unscheduled</Text>
         ),
     },
 
