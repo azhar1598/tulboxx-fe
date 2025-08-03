@@ -18,9 +18,11 @@ import { Image as ImageIcon, Trash2, Upload } from "lucide-react";
 
 const accountSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
-  email: z.string().email("Invalid email address").min(1, "Email is required"),
+  email: z
+    .union([z.string().email("Invalid email address"), z.literal("")])
+    .optional(),
   phone: z.string().optional(),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().optional(),
   companyName: z.string().optional(),
   jobTitle: z.string().optional(),
   industry: z.string().optional(),
@@ -84,9 +86,6 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
     setSelectedLogoFile(file);
     const previewUrl = URL.createObjectURL(file);
     setLogoPreviewUrl(previewUrl);
-    notifications.success(
-      "Logo selected! Click 'Save Account Details' to upload."
-    );
   };
   const handleRemoveLogo = () => {
     setCompanyLogo(null);

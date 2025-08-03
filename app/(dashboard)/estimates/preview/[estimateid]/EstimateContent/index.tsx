@@ -104,8 +104,6 @@ export const EstimateContent = ({
     setSelectedLogoFile(file);
     const previewUrl = URL.createObjectURL(file);
     setLogoPreviewUrl(previewUrl);
-
-    notification.success("Logo selected! Click 'Save Changes' to upload.");
   };
 
   // Remove logo
