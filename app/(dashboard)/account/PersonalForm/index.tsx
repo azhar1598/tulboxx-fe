@@ -282,19 +282,10 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
                 )}
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="flex gap-2">
-                    <Button
-                      size="xs"
-                      variant="white"
-                      onClick={triggerFileInput}
-                    >
+                    <Button size="xs" onClick={triggerFileInput}>
                       <Upload size={12} />
                     </Button>
-                    <Button
-                      size="xs"
-                      variant="white"
-                      color="red"
-                      onClick={handleRemoveLogo}
-                    >
+                    <Button size="xs" color="red" onClick={handleRemoveLogo}>
                       <Trash2 size={12} />
                     </Button>
                   </div>
