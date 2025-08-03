@@ -175,8 +175,7 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
     },
   });
 
-  const isButtonEnabled =
-    form.isValid() && (form.isDirty() || selectedLogoFile);
+  const isButtonEnabled = form.isValid() && form.isDirty();
   return (
     <form
       onSubmit={form.onSubmit((values) => updateUserProfile.mutate(values))}
