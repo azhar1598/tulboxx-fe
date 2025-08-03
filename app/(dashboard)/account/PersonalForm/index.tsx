@@ -319,7 +319,7 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
 
       <Button
         type="submit"
-        disabled={!isButtonEnabled}
+        // disabled={!isButtonEnabled}
         mt={20}
         loading={updateUserProfile.isPending}
       >
