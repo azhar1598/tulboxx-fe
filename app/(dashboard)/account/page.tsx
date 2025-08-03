@@ -93,9 +93,9 @@ function AccountForm() {
             <PersonalForm getUserProfile={getUserProfile} />
           </Tabs.Panel>
 
-          <Tabs.Panel value="banking">
+          {/* <Tabs.Panel value="banking">
             <BankingForm />
-          </Tabs.Panel>
+          </Tabs.Panel> */}
 
           <Tabs.Panel value="third-party-setups">
             <ThirdPartySetupForm />
