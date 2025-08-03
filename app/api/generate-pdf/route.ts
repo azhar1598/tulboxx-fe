@@ -12,18 +12,16 @@ export async function POST(request: Request) {
       });
     }
 
-    // Use local chromium in development
     const executablePath =
       process.env.NODE_ENV === "development"
-        ? "/opt/homebrew/bin/chromium" // For your local Mac
-        : await chromium.executablePath(); // For the production server
+        ? "/opt/homebrew/bin/chromium"
+        : await chromium.executablePath();
 
     const browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      defaultViewport: { width: 1280, height: 720 },
       executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+      //   headless: "new",
     });
 
     const page = await browser.newPage();
