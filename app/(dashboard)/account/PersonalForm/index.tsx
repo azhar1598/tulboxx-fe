@@ -58,11 +58,11 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
         fullName: getUserProfile?.data?.userMetadata?.full_name,
         email: getUserProfile?.data?.email,
         phone: getUserProfile?.data?.phone || "",
-        address: getUserProfile?.data?.address,
-        companyName: getUserProfile?.data?.companyName,
-        jobTitle: getUserProfile?.data?.jobTitle,
-        industry: getUserProfile?.data?.industry,
-        companySize: getUserProfile?.data?.companySize,
+        address: getUserProfile?.data?.address || "",
+        companyName: getUserProfile?.data?.companyName || "",
+        jobTitle: getUserProfile?.data?.jobTitle || "",
+        industry: getUserProfile?.data?.industry || "",
+        companySize: getUserProfile?.data?.companySize || "",
       });
       if (getUserProfile?.data?.logo) {
         setCompanyLogo(getUserProfile.data.logo);
@@ -319,7 +319,7 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
 
       <Button
         type="submit"
-        // disabled={!isButtonEnabled}
+        disabled={!isButtonEnabled}
         mt={20}
         loading={updateUserProfile.isPending}
       >
