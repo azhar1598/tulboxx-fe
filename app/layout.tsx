@@ -16,7 +16,7 @@ import { Sidebar } from "@/components/common/Sidebar";
 import Header from "@/components/common/Header";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
-import "@mantine/carousel/styles.css";
+// import "@mantine/carousel/styles.css";
 import "@mantine/dates/styles.css";
 import { createClient } from "@/utils/supabase/client";
 import { createContext, useEffect, useState } from "react";
