@@ -220,13 +220,13 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
         )}
         <Stack gap={10}>
           {activeTab === "preview" && (
-            <div ref={componentRef} className="md:p-8 bg-white">
-              <div className="mb-6 text-center">
+            <div ref={componentRef} className="md:p-4 bg-white">
+              {/* <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold">Project Estimate</h1>
                 <p className="text-gray-600">
                   {getEstimateQuery?.data?.projectName}
                 </p>
-              </div>
+              </div> */}
 
               <EstimateContent
                 descriptionJson={aiContent}

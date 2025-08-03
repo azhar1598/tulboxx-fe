@@ -341,9 +341,8 @@ export const EstimateContent = ({
       className="w-full bg-white"
       style={{ fontFamily: "Arial, sans-serif" }}
     >
-      {/* Header Section */}
-      <div className="flex justify-between items-start mb-8">
-        {/* Logo Section */}
+      {/* Logo Section */}
+      <div className="mb-8">
         <div
           className={`w-64 h-32 flex items-center justify-center relative overflow-hidden ${
             companyLogo || logoPreviewUrl
@@ -421,6 +420,23 @@ export const EstimateContent = ({
             onChange={handleLogoUpload}
             className="hidden"
           />
+        </div>
+      </div>
+
+      {/* Header Section */}
+      <div className="flex justify-between items-start mb-8">
+        {/* Company Details Section */}
+        <div>
+          <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold mb-2">
+            PREPARED BY:
+          </div>
+          <div className="text-sm leading-relaxed">
+            <div className="font-semibold">
+              {getUserProfile?.data?.companyName || "Company Name"}
+            </div>
+            <div>{getUserProfile?.data?.address || "Company Address"}</div>
+            <div>{getUserProfile?.data?.email || "company@email.com"}</div>
+          </div>
         </div>
 
         {/* Prepared For Section */}
