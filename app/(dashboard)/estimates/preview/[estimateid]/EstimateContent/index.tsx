@@ -296,7 +296,6 @@ export const EstimateContent = ({
       const newData = {
         ...getEstimateQuery?.data,
         clientId: getEstimateQuery?.data.client_id,
-        projectType: getEstimateQuery?.data.project_type,
         ai_generated_estimate: JSON.stringify(data),
         lineItems: lineItems,
         companyLogo: finalLogoUrl,
