@@ -137,9 +137,8 @@ const StoreRegistrationContent = () => {
       // type: "residential",
       // project form
       serviceType: "",
-      problemDescription: "Installing drainage system",
-      solutionDescription:
-        "Installing a trench system to divert water away from house",
+      problemDescription: "",
+      solutionDescription: "",
       projectEstimate: "",
       projectStartDate: "",
       projectType: "residential",
