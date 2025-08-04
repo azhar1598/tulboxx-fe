@@ -99,14 +99,19 @@ function Estimates() {
       accessor: "projectName",
       title: "Project Name",
       sortable: true,
-      render: ({ projectName, id }: any) => (
-        <Link
-          href={`/estimates/preview/${id}`}
-          style={{ color: "blue", textDecoration: "underline" }}
-        >
-          {projectName || "N/A"}
-        </Link>
-      ),
+      render: ({ projectName, id, type }: any) => {
+        if (type === "detailed") {
+          return (
+            <Link
+              href={`/estimates/preview/${id}`}
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              {projectName || "N/A"}
+            </Link>
+          );
+        }
+        return <Text size="14px">{projectName || "N/A"}</Text>;
+      },
     },
     // {
     //   accessor: "projectEstimate",
