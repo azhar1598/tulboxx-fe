@@ -64,7 +64,14 @@ import {
 import dayjs from "dayjs";
 import { UserContext } from "./layout";
 
-const StatCard = ({ title, value, icon: Icon, diff, isLoading, hasData = true }) => {
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  diff,
+  isLoading,
+  hasData = true,
+}) => {
   const theme = useMantineTheme();
   const DiffIcon = diff > 0 ? IconArrowUpRight : null;
 
@@ -187,8 +194,8 @@ const CustomPieChart = ({ data, title, isLoading }) => (
             No data to display
           </Text>
           <Text fz="sm" c="dimmed" ta="center">
-            {title.includes("Invoice") 
-              ? "Create some invoices to see the breakdown" 
+            {title.includes("Invoice")
+              ? "Create some invoices to see the breakdown"
               : "Create some estimates to see the breakdown"}
           </Text>
         </Stack>
