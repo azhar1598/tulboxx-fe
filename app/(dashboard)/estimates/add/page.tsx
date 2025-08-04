@@ -153,8 +153,8 @@ const StoreRegistrationContent = () => {
         },
       ],
       // additional fields
-      equipmentMaterials: "Stone, Gravel, Excavator",
-      additionalNotes: "huge Discounts on Bulk Orders",
+      equipmentMaterials: "",
+      additionalNotes: "",
       // user id
       // user_id: "",
     },
