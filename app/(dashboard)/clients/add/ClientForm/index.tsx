@@ -159,6 +159,7 @@ const ClientForm = ({
             allowNegative={false}
             placeholder="Enter phone number"
             {...form.getInputProps("phone")}
+            maxLength={10}
           />
         </Grid.Col>
 

@@ -137,8 +137,9 @@ const StoreRegistrationContent = () => {
       // type: "residential",
       // project form
       serviceType: "",
-      problemDescription: "",
-      solutionDescription: "",
+      problemDescription: "Installing drainage system",
+      solutionDescription:
+        "Installing a trench system to divert water away from house",
       projectEstimate: "",
       projectStartDate: "",
       projectType: "residential",
@@ -153,8 +154,8 @@ const StoreRegistrationContent = () => {
         },
       ],
       // additional fields
-      equipmentMaterials: "",
-      additionalNotes: "",
+      equipmentMaterials: "Stone, Gravel, Excavator",
+      additionalNotes: "huge Discounts on Bulk Orders",
       // user id
       // user_id: "",
     },

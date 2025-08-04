@@ -19,6 +19,7 @@ import {
   RingProgress,
   Tabs,
   ScrollArea,
+  Center,
 } from "@mantine/core";
 import {
   IconUsers,
@@ -40,6 +41,9 @@ import {
   IconCurrencyDollar,
   IconArrowsExchange,
   IconSparkles,
+  IconInbox,
+  IconFileOff,
+  IconChartAreaLine,
 } from "@tabler/icons-react";
 import {
   LineChart,
@@ -60,9 +64,9 @@ import {
 import dayjs from "dayjs";
 import { UserContext } from "./layout";
 
-const StatCard = ({ title, value, icon: Icon, diff, isLoading }) => {
+const StatCard = ({ title, value, icon: Icon, diff, isLoading, hasData = true }) => {
   const theme = useMantineTheme();
-  const DiffIcon = diff > 0 ? IconArrowUpRight : null; // No icon for negative diff for now
+  const DiffIcon = diff > 0 ? IconArrowUpRight : null;
 
   return (
     <Paper withBorder p="xl" radius="md" shadow="md">
@@ -81,21 +85,32 @@ const StatCard = ({ title, value, icon: Icon, diff, isLoading }) => {
             <Icon size={28} stroke={1.5} />
           </Group>
 
-          <Group align="flex-end" gap="xs" mt="xl">
-            <Text fz={36} fw={700} lh={1}>
-              {value}
-            </Text>
-            {DiffIcon && (
-              <Text c="teal" fz="sm" fw={500}>
-                <span>{diff}%</span>
-                <DiffIcon size="1rem" stroke={1.5} />
-              </Text>
-            )}
-          </Group>
+          {hasData ? (
+            <>
+              <Group align="flex-end" gap="xs" mt="xl">
+                <Text fz={36} fw={700} lh={1}>
+                  {value}
+                </Text>
+                {DiffIcon && (
+                  <Text c="teal" fz="sm" fw={500}>
+                    <span>{diff}%</span>
+                    <DiffIcon size="1rem" stroke={1.5} />
+                  </Text>
+                )}
+              </Group>
 
-          <Text fz="xs" c="dimmed" mt="sm">
-            Compared to previous month
-          </Text>
+              <Text fz="xs" c="dimmed" mt="sm">
+                Compared to previous month
+              </Text>
+            </>
+          ) : (
+            <Stack align="center" mt="xl" mb="sm">
+              <IconInbox size={32} stroke={1.5} color={theme.colors.gray[5]} />
+              <Text fz="sm" c="dimmed" ta="center">
+                No data available yet
+              </Text>
+            </Stack>
+          )}
         </>
       )}
     </Paper>
@@ -109,6 +124,18 @@ const RevenueChart = ({ data, isLoading }) => (
     </Title>
     {isLoading ? (
       <Skeleton height={350} />
+    ) : !data || data.length === 0 ? (
+      <Center style={{ height: 350 }}>
+        <Stack align="center" gap="sm">
+          <IconChartAreaLine size={48} stroke={1.5} color="#cbd5e1" />
+          <Text fz="lg" fw={500} c="dimmed">
+            No performance data available
+          </Text>
+          <Text fz="sm" c="dimmed" ta="center">
+            Create some invoices and estimates to see your monthly performance
+          </Text>
+        </Stack>
+      </Center>
     ) : (
       <ResponsiveContainer width="100%" height={350}>
         <ComposedChart data={data}>
@@ -152,6 +179,20 @@ const CustomPieChart = ({ data, title, isLoading }) => (
     </Title>
     {isLoading ? (
       <Skeleton height={350} />
+    ) : !data || data.length === 0 ? (
+      <Center style={{ height: 350 }}>
+        <Stack align="center" gap="sm">
+          <IconChartPie size={48} stroke={1.5} color="#cbd5e1" />
+          <Text fz="lg" fw={500} c="dimmed">
+            No data to display
+          </Text>
+          <Text fz="sm" c="dimmed" ta="center">
+            {title.includes("Invoice") 
+              ? "Create some invoices to see the breakdown" 
+              : "Create some estimates to see the breakdown"}
+          </Text>
+        </Stack>
+      </Center>
     ) : (
       <ResponsiveContainer width="100%" height={350}>
         <PieChart>
@@ -198,59 +239,95 @@ const ActionFeed = ({ overdue, estimates, isLoading }) => {
 
         <Tabs.Panel value="overdue" pt="xs">
           <ScrollArea.Autosize mah={300}>
-            <List spacing="sm" size="sm">
-              {isLoading
-                ? Array(3)
-                    .fill(0)
-                    .map((_, i) => <Skeleton key={i} height={40} mt="sm" />)
-                : overdue?.map((item) => (
-                    <List.Item key={item.id}>
-                      <Group justify="space-between">
-                        <div>
-                          <Text>Invoice #{item.invoice_number}</Text>
-                          <Text size="xs" c="dimmed">
-                            {item.client?.name || "N/A"}
-                          </Text>
-                        </div>
-                        <Stack align="flex-end" gap={0}>
-                          <Text fw={500}>
-                            ${item.invoice_total_amount.toLocaleString()}
-                          </Text>
-                          <Text size="xs" c="red">
-                            {dayjs().diff(dayjs(item.due_date), "day")} days
-                            overdue
-                          </Text>
-                        </Stack>
-                      </Group>
-                    </List.Item>
+            {isLoading ? (
+              <Stack>
+                {Array(3)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Skeleton key={i} height={40} mt="sm" />
                   ))}
-            </List>
+              </Stack>
+            ) : !overdue || overdue.length === 0 ? (
+              <Center py="xl">
+                <Stack align="center" gap="sm">
+                  <IconCheck size={32} stroke={1.5} color="#22c55e" />
+                  <Text fz="sm" fw={500} c="dimmed">
+                    No overdue invoices
+                  </Text>
+                  <Text fz="xs" c="dimmed" ta="center">
+                    Great! All your invoices are up to date
+                  </Text>
+                </Stack>
+              </Center>
+            ) : (
+              <List spacing="sm" size="sm">
+                {overdue.map((item) => (
+                  <List.Item key={item.id}>
+                    <Group justify="space-between">
+                      <div>
+                        <Text>Invoice #{item.invoice_number}</Text>
+                        <Text size="xs" c="dimmed">
+                          {item.client?.name || "N/A"}
+                        </Text>
+                      </div>
+                      <Stack align="flex-end" gap={0}>
+                        <Text fw={500}>
+                          ${item.invoice_total_amount.toLocaleString()}
+                        </Text>
+                        <Text size="xs" c="red">
+                          {dayjs().diff(dayjs(item.due_date), "day")} days
+                          overdue
+                        </Text>
+                      </Stack>
+                    </Group>
+                  </List.Item>
+                ))}
+              </List>
+            )}
           </ScrollArea.Autosize>
         </Tabs.Panel>
 
         <Tabs.Panel value="estimates" pt="xs">
           <ScrollArea.Autosize mah={300}>
-            <List spacing="sm" size="sm">
-              {isLoading
-                ? Array(3)
-                    .fill(0)
-                    .map((_, i) => <Skeleton key={i} height={40} mt="sm" />)
-                : estimates?.map((item) => (
-                    <List.Item key={item.id}>
-                      <Group justify="space-between">
-                        <div>
-                          <Text>Estimate #{item.number}</Text>
-                          <Text size="xs" c="dimmed">
-                            {item.clients?.name || "N/A"}
-                          </Text>
-                        </div>
-                        <Text fw={500}>
-                          ${item.total_amount.toLocaleString()}
-                        </Text>
-                      </Group>
-                    </List.Item>
+            {isLoading ? (
+              <Stack>
+                {Array(3)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Skeleton key={i} height={40} mt="sm" />
                   ))}
-            </List>
+              </Stack>
+            ) : !estimates || estimates.length === 0 ? (
+              <Center py="xl">
+                <Stack align="center" gap="sm">
+                  <IconFileOff size={32} stroke={1.5} color="#cbd5e1" />
+                  <Text fz="sm" fw={500} c="dimmed">
+                    No estimates yet
+                  </Text>
+                  <Text fz="xs" c="dimmed" ta="center">
+                    Create your first estimate to get started
+                  </Text>
+                </Stack>
+              </Center>
+            ) : (
+              <List spacing="sm" size="sm">
+                {estimates.map((item) => (
+                  <List.Item key={item.id}>
+                    <Group justify="space-between">
+                      <div>
+                        <Text>Estimate #{item.number}</Text>
+                        <Text size="xs" c="dimmed">
+                          {item.clients?.name || "N/A"}
+                        </Text>
+                      </div>
+                      <Text fw={500}>
+                        ${item.total_amount.toLocaleString()}
+                      </Text>
+                    </Group>
+                  </List.Item>
+                ))}
+              </List>
+            )}
           </ScrollArea.Autosize>
         </Tabs.Panel>
       </Tabs>
@@ -283,8 +360,13 @@ function DashboardPage() {
     overdueInvoices,
     invoiceStatusData,
     estimateTypeData,
+    hasInvoiceData,
+    hasEstimateData,
   } = useMemo(() => {
     if (!invoices || !estimates) return {};
+
+    const hasInvoiceData = invoices && invoices.length > 0;
+    const hasEstimateData = estimates && estimates.length > 0;
 
     let totalRevenue = 0;
     const paidInvoices = invoices.filter((i) => i.status === "paid");
@@ -368,6 +450,8 @@ function DashboardPage() {
       overdueInvoices,
       invoiceStatusData,
       estimateTypeData,
+      hasInvoiceData,
+      hasEstimateData,
     };
   }, [invoices, estimates]);
 
@@ -396,8 +480,9 @@ function DashboardPage() {
             title="Total Revenue"
             value={`$${(totalRevenue || 0).toLocaleString()}`}
             icon={IconCurrencyDollar}
-            diff={14} // Placeholder diff
+            diff={14}
             isLoading={isLoading}
+            hasData={hasInvoiceData && totalRevenue > 0}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
@@ -405,8 +490,9 @@ function DashboardPage() {
             title="Overdue Amount"
             value={`$${(overdueAmount || 0).toLocaleString()}`}
             icon={IconReceiptOff}
-            diff={-5} // Placeholder diff
+            diff={-5}
             isLoading={isLoading}
+            hasData={hasInvoiceData}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
@@ -414,8 +500,9 @@ function DashboardPage() {
             title="Conversion Rate"
             value={`${(conversionRate || 0).toFixed(1)}%`}
             icon={IconArrowsExchange}
-            diff={22} // Placeholder diff
+            diff={22}
             isLoading={isLoading}
+            hasData={hasInvoiceData && hasEstimateData}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
@@ -423,8 +510,9 @@ function DashboardPage() {
             title="Avg. Job Value"
             value={`$${(avgJobValue || 0).toLocaleString()}`}
             icon={IconCash}
-            diff={8} // Placeholder diff
+            diff={8}
             isLoading={isLoading}
+            hasData={hasInvoiceData && avgJobValue > 0}
           />
         </Grid.Col>
       </Grid>
