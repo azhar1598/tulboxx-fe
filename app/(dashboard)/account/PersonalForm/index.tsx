@@ -41,7 +41,7 @@ const accountSchema = z.object({
   streetAddress: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
-  zip: z.union([z.string(), z.number()]).optional(),
+  zip: z.any().optional(),
   companyName: z.string().optional(),
   jobTitle: z.string().optional(),
   industry: z.string().optional(),
