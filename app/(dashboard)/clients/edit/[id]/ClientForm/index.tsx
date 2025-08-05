@@ -32,6 +32,7 @@ import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/app/layout";
 import { USStates } from "@/lib/constants";
+import { formatPhoneNumber } from "@/lib/utils";
 
 // Define the validation schema using zod
 const formSchema = z.object({
@@ -98,7 +99,7 @@ const ClientForm = () => {
       form.setValues({
         name: name || "",
         email: email || "",
-        phone: phone ? Number(phone) : "",
+        phone: phone ? formatPhoneNumber(phone) : "",
         address: address || "",
         city: city || "",
         state: state || "",
@@ -114,7 +115,8 @@ const ClientForm = () => {
   }, [getClientQuery.data]);
 
   const updateClient = useMutation({
-    mutationFn: () => callApi.put(`/clients/${id}`, form.values),
+    mutationFn: (clientData: ClientFormValues) =>
+      callApi.put(`/clients/${id}`, clientData),
     onSuccess: async (res) => {
       const { data } = res;
 
@@ -142,9 +144,12 @@ const ClientForm = () => {
 
   return (
     <form
-      onSubmit={form.onSubmit(() => {
-        const values = form.values;
-        updateClient.mutate();
+      onSubmit={form.onSubmit((values) => {
+        const submissionValues = {
+          ...values,
+          phone: values.phone?.toString().replace(/-/g, ""),
+        };
+        updateClient.mutate(submissionValues);
       })}
     >
       <Grid>
@@ -167,14 +172,15 @@ const ClientForm = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <NumberInput
+          <TextInput
             label="Phone"
-            allowDecimal={false}
-            hideControls
-            allowNegative={false}
             placeholder="Enter phone number"
             {...form.getInputProps("phone")}
-            maxLength={10}
+            onChange={(event) => {
+              const formatted = formatPhoneNumber(event.currentTarget.value);
+              form.setFieldValue("phone", formatted);
+            }}
+            maxLength={12}
           />
         </Grid.Col>
 
