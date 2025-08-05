@@ -7,6 +7,7 @@ import {
   Button,
   Divider,
   Select,
+  NumberInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
@@ -15,6 +16,21 @@ import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { createClient } from "@/utils/supabase/client";
 import { Image as ImageIcon, Trash2, Upload } from "lucide-react";
+import { USStates } from "@/lib/constants";
+
+const formatPhoneNumber = (value: string) => {
+  if (!value) return "";
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+  }
+  return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
+    3,
+    6
+  )}-${phoneNumber.slice(6, 10)}`;
+};
 
 const accountSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -22,12 +38,14 @@ const accountSchema = z.object({
     .union([z.string().email("Invalid email address"), z.literal("")])
     .optional(),
   phone: z.string().optional(),
-  address: z.string().optional(),
+  streetAddress: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.union([z.string(), z.number()]).optional(),
   companyName: z.string().optional(),
   jobTitle: z.string().optional(),
   industry: z.string().optional(),
   companySize: z.string().optional(),
-  logo: z.string().optional(),
 });
 
 function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
@@ -43,12 +61,14 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
       fullName: "",
       email: "",
       phone: "",
-      address: "",
+      streetAddress: "",
+      city: "",
+      state: "",
+      zip: "",
       companyName: "",
       jobTitle: "",
       industry: "",
       companySize: "",
-      logo: "",
     },
     validateInputOnChange: true,
   });
@@ -57,8 +77,11 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
       form.setValues({
         fullName: getUserProfile?.data?.userMetadata?.full_name,
         email: getUserProfile?.data?.email,
-        phone: getUserProfile?.data?.phone || "",
-        address: getUserProfile?.data?.address || "",
+        phone: formatPhoneNumber(getUserProfile?.data?.phone || ""),
+        streetAddress: getUserProfile?.data?.streetAddress || "",
+        city: getUserProfile?.data?.city || "",
+        state: getUserProfile?.data?.state || "",
+        zip: getUserProfile?.data?.zip || null,
         companyName: getUserProfile?.data?.companyName || "",
         jobTitle: getUserProfile?.data?.jobTitle || "",
         industry: getUserProfile?.data?.industry || "",
@@ -66,6 +89,8 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
       });
       if (getUserProfile?.data?.logo) {
         setCompanyLogo(getUserProfile.data.logo);
+      } else {
+        setCompanyLogo(null);
       }
       form.resetDirty();
     }
@@ -97,7 +122,6 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-    form.setFieldValue("logo", ""); // Also update form state
   };
   const triggerFileInput = () => {
     fileInputRef.current?.click();
@@ -150,12 +174,16 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
       }
 
       const formattedData = {
+        phone: values.phone,
         companyName: values.companyName,
         companySize: values.companySize,
-        address: values.address,
+        streetAddress: values.streetAddress,
+        city: values.city,
+        state: values.state,
+        zip: String(values.zip),
         industry: values.industry,
         jobTitle: values.jobTitle,
-        logo: logoUrl,
+        logo: logoUrl === null ? "" : logoUrl,
       };
       const response = await callApi.patch("/user-profile", formattedData);
       return response.data;
@@ -175,7 +203,13 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
     },
   });
 
-  const isButtonEnabled = form.isValid() && form.isDirty();
+  console.log("getvalues", accountSchema.safeParse(form.values));
+
+  const logoHasChanged =
+    selectedLogoFile !== null ||
+    companyLogo !== (getUserProfile?.data?.logo || null);
+
+  const isButtonEnabled = form.isValid() && (form.isDirty() || logoHasChanged);
   return (
     <form
       onSubmit={form.onSubmit((values) => updateUserProfile.mutate(values))}
@@ -205,16 +239,48 @@ function PersonalForm({ getUserProfile }: { getUserProfile: any }) {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TextInput
             label="Phone Number"
-            placeholder="+1 (555) 555-5555"
+            placeholder="123-456-7890"
             {...form.getInputProps("phone")}
+            onChange={(event) => {
+              const formatted = formatPhoneNumber(event.currentTarget.value);
+              form.setFieldValue("phone", formatted);
+            }}
+            maxLength={12}
           />
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Textarea
-            label="Address"
-            placeholder="Your address"
-            {...form.getInputProps("address")}
+          <TextInput
+            label="Street Address"
+            placeholder="Your street address"
+            {...form.getInputProps("streetAddress")}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <TextInput
+            label="City"
+            placeholder="Your city"
+            {...form.getInputProps("city")}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Select
+            label="State"
+            placeholder="Select State"
+            data={USStates}
+            {...form.getInputProps("state")}
+            searchable
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <NumberInput
+            label="Zip Code"
+            placeholder="Your zip code"
+            {...form.getInputProps("zip")}
+            hideControls
           />
         </Grid.Col>
 
