@@ -10,7 +10,7 @@ function page() {
     <>
       <PageHeader title={"Create Client"} />
       <PageMainWrapper w="full">
-        <ClientForm />
+        <ClientForm clientPage={true} />
       </PageMainWrapper>
     </>
   );

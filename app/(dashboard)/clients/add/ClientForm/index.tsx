@@ -63,12 +63,14 @@ const ClientForm = ({
   getClients,
   estimateForm,
   invoiceForm,
+  clientPage = false,
 }: {
   md?: number;
   setClientModalOpened?: (value: boolean) => void;
   getClients?: any;
   estimateForm?: any;
   invoiceForm?: any;
+  clientPage?: boolean;
 }) => {
   const router = useRouter();
   const notification = usePageNotifications();
@@ -103,6 +105,7 @@ const ClientForm = ({
 
       notification.success(`Client created successfully`);
       if (md === 6) {
+        if (!clientPage) return;
         router.push(`/clients`);
       } else {
         setClientModalOpened(false);

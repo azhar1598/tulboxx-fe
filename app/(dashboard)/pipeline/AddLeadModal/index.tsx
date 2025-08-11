@@ -6,6 +6,7 @@ import {
   Stack,
   Textarea,
   NumberInput,
+  Grid,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import callApi from "@/services/apiService";
 import { IconCurrencyDollar, IconSearch } from "@tabler/icons-react";
 import { DateInput, DatePickerInput } from "@mantine/dates";
 import CustomModal from "@/components/common/CustomMoodal";
+import CustomClientSelect from "@/components/common/CustomClientSelect";
 
 const formSchema = z.object({
   customerId: z.string().min(1, "Client is required"),
@@ -77,7 +79,7 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
     >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
-          <Select
+          {/*   <Select
             label="Choose Client"
             placeholder="Search Clients..."
             data={getClients?.data}
@@ -87,7 +89,10 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
             {...form.getInputProps("customerId")}
             rightSection={<IconSearch size={16} color="gray" />}
             withAsterisk
-          />
+          /> */}
+
+          <CustomClientSelect form={form} />
+
           <Select
             label="Stage"
             placeholder="Select a stage"
