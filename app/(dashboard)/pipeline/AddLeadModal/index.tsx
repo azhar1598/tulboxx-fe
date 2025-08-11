@@ -19,7 +19,7 @@ import CustomModal from "@/components/common/CustomMoodal";
 import CustomClientSelect from "@/components/common/CustomClientSelect";
 
 const formSchema = z.object({
-  customerId: z.string().min(1, "Client is required"),
+  clientId: z.string().min(1, "Client is required"),
   stageId: z.string().min(1, "Stage is required"),
   estimatedValue: z.number().optional(),
   expectedCloseDate: z.date().optional().nullable(),
@@ -32,7 +32,7 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
 
   const form = useForm({
     initialValues: {
-      customerId: "",
+      clientId: "",
       stageId: "",
       estimatedValue: undefined,
       expectedCloseDate: null,
@@ -62,13 +62,15 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
     console.log("leads", leads, values);
     if (
       leads &&
-      leads.some((lead) => lead.client_id.toString() === values.customerId)
+      leads.some((lead) => lead.client_id.toString() === values.clientId)
     ) {
       notification.error("This client is already assigned to a lead.");
       return;
     }
-    addLeadMutation.mutate(values);
+    addLeadMutation.mutate({ customerId: values.clientId, ...values });
   };
+
+  console.log("form.values", formSchema.safeParse(form.values));
 
   return (
     <CustomModal
@@ -86,7 +88,7 @@ const AddLeadModal = ({ opened, onClose, getClients, getStages }) => {
             searchable
             clearable
             w=""
-            {...form.getInputProps("customerId")}
+            {...form.getInputProps("clientId")}
             rightSection={<IconSearch size={16} color="gray" />}
             withAsterisk
           /> */}

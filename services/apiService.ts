@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/client";
 
 export const BASE_URL =
   process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001"
+    ? process.env.NEXT_PUBLIC_API_DEV_URL || "http://localhost:3001"
     : process.env.NEXT_PUBLIC_BASE_URL || "";
 
 export const api = axios.create({
