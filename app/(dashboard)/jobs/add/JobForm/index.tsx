@@ -141,7 +141,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
         <Grid.Col span={{ base: 12, md: md }}>
           <TextInput
             label="Job Name"
-            placeholder="Type here..."
+            placeholder="Johnson - Grading"
             {...form.getInputProps("name")}
             withAsterisk
           />
@@ -193,7 +193,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
 
         <Grid.Col span={{ base: 12, md: md }}>
           <NumberInput
-            label="Hours"
+            label="Estimated Hours"
             placeholder="Enter estimated hours"
             {...form.getInputProps("hours")}
             hideControls
