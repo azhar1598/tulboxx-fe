@@ -14,7 +14,7 @@ import {
   Center,
   Loader,
 } from "@mantine/core";
-import LoginCover from "../../public/assets/auth/logincover.jpg";
+import LoginCover from "../../public/assets/auth/loginscreen.png";
 import { isEmail } from "@mantine/form";
 import { useForm } from "@mantine/form";
 import GoogleLogo from "../../public/assets/auth/google.png";
@@ -28,8 +28,10 @@ const LoginForm = ({ login }: { login: any }) => {
 
   const form = useForm({
     initialValues: {
-      email: "admin@gmail.com",
-      password: "12345678",
+      // email: "admin@gmail.com",
+      // password: "12345678",
+      email: "",
+      password: "",
     },
     validate: {
       email: isEmail("Please enter a valid email address"),
