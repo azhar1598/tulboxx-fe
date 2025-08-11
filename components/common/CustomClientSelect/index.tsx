@@ -142,6 +142,7 @@ const CustomClientSelect = ({ form }: { form: any }) => {
           getClients={getClients}
           estimateForm={form}
           invoiceForm={form}
+          md={12}
         />
       </CustomModal>
     </Box>
