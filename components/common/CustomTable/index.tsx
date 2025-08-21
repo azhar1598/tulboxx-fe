@@ -439,7 +439,11 @@ const CustomDataTable = <T extends BaseRecord>({
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     checked={isAllSelected}
-                    ref={(el) => el && (el.indeterminate = isIndeterminate)}
+                    ref={(el) => {
+                      if (el) {
+                        el.indeterminate = isIndeterminate;
+                      }
+                    }}
                     onChange={(e) => handleSelectAll(e.target.checked)}
                   />
                 </th>
