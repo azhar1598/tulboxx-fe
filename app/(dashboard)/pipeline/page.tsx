@@ -434,8 +434,6 @@ export default function PipelinePage() {
           width: "100%",
           backgroundColor: "#f8f9fa",
           minHeight: "100vh",
-          maxWidth: "90vw",
-          overflow: "hidden",
         }}
       >
         <Stack gap="xl">

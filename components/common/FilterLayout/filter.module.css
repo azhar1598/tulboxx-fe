@@ -1,13 +1,60 @@
 .filter_search_input {
   width: 300px;
 }
+
 .filter_input {
   width: 300px;
 }
 
-@media only screen and (max-width: 992px) {
+/* Desktop layout - visible by default */
+.desktop_layout {
+  display: flex;
+}
+
+.mobile_layout {
+  display: none;
+}
+
+/* Mobile styles */
+@media only screen and (max-width: 768px) {
+  /* Hide desktop layout on mobile */
+  .desktop_layout {
+    display: none;
+  }
+  
+  /* Show mobile layout */
+  .mobile_layout {
+    display: flex;
+  }
+  
+  .mobile_search_input {
+    width: 100%;
+  }
+  
+  .mobile_filter_input {
+    width: 100%;
+  }
+  
+  .mobile_filters {
+    width: 100%;
+  }
+}
+
+/* Tablet styles */
+@media only screen and (max-width: 992px) and (min-width: 769px) {
   .filter_search_input,
   .filter_input {
-    width: 100%;
+    width: 200px;
+  }
+}
+
+/* Small mobile devices */
+@media only screen and (max-width: 480px) {
+  .mobile_layout {
+    gap: 0.75rem;
+  }
+  
+  .mobile_filters {
+    gap: 0.5rem;
   }
 }

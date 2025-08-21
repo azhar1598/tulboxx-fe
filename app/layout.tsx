@@ -20,7 +20,6 @@ import { Notifications } from "@mantine/notifications";
 import "@mantine/dates/styles.css";
 import { createClient } from "@/utils/supabase/client";
 import { createContext, useEffect, useState } from "react";
-import MobileViewMessage from "@/components/common/MobileViewMessage";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -72,38 +71,38 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} antialiased `}>
-        {isMobileView && <MobileViewMessage />}
-        {!isMobileView && (
-          <QueryClientProvider client={queryClient}>
-            <MantineProvider theme={theme}>
-              <Notifications position="top-center" />
-              <Provider store={store}>
-                <UserContext.Provider value={user}>
-                  <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
-                    {pathname !== "/login" &&
-                      pathname !== "/test" &&
-                      pathname !== "/signup" &&
-                      pathname != "/story-editor" && <Sidebar />}
+        {/* {isMobileView && <MobileViewMessage />} */}
+        {/* {!isMobileView && ( */}
+        <QueryClientProvider client={queryClient}>
+          <MantineProvider theme={theme}>
+            <Notifications position="top-center" />
+            <Provider store={store}>
+              <UserContext.Provider value={user}>
+                <Flex align={"Flex-start"} justify={"Flex-start"} w={"100%"}>
+                  {pathname !== "/login" &&
+                    pathname !== "/test" &&
+                    pathname !== "/signup" &&
+                    pathname != "/story-editor" && <Sidebar />}
 
-                    {/* {pathname != "/story-editor" &&
+                  {/* {pathname != "/story-editor" &&
                       pathname !== "/login" &&
                       pathname !== "/signup" && <Header />} */}
-                    <Stack>
-                      {pathname !== "/login" &&
-                        pathname !== "/test" &&
-                        pathname !== "/signup" && <Header />}
-                      <div
-                        className={`${pathname === "/" ? "main-content" : ""}`}
-                      >
-                        {children}
-                      </div>
-                    </Stack>
-                  </Flex>
-                </UserContext.Provider>
-              </Provider>
-            </MantineProvider>
-          </QueryClientProvider>
-        )}
+                  <Stack>
+                    {pathname !== "/login" &&
+                      pathname !== "/test" &&
+                      pathname !== "/signup" && <Header />}
+                    <div
+                      className={`${pathname === "/" ? "main-content" : ""}`}
+                    >
+                      {children}
+                    </div>
+                  </Stack>
+                </Flex>
+              </UserContext.Provider>
+            </Provider>
+          </MantineProvider>
+        </QueryClientProvider>
+        {/* )} */}
       </body>
     </html>
   );

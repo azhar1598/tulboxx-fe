@@ -284,25 +284,167 @@ const CustomDataTable = <T extends BaseRecord>({
 
   return (
     <div className="bg-slate-50/70 p-1 sm:p-2 lg:p-4 rounded-xl">
-      <div className="overflow-x-auto">
+      {/* Mobile View - Card Layout */}
+      <div className="block md:hidden">
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: Math.min(limit, 5) }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg p-4 shadow-sm animate-pulse"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-gray-200 rounded"></div>
+                  <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : data.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="flex flex-col items-center gap-4">
+              <img
+                src="/assets/no-data.svg"
+                alt="No records illustration"
+                className="w-32 h-32 opacity-60"
+              />
+              <span className="text-gray-600 font-medium text-sm">
+                {defaultRecordText}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {data.map((record, index) => {
+              // Find the actions column
+              const actionsColumn = columns.find(
+                (col: any) => col.accessor === "actions"
+              );
+              const nameColumn = columns.find(
+                (col: any) => col.accessor === "name"
+              );
+
+              return (
+                <div
+                  key={record.id ?? index}
+                  className={`bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${
+                    onRowClick ? "cursor-pointer active:scale-[0.98]" : ""
+                  }`}
+                  onClick={(e) =>
+                    onRowClick?.({
+                      event: e as React.MouseEvent<HTMLTableRowElement>,
+                      record,
+                      index,
+                    })
+                  }
+                >
+                  {/* Header with name and action */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-50 bg-gray-50/50">
+                    <div className="flex-1 min-w-0">
+                      {nameColumn?.render ? (
+                        <div className="text-base font-semibold text-gray-900 truncate">
+                          {nameColumn.render(record, index)}
+                        </div>
+                      ) : (
+                        <div className="text-base font-semibold text-gray-900 truncate">
+                          {record[nameColumn?.accessor] as React.ReactNode}
+                        </div>
+                      )}
+                    </div>
+                    {actionsColumn && (
+                      <div
+                        className="ml-3 flex-shrink-0"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {actionsColumn.render(record, index)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 space-y-3">
+                    {columns
+                      .filter(
+                        (col: any) =>
+                          col.accessor !== "name" && col.accessor !== "actions"
+                      )
+                      .map((column: any) => (
+                        <div
+                          key={String(column.accessor)}
+                          className="flex items-start gap-3"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                              {typeof column.title === "string"
+                                ? column.title
+                                : "Info"}
+                            </div>
+                            <div className="text-sm text-gray-900">
+                              {column.render
+                                ? column.render(record, index)
+                                : (record[
+                                    column.accessor
+                                  ] as React.ReactNode) || "N/A"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Selection checkbox if selectable */}
+                  {selectable && (
+                    <div className="px-4 pb-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          checked={selectable.selectedRecords.some(
+                            (r) => r.id === record.id
+                          )}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleSelectRow(record, e.target.checked);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span className="text-sm text-gray-600">
+                          Select this item
+                        </span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop/Tablet View - Table Layout */}
+      <div className="hidden md:block overflow-x-auto">
         <table
           className="w-full text-sm border-separate"
           style={{ borderSpacing: "0 1rem" }}
         >
-          <thead className="hidden md:table-header-group">
+          <thead>
             <tr>
-              {/* {selectable && (
+              {selectable && (
                 <th className="p-4 w-4 text-left">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-800 focus:ring-blue-800 cursor-pointer"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     checked={isAllSelected}
                     ref={(el) => el && (el.indeterminate = isIndeterminate)}
                     onChange={(e) => handleSelectAll(e.target.checked)}
                   />
                 </th>
-              )} */}
-              {columns.map((column) => (
+              )}
+              {columns.map((column: any) => (
                 <th
                   key={String(column.accessor)}
                   className={`px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider ${
@@ -349,15 +491,23 @@ const CustomDataTable = <T extends BaseRecord>({
             {isLoading ? (
               Array.from({ length: limit }).map((_, i) => (
                 <tr key={i} className="bg-white rounded-xl shadow-sm">
-                  <td className="px-6 py-4 rounded-l-xl">
-                    <div className="h-5 w-5 bg-gray-200 rounded-md animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4 rounded-r-xl">
-                    <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse"></div>
-                  </td>
+                  {selectable && (
+                    <td className="px-4 py-4 rounded-l-xl">
+                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+                    </td>
+                  )}
+                  {columns.map((column: any, colIndex: number) => (
+                    <td
+                      key={String(column.accessor)}
+                      className={`px-6 py-4 ${
+                        colIndex === 0 && !selectable ? "rounded-l-xl" : ""
+                      } ${
+                        colIndex === columns.length - 1 ? "rounded-r-xl" : ""
+                      }`}
+                    >
+                      <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                    </td>
+                  ))}
                 </tr>
               ))
             ) : data.length === 0 ? (
@@ -370,7 +520,7 @@ const CustomDataTable = <T extends BaseRecord>({
                     <img
                       src="/assets/no-data.svg"
                       alt="No records illustration"
-                      className="w-40 h-40"
+                      className="w-40 h-40 opacity-60"
                     />
                     <span className="text-gray-600 font-medium text-base">
                       {defaultRecordText}
@@ -391,7 +541,7 @@ const CustomDataTable = <T extends BaseRecord>({
                     <td className="px-4 py-5 rounded-l-xl align-middle">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-blue-800 focus:ring-blue-800 cursor-pointer"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         checked={selectable.selectedRecords.some(
                           (r) => r.id === record.id
                         )}
@@ -403,16 +553,13 @@ const CustomDataTable = <T extends BaseRecord>({
                       />
                     </td>
                   )}
-                  {columns.map((column, colIndex) => (
+                  {columns.map((column: any, colIndex: number) => (
                     <td
                       key={String(column.accessor)}
                       className={`px-6 py-5 align-middle ${
                         colIndex === columns.length - 1 ? "rounded-r-xl" : ""
                       } ${colIndex === 0 && !selectable ? "rounded-l-xl" : ""}`}
                     >
-                      <div className="md:hidden text-xs font-semibold text-gray-400 uppercase mb-1">
-                        {column.title as string}
-                      </div>
                       <div
                         className={
                           colIndex === 0
@@ -432,9 +579,11 @@ const CustomDataTable = <T extends BaseRecord>({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
       {pagination && tablePageInfo && tablePageInfo.totalRecords > 0 && (
-        <div className="p-4 flex items-center justify-between flex-wrap gap-4">
-          <div className="text-sm text-gray-600">
+        <div className="mt-4 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white rounded-lg border border-gray-100">
+          <div className="text-sm text-gray-600 text-center sm:text-left">
             Showing{" "}
             <span className="font-semibold text-gray-800">
               {tablePageInfo.totalRecords > 0 ? (page - 1) * limit + 1 : 0}
@@ -449,16 +598,18 @@ const CustomDataTable = <T extends BaseRecord>({
             </span>{" "}
             results
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Rows:</span>
+              <span className="text-sm text-gray-600 whitespace-nowrap">
+                Rows:
+              </span>
               <select
                 value={limit}
                 onChange={(e) => {
                   setLimit(Number(e.target.value));
                   setPage(1);
                 }}
-                className="bg-white border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:ring-2 focus:ring-blue-800 focus:border-blue-800 shadow-sm transition-all"
+                className="bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all"
               >
                 {[10, 20, 50, 100].map((size) => (
                   <option key={size} value={size}>
@@ -467,7 +618,7 @@ const CustomDataTable = <T extends BaseRecord>({
                 ))}
               </select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
@@ -476,14 +627,31 @@ const CustomDataTable = <T extends BaseRecord>({
                 <ChevronLeft size={16} />
               </button>
               <div className="flex items-center gap-1">
+                {/* Show fewer pages on mobile */}
                 {Array.from(
-                  { length: tablePageInfo.totalPages },
-                  (_, i) => i + 1
+                  {
+                    length: Math.min(
+                      tablePageInfo.totalPages,
+                      window.innerWidth < 640 ? 3 : 7
+                    ),
+                  },
+                  (_, i) => {
+                    const totalPages = tablePageInfo.totalPages;
+                    const maxVisible = window.innerWidth < 640 ? 3 : 7;
+                    let start = Math.max(1, page - Math.floor(maxVisible / 2));
+                    let end = Math.min(totalPages, start + maxVisible - 1);
+
+                    if (end - start + 1 < maxVisible) {
+                      start = Math.max(1, end - maxVisible + 1);
+                    }
+
+                    return start + i;
+                  }
                 ).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-9 h-9 rounded-md text-sm font-semibold transition-all duration-200 ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-md text-xs sm:text-sm font-semibold transition-all duration-200 ${
                       p === page
                         ? "bg-[#182a4d] text-white shadow-lg scale-105"
                         : "bg-white hover:bg-gray-100 text-gray-700 shadow-sm border border-gray-300 hover:border-gray-400"

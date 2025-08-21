@@ -1,7 +1,25 @@
 .calendar-container {
   display: grid;
-  grid-template-columns: 280px 2fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+/* Desktop and larger tablets */
+@media (min-width: 1024px) {
+  .calendar-container {
+    grid-template-columns: 280px 2fr;
+  }
+}
+
+/* Medium tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .calendar-container {
+    grid-template-columns: 1fr;
+  }
+
+  .unscheduled-jobs {
+    max-height: 300px;
+  }
 }
 
 .unscheduled-jobs {
@@ -11,6 +29,18 @@
   border-radius: 0.75rem;
   background-color: white;
   overflow: hidden;
+  min-height: 200px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  .unscheduled-jobs {
+    max-height: 250px;
+  }
+
+  .jobs-list {
+    padding: 0 0.5rem 0.5rem;
+  }
 }
 
 .jobs-list {
@@ -25,4 +55,12 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   background-color: white;
+}
+
+/* Mobile calendar optimizations */
+@media (max-width: 640px) {
+  .calendar-view {
+    margin: 0 -0.5rem;
+    border-radius: 0.5rem;
+  }
 }

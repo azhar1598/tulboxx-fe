@@ -20,7 +20,7 @@ function index({
     <>
       <div className="flex items-center justify-between w-full p-2">
         <Text size="xl" fw={700} className="text-xl font-bold">
-          Tulboxx
+          TULBOXX
         </Text>
         <div className="">
           <Burger opened={opened} onClick={toggle} className="md:hidden" />
