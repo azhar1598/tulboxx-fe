@@ -48,7 +48,6 @@ export const FilterLayout = ({
           ))}
         </Group>
 
-        {/* Right section with search bar */}
         <Group>
           <TextInput
             rightSection={<IconSearch />}
@@ -63,15 +62,15 @@ export const FilterLayout = ({
       {/* Mobile Layout */}
       <Stack gap="md" className={classes.mobile_layout}>
         {/* Search bar first on mobile */}
-        <TextInput
+        {/* <TextInput
           rightSection={<IconSearch />}
           placeholder="Search..."
           onChange={(e) => onSearch?.(e.target.value)}
           className={classes.mobile_search_input}
-        />
+        /> */}
 
         {/* Filters in a responsive grid */}
-        {filters.length > 0 && (
+        {/* {filters.length > 0 && (
           <SimpleGrid
             cols={{ base: 1, xs: 2, sm: 3 }}
             spacing="xs"
@@ -95,7 +94,7 @@ export const FilterLayout = ({
               />
             ))}
           </SimpleGrid>
-        )}
+        )} */}
       </Stack>
     </Box>
   );

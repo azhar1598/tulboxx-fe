@@ -44,6 +44,31 @@ import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import { useLeadsQuery } from "@/lib/hooks/useLeadsQuery";
 
+// Function to format phone number as 123-456-7890
+const formatPhoneNumber = (phone: string): string => {
+  if (!phone) return "";
+
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, "");
+
+  // Check if we have a valid 10-digit US phone number
+  if (cleaned.length === 10) {
+    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+
+  // If it's 11 digits and starts with 1, remove the 1 and format
+  if (cleaned.length === 11 && cleaned.startsWith("1")) {
+    const withoutCountryCode = cleaned.slice(1);
+    return `${withoutCountryCode.slice(0, 3)}-${withoutCountryCode.slice(
+      3,
+      6
+    )}-${withoutCountryCode.slice(6)}`;
+  }
+
+  // Return original if it doesn't match expected formats
+  return phone;
+};
+
 function Clients() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -119,7 +144,7 @@ function Clients() {
         phone ? (
           <Text size="14px" className="flex items-center gap-2">
             <IconPhone size={16} />
-            {phone}
+            {formatPhoneNumber(phone)}
           </Text>
         ) : (
           <Text size="14px">N/A</Text>

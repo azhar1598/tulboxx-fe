@@ -17,20 +17,7 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { createClient } from "@/utils/supabase/client";
 import { Image as ImageIcon, Trash2, Upload } from "lucide-react";
 import { USStates } from "@/lib/constants";
-
-const formatPhoneNumber = (value: string) => {
-  if (!value) return "";
-  const phoneNumber = value.replace(/[^\d]/g, "");
-  const phoneNumberLength = phoneNumber.length;
-  if (phoneNumberLength < 4) return phoneNumber;
-  if (phoneNumberLength < 7) {
-    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
-  }
-  return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
-    3,
-    6
-  )}-${phoneNumber.slice(6, 10)}`;
-};
+import { formatPhoneNumber } from "@/lib/utils";
 
 const accountSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),

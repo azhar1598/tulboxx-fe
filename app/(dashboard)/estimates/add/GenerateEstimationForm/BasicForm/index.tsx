@@ -30,6 +30,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import { formatPhoneNumber } from "@/lib/utils";
 
 function BasicForm({ form, active, nextStep, prevStep, setClientModalOpened }) {
   // Check if required fields are filled
@@ -120,13 +121,15 @@ function BasicForm({ form, active, nextStep, prevStep, setClientModalOpened }) {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <NumberInput
+          <TextInput
             label="Customer Phone"
-            allowDecimal={false}
-            hideControls
-            allowNegative={false}
-            placeholder="(555) 555-5555"
+            placeholder="123-456-7890"
             {...form.getInputProps("phone")}
+            onChange={(event) => {
+              const formatted = formatPhoneNumber(event.currentTarget.value);
+              form.setFieldValue("phone", formatted);
+            }}
+            maxLength={12}
           />
         </Grid.Col>
 

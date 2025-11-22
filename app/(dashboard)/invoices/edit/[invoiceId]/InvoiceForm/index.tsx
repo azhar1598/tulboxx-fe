@@ -29,6 +29,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { formatPhoneNumber } from "@/lib/utils";
 
 function InvoiceForm({
   form,
@@ -378,8 +379,13 @@ function InvoiceForm({
                   <Grid.Col span={12}>
                     <TextInput
                       label="Phone"
-                      placeholder="(555) 555-5555"
+                      placeholder="123-456-7890"
                       {...form.getInputProps("phone")}
+                      onChange={(event) => {
+                        const formatted = formatPhoneNumber(event.currentTarget.value);
+                        form.setFieldValue("phone", formatted);
+                      }}
+                      maxLength={12}
                     />
                   </Grid.Col>
                 </Grid> */}
