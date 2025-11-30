@@ -15,7 +15,8 @@ interface Job {
   name: string;
   type: string;
   amount: number;
-  date: string;
+  startDate: string;
+  endDate: string;
   hours: number;
   notes: string;
   client: {
@@ -106,13 +107,17 @@ const ScheduledJobs = ({ onJobSelect }: ScheduledJobsProps) => {
       return response.data;
     },
     select(data) {
-      return data?.data as Job[];
+      return data?.data?.map((job: any) => ({
+        ...job,
+        startDate: job.start_date,
+        endDate: job.end_date,
+      })) as Job[];
     },
   });
 
   const jobs = getJobsQuery.data || [];
   const unscheduledJobs = jobs.filter(
-    (job) => !job.date || isNaN(new Date(job.date).getTime())
+    (job) => !job.startDate || isNaN(new Date(job.startDate).getTime())
   );
 
   return (

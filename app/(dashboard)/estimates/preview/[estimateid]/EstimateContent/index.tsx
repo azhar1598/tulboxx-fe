@@ -688,46 +688,53 @@ export const EstimateContent = ({
           </div>
         ) : (
           <div>
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-400 p-3 text-left font-bold">
-                    DESCRIPTION
-                  </th>
-                  <th className="border border-gray-400 p-3 text-center font-bold">
-                    QUANTITY/UNIT
-                  </th>
-                  <th className="border border-gray-400 p-3 text-center font-bold">
-                    UNIT PRICE
-                  </th>
-                  <th className="border border-gray-400 p-3 text-center font-bold">
-                    LINE TOTAL
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {lineItems?.map((item) => (
-                  <tr key={item.id}>
-                    <td className="border border-gray-400 p-3">
-                      {item.description}
-                    </td>
-                    <td className="border border-gray-400 p-3 text-center">
-                      {item.quantity}
-                    </td>
-                    <td className="border border-gray-400 p-3 text-center">
-                      ${item.unitPrice.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-400 p-3 text-center">
-                      ${item.totalPrice.toFixed(2)}
-                    </td>
+            {getEstimateQuery?.data?.type !== "quick" && (
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-400 p-3 text-left font-bold">
+                      DESCRIPTION
+                    </th>
+                    <th className="border border-gray-400 p-3 text-center font-bold">
+                      QUANTITY/UNIT
+                    </th>
+                    <th className="border border-gray-400 p-3 text-center font-bold">
+                      UNIT PRICE
+                    </th>
+                    <th className="border border-gray-400 p-3 text-center font-bold">
+                      LINE TOTAL
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lineItems?.map((item) => (
+                    <tr key={item.id}>
+                      <td className="border border-gray-400 p-3">
+                        {item.description}
+                      </td>
+                      <td className="border border-gray-400 p-3 text-center">
+                        {item.quantity}
+                      </td>
+                      <td className="border border-gray-400 p-3 text-center">
+                        ${item.unitPrice.toFixed(2)}
+                      </td>
+                      <td className="border border-gray-400 p-3 text-center">
+                        ${item.totalPrice.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
 
             <div className="flex justify-end mt-4">
               <div className="bg-gray-800 text-white px-6 py-3 font-bold text-lg">
-                TOTAL: ${totalAmount.toFixed(2)}
+                TOTAL: $
+                {getEstimateQuery?.data?.type === "quick"
+                  ? Number(
+                      getEstimateQuery?.data?.projectEstimate || 0
+                    ).toFixed(2)
+                  : totalAmount.toFixed(2)}
               </div>
             </div>
           </div>

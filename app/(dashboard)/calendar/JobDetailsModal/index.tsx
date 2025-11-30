@@ -37,7 +37,8 @@ interface Job {
   name: string;
   type: string;
   amount: number;
-  date: string;
+  startDate: string;
+  endDate: string;
   hours: number;
   notes: string;
   client: {
@@ -81,7 +82,8 @@ export function JobDetailsModal({
       amount: null,
       hours: null,
       notes: "",
-      date: new Date(),
+      startDate: new Date(),
+      endDate: new Date(),
       client_id: "",
     },
   });
@@ -94,7 +96,8 @@ export function JobDetailsModal({
         amount: job.amount || null,
         hours: job.hours || null,
         notes: job.notes || "",
-        date: job.date ? new Date(job.date) : new Date(),
+        startDate: job.startDate ? new Date(job.startDate) : new Date(),
+        endDate: job.endDate ? new Date(job.endDate) : new Date(),
         client_id: job.client_id || "",
       });
     }
@@ -103,8 +106,14 @@ export function JobDetailsModal({
   console.log("job", job);
 
   const updateJobMutation = useMutation({
-    mutationFn: (updatedJob: Partial<Job>) =>
-      callApi.put(`/jobs/${job?.id}`, updatedJob),
+    mutationFn: (updatedJob: Partial<Job>) => {
+      const payload = {
+        ...updatedJob,
+        start_date: updatedJob.startDate,
+        end_date: updatedJob.endDate,
+      };
+      return callApi.put(`/jobs/${job?.id}`, payload);
+    },
     onSuccess: () => {
       notification.success("Job updated successfully.");
       queryClient.invalidateQueries({ queryKey: ["get-jobs"] });
@@ -121,17 +130,23 @@ export function JobDetailsModal({
   const handleSave = () => {
     updateJobMutation.mutate({
       ...form.values,
-      date: form.values.date.toISOString(),
+      startDate: form.values.startDate.toISOString(),
+      endDate: form.values.endDate.toISOString(),
     });
   };
 
-  const jobDate = new Date(job.date);
-  const formattedDate = jobDate.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
+  const startDate = new Date(job.startDate);
+  const endDate = new Date(job.endDate);
+  const formattedStartDate = startDate.toLocaleDateString("en-US", {
+    month: "short",
     day: "numeric",
   });
+  const formattedEndDate = endDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const dateRange = `${formattedStartDate} - ${formattedEndDate}`;
 
   return (
     // <Modal
@@ -160,11 +175,18 @@ export function JobDetailsModal({
         <Stack gap="md">
           <TextInput label="Job Name" {...form.getInputProps("name")} />
           <TextInput label="Job Type" {...form.getInputProps("type")} />
-          <DateInput
-            label="Date"
-            placeholder="Select date"
-            {...form.getInputProps("date")}
-          />
+          <Group grow>
+            <DateInput
+              label="Start Date"
+              placeholder="Start Date"
+              {...form.getInputProps("startDate")}
+            />
+            <DateInput
+              label="End Date"
+              placeholder="End Date"
+              {...form.getInputProps("endDate")}
+            />
+          </Group>
           <Select
             label="Client"
             placeholder="Select client"
@@ -215,7 +237,7 @@ export function JobDetailsModal({
           </Group>
           <Group>
             <IconCalendar size={20} />
-            <Text>{formattedDate}</Text>
+            <Text>{dateRange}</Text>
           </Group>
 
           {job.hours && (

@@ -40,9 +40,11 @@ function GenerateQuickEstimateForm({
   // Check if required fields are filled
   const isFormValid = () => {
     return (
-      form.values.projectName?.trim() &&
       form.values.clientId?.trim() &&
-      form.values.projectEstimate
+      form.values.projectType?.trim() &&
+      form.values.problemDescription?.trim() &&
+      form.values.solutionDescription?.trim() &&
+      form.values.projectName?.trim()
     );
   };
 
@@ -86,30 +88,8 @@ function GenerateQuickEstimateForm({
               </Grid.Col>
 
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <TextInput
-                  label="Project Name"
-                  placeholder="Type here..."
-                  className=""
-                  {...form.getInputProps("projectName")}
-                />
-              </Grid.Col>
-
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <NumberInput
-                  label="Project Estimate"
-                  placeholder="$5,000"
-                  className=""
-                  allowDecimal={false}
-                  allowNegative={false}
-                  hideControls
-                  leftSection={<IconCurrencyDollar stroke={2} size={15} />}
-                  {...form.getInputProps("projectEstimate")}
-                />
-              </Grid.Col>
-
-              <Grid.Col span={{ base: 12, md: 6 }}>
                 <Text size="14px" fw={500} mt={7}>
-                  Project Type
+                  Client Type
                 </Text>
                 <Radio.Group
                   {...form.getInputProps("projectType")}
@@ -133,10 +113,49 @@ function GenerateQuickEstimateForm({
 
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <Textarea
-                  label="Additional Notes"
-                  placeholder="Additional Notes"
+                  label="What is the customer dealing with?"
+                  placeholder="Problem description..."
+                  minRows={3}
+                  {...form.getInputProps("problemDescription")}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Textarea
+                  label="What’s the plan to fix it?"
+                  placeholder="Solution description..."
+                  minRows={3}
+                  {...form.getInputProps("solutionDescription")}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Textarea
+                  label="Additional Notes or Requests"
+                  placeholder="Optional notes..."
                   minRows={3}
                   {...form.getInputProps("additionalNotes")}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput
+                  label="What would you call this job?"
+                  placeholder="Project listing name"
+                  {...form.getInputProps("projectName")}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <NumberInput
+                  label="Project Estimate"
+                  placeholder="$5,000"
+                  className=""
+                  allowDecimal={false}
+                  allowNegative={false}
+                  hideControls
+                  leftSection={<IconCurrencyDollar stroke={2} size={15} />}
+                  {...form.getInputProps("projectEstimate")}
                 />
               </Grid.Col>
             </Grid>

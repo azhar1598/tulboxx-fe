@@ -19,7 +19,8 @@ import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
   jobId: z.string().min(1, "Job selection is required"),
-  date: z.date({ required_error: "Date is required" }),
+  startDate: z.date({ required_error: "Start Date is required" }),
+  endDate: z.date({ required_error: "End Date is required" }),
   notes: z.string().optional(),
   option: z.any(), // to store the selected job option
 });
@@ -34,7 +35,8 @@ export const ScheduleJobModal: React.FC<{
   const form = useForm({
     initialValues: {
       jobId: "",
-      date: null,
+      startDate: null,
+      endDate: null,
       notes: "",
       option: null,
     },
@@ -73,7 +75,8 @@ export const ScheduleJobModal: React.FC<{
       const payload = {
         amount: values.option.amount,
         customer: values.option.client_id,
-        date: values.date.toISOString(),
+        start_date: values.startDate.toISOString(),
+        end_date: values.endDate.toISOString(),
         description: values.option.description,
         hours: values.option.hours,
         name: values.option.name,
@@ -98,7 +101,8 @@ export const ScheduleJobModal: React.FC<{
   const handleSubmit = (values: any) => {
     updateJobMutation.mutate({
       jobId: values.jobId,
-      date: values.date,
+      startDate: values.startDate,
+      endDate: values.endDate,
       notes: values.notes,
       option: values.option,
     });
@@ -130,14 +134,24 @@ export const ScheduleJobModal: React.FC<{
             }}
           />
 
-          <DateInput
-            {...form.getInputProps("date")}
-            label="Scheduled Date"
-            placeholder="Select a date"
-            withAsterisk
-            valueFormat="DD-MM-YYYY"
-            minDate={new Date()} // This will disable all past dates
-          />
+          <Group grow>
+            <DateInput
+              {...form.getInputProps("startDate")}
+              label="Start Date"
+              placeholder="Select start date"
+              withAsterisk
+              valueFormat="DD-MM-YYYY"
+              minDate={new Date()}
+            />
+            <DateInput
+              {...form.getInputProps("endDate")}
+              label="End Date"
+              placeholder="Select end date"
+              withAsterisk
+              valueFormat="DD-MM-YYYY"
+              minDate={form.values.startDate || new Date()}
+            />
+          </Group>
           <Textarea
             label="Additional Notes"
             placeholder="Start typing..."

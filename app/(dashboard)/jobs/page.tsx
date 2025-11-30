@@ -33,12 +33,11 @@ import {
   IconMapPin,
   IconPhone,
   IconMail,
-  IconHourglass,
   IconTypeface,
-  IconCategory,
   IconCalendar,
   IconUser,
   IconBriefcase,
+  IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -48,11 +47,12 @@ import StatisticsCards from "./StatisticsCards";
 // import { PrintLayout } from "./PrintLayout";
 import { checkStatus, extractAndParseJson } from "@/lib/constants";
 import { useTableQuery } from "@/lib/hooks/useTableQuery";
-import { Hourglass } from "lucide-react";
 import dayjs from "dayjs";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { SelectEstimateModal } from "./SelectEstimateModal";
 
 function Jobs() {
+  const [opened, { open, close }] = useDisclosure(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [apiData, setApiData] = useState([]);
@@ -120,84 +120,51 @@ function Jobs() {
           <Text size="14px">N/A</Text>
         ),
     },
-    // {
-    //   accessor: "client",
-    //   title: "Client",
-    //   textAlign: "left",
-    //   sortable: true,
-    // },
     {
-      accessor: "hours",
-      title: "Hours",
+      accessor: "amount",
+      title: "Amount",
       textAlign: "left",
       sortable: true,
-      render: ({ hours }: any) =>
-        hours ? (
-          <Text size="14px" className="flex items-center gap-3">
-            <Hourglass size={16} />
-            {hours}
+      render: ({ amount }: any) =>
+        amount ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconCurrencyDollar size={16} />
+            {amount}
           </Text>
         ) : (
           <Text size="14px">N/A</Text>
         ),
     },
-
     {
-      accessor: "type",
-      title: "Type",
+      accessor: "start_date",
+      title: "Start Date",
       textAlign: "left",
       sortable: true,
-      render: ({ type }: any) =>
-        type ? (
-          <Text size="14px" className="flex items-center gap-3">
-            <IconCategory size={16} />
-            {type}
-          </Text>
-        ) : (
-          <Text size="14px">N/A</Text>
-        ),
-    },
-
-    {
-      accessor: "date",
-      title: "Date",
-      textAlign: "left",
-      sortable: true,
-      render: ({ date }: any) =>
-        date ? (
+      render: ({ start_date }: any) =>
+        start_date ? (
           <Text size="14px" className="flex items-center gap-2">
             <IconCalendar size={16} />
-            {dayjs(date).format("MM-DD-YYYY")}
+            {dayjs(start_date).format("MM-DD-YYYY")}
           </Text>
         ) : (
           <Text size="14px">Unscheduled</Text>
         ),
     },
-
-    // {
-    //   accessor: "location",
-    //   title: "Location",
-    //   textAlign: "left",
-    //   sortable: true,
-    //   render: ({ location }: any) => (
-    //     <Text size="14px" className="flex items-center gap-2">
-    //       <IconMapPin size={16} />
-    //       {location}
-    //     </Text>
-    //   ),
-    // },
-
-    // {
-    //   accessor: "name",
-    //   title: "Project Name",
-    //   textAlign: "left",
-    //   render: ({ estimates, project_id }: any) => (
-    //     <Link href={`#`} style={{ color: "blue", textDecoration: "underline" }}>
-    //       {estimates?.projectName || "N/A"}
-    //     </Link>
-    //   ),
-    // },
-
+    {
+      accessor: "end_date",
+      title: "End Date",
+      textAlign: "left",
+      sortable: true,
+      render: ({ end_date }: any) =>
+        end_date ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconCalendar size={16} />
+            {dayjs(end_date).format("MM-DD-YYYY")}
+          </Text>
+        ) : (
+          <Text size="14px">Unscheduled</Text>
+        ),
+    },
     {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
@@ -246,12 +213,13 @@ function Jobs() {
           title={`Jobs (${state?.allRecords || 0})`}
           rightSection={
             <Group>
-              <Link href={"/jobs/add"}>
-                <Button leftSection={<IconPlus size={16} />}>New Job</Button>
-              </Link>
+              <Button leftSection={<IconPlus size={16} />} onClick={open}>
+                New Job
+              </Button>
             </Group>
           }
         />
+        <SelectEstimateModal opened={opened} onClose={close} />
       </div>
       <StatisticsCards jobs={state.data} />
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">

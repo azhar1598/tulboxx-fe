@@ -100,17 +100,14 @@ function Estimates() {
       title: "Project Name",
       sortable: true,
       render: ({ projectName, id, type }: any) => {
-        if (type === "detailed") {
-          return (
-            <Link
-              href={`/estimates/preview/${id}`}
-              style={{ color: "blue", textDecoration: "underline" }}
-            >
-              {projectName || "N/A"}
-            </Link>
-          );
-        }
-        return <Text size="14px">{projectName || "N/A"}</Text>;
+        return (
+          <Link
+            href={`/estimates/preview/${id}`}
+            style={{ color: "blue", textDecoration: "underline" }}
+          >
+            {projectName || "N/A"}
+          </Link>
+        );
       },
     },
     // {
@@ -192,7 +189,6 @@ function Estimates() {
               style={{ fontSize: "12px" }}
               variant="table-btn-primary"
               // leftSection={<IconEdit size={16} />}
-              disabled={record.type !== "detailed"}
             >
               Edit
             </Button>

@@ -38,7 +38,7 @@ function StatisticsCards({ jobs }) {
     jobs.forEach((job) => {
       if (job.status === "Completed") {
         completed++;
-      } else if (dayjs(job.date).isAfter(now)) {
+      } else if (dayjs(job.start_date).isAfter(now)) {
         scheduled++;
         activeJobsValue += job.amount;
       } else {

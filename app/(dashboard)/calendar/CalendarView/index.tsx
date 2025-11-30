@@ -17,7 +17,8 @@ interface Job {
   name: string;
   type: string;
   amount: number;
-  date: string;
+  startDate: string;
+  endDate: string;
   hours: number;
   notes: string;
   client: {
@@ -214,37 +215,82 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   const getJobsForDate = (date: Date) => {
     return getJobs.filter((job) => {
-      if (!job.date) return false;
-      const jobDate = new Date(job.date);
-      return (
-        jobDate.getDate() === date.getDate() &&
-        jobDate.getMonth() === date.getMonth() &&
-        jobDate.getFullYear() === date.getFullYear()
-      );
+      if (!job.startDate || !job.endDate) return false;
+      const start = new Date(job.startDate);
+      const end = new Date(job.endDate);
+      const current = new Date(date);
+      
+      // Reset time parts for comparison
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+      current.setHours(0, 0, 0, 0);
+
+      return current.getTime() >= start.getTime() && current.getTime() <= end.getTime();
     });
   };
 
-  const JobCard = ({ job }: { job: Job }) => (
-    <Card
-      withBorder
-      shadow="sm"
-      radius="sm"
-      className={`mb-2 p-2 transition-all ${
-        selectedJobId === job.id
-          ? "border-2 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"
-          : ""
-      }`}
-      style={{ backgroundColor: "#f8f9fa" }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setSelectedJob(job);
-      }}
-    >
-      <Text size="xs" fw={500} truncate>
-        {job.name}
-      </Text>
-    </Card>
-  );
+  const isSameDay = (d1: Date, d2: Date) => {
+    return (
+      d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear()
+    );
+  };
+
+  const getJobColor = (jobId: string) => {
+    const colors = [
+      { bg: "bg-blue-100", border: "border-blue-200", text: "text-blue-800", hover: "hover:bg-blue-200", ring: "ring-blue-500" },
+      { bg: "bg-green-100", border: "border-green-200", text: "text-green-800", hover: "hover:bg-green-200", ring: "ring-green-500" },
+      { bg: "bg-purple-100", border: "border-purple-200", text: "text-purple-800", hover: "hover:bg-purple-200", ring: "ring-purple-500" },
+      { bg: "bg-orange-100", border: "border-orange-200", text: "text-orange-800", hover: "hover:bg-orange-200", ring: "ring-orange-500" },
+      { bg: "bg-pink-100", border: "border-pink-200", text: "text-pink-800", hover: "hover:bg-pink-200", ring: "ring-pink-500" },
+      { bg: "bg-teal-100", border: "border-teal-200", text: "text-teal-800", hover: "hover:bg-teal-200", ring: "ring-teal-500" },
+      { bg: "bg-indigo-100", border: "border-indigo-200", text: "text-indigo-800", hover: "hover:bg-indigo-200", ring: "ring-indigo-500" },
+      { bg: "bg-yellow-100", border: "border-yellow-200", text: "text-yellow-800", hover: "hover:bg-yellow-200", ring: "ring-yellow-500" },
+    ];
+    
+    // Simple hash function to get a deterministic index
+    let hash = 0;
+    for (let i = 0; i < jobId.length; i++) {
+      hash = jobId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  };
+
+  const JobCard = ({
+    job,
+    isStart,
+    isEnd,
+  }: {
+    job: Job;
+    isStart?: boolean;
+    isEnd?: boolean;
+  }) => {
+    const color = getJobColor(job.id);
+    
+    return (
+      <div
+        className={`
+          p-1 px-2 text-xs font-medium cursor-pointer transition-all
+          ${color.bg} ${color.border} ${color.text}
+          ${color.hover}
+          ${isStart ? "rounded-l-md ml-1" : ""}
+          ${isEnd ? "rounded-r-md mr-1" : ""}
+          ${!isStart ? "-ml-[1px] border-l-0 pl-2" : ""} 
+          ${!isEnd ? "-mr-[1px] border-r-0 pr-2" : ""}
+          ${selectedJobId === job.id ? `ring-2 ${color.ring} z-10` : ""}
+        `}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedJob(job);
+        }}
+      >
+        <div className="truncate">{job.name}</div>
+      </div>
+    );
+  };
 
   const days = getDaysInMonth(currentDate);
 
@@ -320,8 +366,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
               return (
                 <CalendarDay key={index} dayInfo={dayInfo}>
-                  <div className="p-2 h-full">
-                    <div className="flex justify-between items-start">
+                  <div className="h-full flex flex-col">
+                    <div className="p-2 flex justify-between items-start">
                       <span
                         className={`
                         text-xs font-semibold
@@ -346,17 +392,30 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                           size="sm"
                           radius="sm"
                         >
-                          {dayJobs.length} Jobs
+                          {dayJobs.length}
                         </Badge>
                       )}
                     </div>
-                    <div className="mt-2 space-y-1 overflow-y-auto max-h-24">
+                    <div className="mt-1 space-y-1 overflow-y-auto flex-1">
                       {dayInfo.isCurrentMonth &&
-                        dayJobs.map((job) => (
-                          <DraggableJob key={job.id} job={job}>
-                            <JobCard job={job} />
-                          </DraggableJob>
-                        ))}
+                        dayJobs.map((job) => {
+                          const isStart =
+                            isSameDay(dayInfo.date, new Date(job.startDate)) ||
+                            index % 7 === 0;
+                          const isEnd =
+                            isSameDay(dayInfo.date, new Date(job.endDate)) ||
+                            index % 7 === 6;
+
+                          return (
+                            <DraggableJob key={job.id} job={job}>
+                              <JobCard
+                                job={job}
+                                isStart={isStart}
+                                isEnd={isEnd}
+                              />
+                            </DraggableJob>
+                          );
+                        })}
                     </div>
                   </div>
                 </CalendarDay>
@@ -408,7 +467,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 <div
                   key={index}
                   className={`
-                    min-h-[500px] border-r last:border-r-0 p-2 overflow-y-auto
+                    min-h-[500px] border-r last:border-r-0 overflow-y-auto
                     ${
                       day.getDate() === currentDate.getDate()
                         ? "bg-blue-50"
@@ -417,11 +476,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   `}
                 >
                   <CalendarDay dayInfo={dayInfo}>
-                    {dayJobs.map((job) => (
-                      <DraggableJob key={job.id} job={job}>
-                        <JobCard job={job} />
-                      </DraggableJob>
-                    ))}
+                    <div className="h-full flex flex-col">
+                      {dayJobs.map((job) => {
+                        // Week view logic - simplified for vertical list since week view is columns
+                        // But user asked for continuous. Vertical list doesn't need continuity across columns.
+                        // For week view, usually it's time-based or just a list.
+                        // We will keep card style but maybe consistent with month view.
+                        return (
+                          <div key={job.id} className="mb-1 px-2">
+                             <DraggableJob job={job}>
+                              <JobCard job={job} isStart={true} isEnd={true} />
+                            </DraggableJob>
+                          </div>
+                         
+                        );
+                      })}
+                    </div>
                   </CalendarDay>
                 </div>
               );
