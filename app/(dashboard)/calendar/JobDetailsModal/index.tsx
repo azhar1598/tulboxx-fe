@@ -2,19 +2,15 @@ import {
   Modal,
   Text,
   Group,
-  Badge,
   Stack,
   Button,
   TextInput,
   Textarea,
-  NumberInput,
   Select,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
   IconCalendar,
-  IconClock,
-  IconCurrencyDollar,
   IconNotes,
   IconUser,
   IconPencil,
@@ -24,7 +20,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useEffect, useState } from "react";
-import { DollarSignIcon } from "lucide-react";
 import CustomModal from "@/components/common/CustomMoodal";
 
 interface Client {
@@ -174,7 +169,6 @@ export function JobDetailsModal({
       {isEditing ? (
         <Stack gap="md">
           <TextInput label="Job Name" {...form.getInputProps("name")} />
-          <TextInput label="Job Type" {...form.getInputProps("type")} />
           <Group grow>
             <DateInput
               label="Start Date"
@@ -196,19 +190,6 @@ export function JobDetailsModal({
             }))}
             {...form.getInputProps("client_id")}
           />
-          <NumberInput
-            label="Amount"
-            {...form.getInputProps("amount")}
-            allowDecimal={false}
-            hideControls
-            leftSection={<DollarSignIcon size={16} />}
-          />
-          <NumberInput
-            label="Hours"
-            {...form.getInputProps("hours")}
-            hideControls
-            leftSection={<IconClock size={16} />}
-          />
           <Textarea label="Notes" {...form.getInputProps("notes")} />
           <Group justify="right" mt="md">
             <Button onClick={() => setIsEditing(false)}>Cancel</Button>
@@ -223,11 +204,6 @@ export function JobDetailsModal({
             <Text fw={600} size="lg">
               {job.name}
             </Text>
-            {job.type && (
-              <Badge size="lg" variant="light" color="blue">
-                {job.type}
-              </Badge>
-            )}
             <Button
               leftSection={<IconPencil size={14} />}
               onClick={() => setIsEditing(true)}
@@ -239,20 +215,6 @@ export function JobDetailsModal({
             <IconCalendar size={20} />
             <Text>{dateRange}</Text>
           </Group>
-
-          {job.hours && (
-            <Group>
-              <IconClock size={20} />
-              <Text>{job.hours} hours</Text>
-            </Group>
-          )}
-
-          {job.amount && (
-            <Group>
-              <IconCurrencyDollar size={20} />
-              <Text>${job.amount}</Text>
-            </Group>
-          )}
 
           {job.client && (
             <Stack gap="xs">

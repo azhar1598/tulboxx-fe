@@ -166,6 +166,39 @@ function Jobs() {
         ),
     },
     {
+      accessor: "status",
+      title: "Status",
+      textAlign: "left",
+      sortable: true,
+      render: ({ start_date, end_date }: any) => {
+        const getStatus = () => {
+          if (!start_date || !end_date)
+            return { label: "Unscheduled", color: "gray" };
+          const now = dayjs();
+          const start = dayjs(start_date);
+          const end = dayjs(end_date);
+
+          if (now.isBefore(start, "day"))
+            return { label: "Not Started", color: "blue" };
+          if (now.isAfter(end, "day"))
+            return { label: "Completed", color: "green" };
+          return { label: "In Progress", color: "yellow" };
+        };
+
+        const status = getStatus();
+        return (
+          <Badge
+            color={status.color}
+            variant="light"
+            size="xs"
+            style={{ fontSize: "10px" }}
+          >
+            {status.label}
+          </Badge>
+        );
+      },
+    },
+    {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
       textAlign: "left",

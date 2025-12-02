@@ -80,7 +80,7 @@ const CalendarDay = ({
     <div
       ref={setNodeRef}
       className={`
-        h-40 bg-white border-t border-l border-gray-200 transition-colors cursor-pointer relative
+        min-h-[10rem] h-full bg-white border-t border-l border-gray-200 transition-colors cursor-pointer relative
         ${!dayInfo.isCurrentMonth ? "bg-gray-50" : ""}
         ${isOver ? "bg-green-100" : ""}
       `}
@@ -396,7 +396,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         </Badge>
                       )}
                     </div>
-                    <div className="mt-1 space-y-1 overflow-y-auto flex-1">
+                    <div className="mt-1 space-y-1 flex-1">
                       {dayInfo.isCurrentMonth &&
                         dayJobs.map((job) => {
                           const isStart =
