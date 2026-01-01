@@ -42,7 +42,7 @@ import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import { esimatesData } from "@/apiData";
 import { createClient } from "@/utils/supabase/client";
 import AuthProvider from "@/components/auth/AuthProvider";
-import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
+// import { useDropdownOptions } from "@/lib/hooks/useDropdownOptions";
 import { queryClient } from "@/lib/queryClient";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { UserContext } from "@/app/layout";
@@ -52,6 +52,10 @@ import StatisticsCards from "./StatisticsCards";
 
 function Estimates() {
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    deleteModalOpened,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure(false);
   // const [storeId, setStoreId] = useState();
   const [qrCode, setQrCode] = useState("");
   const [storeInfo, setStoreInfo] = useState();
@@ -60,6 +64,7 @@ function Estimates() {
   const pageSize = 10;
   const notification = usePageNotifications();
   const [deletEstimateId, setDeletEstimateId] = useState();
+  const [estimateToDelete, setEstimateToDelete] = useState<any>(null);
 
   const [state, setState] = useState({
     sortOrder: "",
@@ -87,12 +92,26 @@ function Estimates() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get-estimates"] });
+      queryClient.invalidateQueries({ queryKey: ["estimates-stats"] });
       notification.success("Estimate deleted successfully");
+      closeDeleteModal();
+      setEstimateToDelete(null);
     },
     onError: () => {
       notification.error("Failed to delete estimate");
     },
   });
+
+  const handleDeleteClick = (record: any) => {
+    setEstimateToDelete(record);
+    openDeleteModal();
+  };
+
+  const handleConfirmDelete = () => {
+    if (estimateToDelete) {
+      deletEstimateMutation.mutate(estimateToDelete.id);
+    }
+  };
 
   let columns = [
     {
@@ -100,14 +119,17 @@ function Estimates() {
       title: "Project Name",
       sortable: true,
       render: ({ projectName, id, type }: any) => {
-        return (
-          <Link
-            href={`/estimates/preview/${id}`}
-            style={{ color: "blue", textDecoration: "underline" }}
-          >
-            {projectName || "N/A"}
-          </Link>
-        );
+        if (type === "detailed") {
+          return (
+            <Link
+              href={`/estimates/preview/${id}`}
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              {projectName || "N/A"}
+            </Link>
+          );
+        }
+        return <Text size="14px">{projectName || "N/A"}</Text>;
       },
     },
     // {
@@ -176,7 +198,6 @@ function Estimates() {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
       textAlign: "left",
-
       render: (record: any) => (
         <Group>
           {/* */}
@@ -189,6 +210,7 @@ function Estimates() {
               style={{ fontSize: "12px" }}
               variant="table-btn-primary"
               // leftSection={<IconEdit size={16} />}
+              disabled={record.type !== "detailed"}
             >
               Edit
             </Button>
@@ -197,7 +219,7 @@ function Estimates() {
             style={{ fontSize: "12px" }}
             variant="table-btn-danger"
             // leftSection={<IconTrash size={16} />}
-            onClick={() => deletEstimateMutation.mutate(record.id)}
+            onClick={() => handleDeleteClick(record)}
             loading={
               record.id === deletEstimateId && deletEstimateMutation.isPending
             }
@@ -216,41 +238,140 @@ function Estimates() {
     pageSize: 10,
   };
 
-  const getEstimatesQueryOptions = useDropdownOptions(queryFilters);
+  // const getEstimatesQueryOptions = useDropdownOptions(queryFilters);
 
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState([
+    { value: "detailed", label: "Detailed" },
+    { value: "quick", label: "Quick" },
+  ]);
 
-  useEffect(() => {
-    if (!getEstimatesQueryOptions) return;
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterClientId, setFilterClientId] = useState<string | null>(null);
 
-    setOptions([{ value: "", label: "All" }, ...getEstimatesQueryOptions]);
-  }, [getEstimatesQueryOptions]);
-
-  const [projectId, setProjectId] = useState();
-
-  const handleTypeChange = (value) => {
-    setProjectId(value.value);
+  const handleTypeChange = (value: string | null) => {
+    setFilterType(value);
   };
+
+  const handleClientChange = (value: string | null) => {
+    setFilterClientId(value);
+  };
+
   const handleSearch = (value) => {
     setSearch(value);
   };
 
   const handleRecordsPerPage = () => {};
 
+  const { data: clientOptions } = useQuery({
+    queryKey: ["get-clients-dropdown"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
+
+      return response.data;
+    },
+    select(data) {
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      return options;
+    },
+  });
+
   const filters = [
     {
       id: "type",
-      label: "Project Name",
+      label: "Estimation Type",
       options: options,
       onChange: (value) => handleTypeChange(value),
+    },
+    {
+      id: "clientId",
+      label: "Customer",
+      options: clientOptions || [],
+      onChange: (value) => handleClientChange(value),
     },
     // ... more filters
   ];
 
   const user = useContext(UserContext);
 
+  const invoicesCount = estimateToDelete?.invoices?.length || 0;
+  const jobsCount = estimateToDelete?.jobs?.length || 0;
+
   return (
     <>
+      <Modal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        title={
+          <Text size="lg" fw={600}>
+            Delete Estimate
+          </Text>
+        }
+        centered
+        size="md"
+      >
+        <Stack gap={20}>
+          <Text size="sm" c="dimmed">
+            Are you sure you want to delete the estimate for{" "}
+            <Text component="span" fw={600} c="dark">
+              {estimateToDelete?.projectName}
+            </Text>
+            ?
+          </Text>
+
+          {(invoicesCount > 0 || jobsCount > 0) && (
+            <Card withBorder padding="md" radius="md" bg="red.0">
+              <Stack gap={8}>
+                <Text size="sm" fw={600} c="red.7">
+                  Warning: This estimate has associated records
+                </Text>
+                <Stack gap={4}>
+                  {invoicesCount > 0 && (
+                    <Text size="sm" c="red.7">
+                      • {invoicesCount}{" "}
+                      {invoicesCount === 1 ? "invoice" : "invoices"}
+                    </Text>
+                  )}
+                  {jobsCount > 0 && (
+                    <Text size="sm" c="red.7">
+                      • {jobsCount} {jobsCount === 1 ? "job" : "jobs"}
+                    </Text>
+                  )}
+                </Stack>
+                <Text size="xs" c="red.6" mt={4}>
+                  Deleting this estimate may affect these related records.
+                </Text>
+              </Stack>
+            </Card>
+          )}
+
+          <Group justify="flex-end" gap={12}>
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={closeDeleteModal}
+              disabled={deletEstimateMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="red"
+              onClick={handleConfirmDelete}
+              loading={deletEstimateMutation.isPending}
+            >
+              Yes, Delete Estimate
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
       <div className="mb-4">
         <PageHeader
           title={"Estimates"}
@@ -282,7 +403,7 @@ function Estimates() {
         <FilterLayout
           filters={filters}
           onSearch={handleSearch}
-          searchable={true}
+          searchable={false}
           // onRecordsPerPageChange={handleRecordsPerPage}
         />
 
@@ -290,6 +411,7 @@ function Estimates() {
           url={"/estimates"}
           queryKey={["get-estimates"]}
           search={search}
+          filters={{ type: filterType, clientId: filterClientId }}
           columns={columns}
           pagination={true}
           sortable

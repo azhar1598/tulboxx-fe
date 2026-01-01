@@ -45,6 +45,7 @@ const formSchema = z.object({
   end_date: z.date().nullable().optional(),
   amount: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
   notes: z.string().optional(),
+  project_id: z.string().optional(),
 });
 
 interface JobFormValues {
@@ -55,6 +56,7 @@ interface JobFormValues {
   end_date: Date | null;
   amount: number | "";
   notes: string;
+  project_id: string;
 }
 
 import { extractEstimateJson1 } from "@/lib/constants";
@@ -74,6 +76,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
       end_date: null,
       amount: "",
       notes: "",
+      project_id: "",
     },
     validateInputOnChange: true,
   });
@@ -97,6 +100,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
         projectStartDate,
         projectEndDate,
         projectEstimate,
+        id,
       } = estimateData.data;
 
       const parsedAiContent: any = extractEstimateJson1(ai_generated_estimate);
@@ -113,6 +117,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             ? parsedAiContent.scopeOfWork.join("\n")
             : parsedAiContent.scopeOfWork
           : "",
+        project_id: id || estimateId || "",
       });
     }
   }, [estimateData]);
@@ -192,6 +197,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             placeholder="Select a start date"
             valueFormat="DD-MM-YYYY"
             leftSection={<IconCalendar size={16} />}
+            maxDate={form.values.end_date || undefined}
           />
         </Grid.Col>
 
@@ -202,6 +208,7 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             placeholder="Select an end date"
             valueFormat="DD-MM-YYYY"
             leftSection={<IconCalendar size={16} />}
+            minDate={form.values.start_date || undefined}
           />
         </Grid.Col>
 

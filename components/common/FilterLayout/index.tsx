@@ -35,9 +35,8 @@ export const FilterLayout = ({
               label={filter.label}
               data={filter.options}
               placeholder="Select Option"
-              onChange={(e, option) => {
-                console.log("option", option, filter);
-                filter.onChange(option.value);
+              onChange={(value) => {
+                filter.onChange(value);
               }}
               {...filter.form?.getInputProps(`${filter.fieldName}`)}
               className={classes.filter_input}

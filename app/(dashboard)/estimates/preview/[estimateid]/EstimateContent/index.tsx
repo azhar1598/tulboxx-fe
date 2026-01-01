@@ -432,7 +432,10 @@ export const EstimateContent = ({
             <div className="font-semibold">
               {getUserProfile?.data?.companyName || "Company Name"}
             </div>
-            <div>{getUserProfile?.data?.address || "Company Address"}</div>
+            <div>
+              {getUserProfile?.data?.address ||
+                "123 Business Rd, Suite 100, City, State, 12345"}
+            </div>
             <div>{getUserProfile?.data?.email || "company@email.com"}</div>
           </div>
         </div>
