@@ -140,7 +140,7 @@ function Estimates() {
     // },
     {
       accessor: "customerName",
-      title: "Customer",
+      title: "Client",
       sortable: true,
       render: ({ clients }: any) => (
         <Stack gap={4}>
@@ -292,7 +292,7 @@ function Estimates() {
     },
     {
       id: "clientId",
-      label: "Customer",
+      label: "Client",
       options: clientOptions || [],
       onChange: (value) => handleClientChange(value),
     },

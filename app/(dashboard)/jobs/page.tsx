@@ -1,52 +1,24 @@
 "use client";
 import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
-import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
 import callApi from "@/services/apiService";
-import QRCode from "react-qr-code";
 
-import {
-  ActionIcon,
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Group,
-  Modal,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Badge, Box, Button, Flex, Group, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  IconBrandFacebook,
-  IconBrandLinkedin,
-  IconBrandInstagram,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconPlus,
-  IconQrcode,
-  IconTrash,
-  IconHome,
-  IconBuilding,
-  IconMapPin,
-  IconPhone,
-  IconMail,
-  IconTypeface,
-  IconCalendar,
-  IconUser,
   IconBriefcase,
+  IconCalendar,
   IconCurrencyDollar,
+  IconPlus,
+  IconUser,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import StatisticsCards from "./StatisticsCards";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
-import { checkStatus, extractAndParseJson } from "@/lib/constants";
-import { useTableQuery } from "@/lib/hooks/useTableQuery";
 import dayjs from "dayjs";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { SelectEstimateModal } from "./SelectEstimateModal";
@@ -55,8 +27,7 @@ function Jobs() {
   const [opened, { open, close }] = useDisclosure(false);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [apiData, setApiData] = useState([]);
+  const [filterClientId, setFilterClientId] = useState<string | null>(null);
   const [deleteJobId, setDeleteJobId] = useState();
 
   const notifications = usePageNotifications();
@@ -77,6 +48,10 @@ function Jobs() {
     const tableOperators: any = {};
     const now = dayjs().format("YYYY-MM-DD");
 
+    if (filterClientId) {
+      tableFilters.clientId = filterClientId;
+    }
+
     if (status === "not started") {
       tableFilters.start_date = now;
       tableOperators.start_date = "$gt";
@@ -94,7 +69,7 @@ function Jobs() {
     }
 
     return { tableFilters, tableOperators };
-  }, [status]);
+  }, [status, filterClientId]);
 
   const deleteJobMutation = useMutation({
     mutationFn: (id: any) => {
@@ -109,10 +84,6 @@ function Jobs() {
       notifications.error("Failed to delete job");
     },
   });
-
-  const pageSize = 10;
-
-  console.log("state", state);
 
   let columns = [
     {
@@ -257,11 +228,26 @@ function Jobs() {
     setSearch(value);
   };
 
-  const handleRecordsPerPage = () => {};
+  const { data: clientOptions } = useQuery({
+    queryKey: ["get-clients-dropdown"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
+      return response.data;
+    },
+    select(data) {
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
+
+      return options;
+    },
+  });
 
   const filters = [
     {
@@ -275,9 +261,14 @@ function Jobs() {
       ],
       onChange: (value: any) => setStatus(value),
     },
+    {
+      label: "Client",
+      fieldName: "clientId",
+      options: clientOptions || [],
+      onChange: (value: any) => setFilterClientId(value),
+    },
   ];
 
-  console.log("apiData", state);
   return (
     <>
       <div className="mb-4">
