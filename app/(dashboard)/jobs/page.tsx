@@ -54,6 +54,7 @@ import { SelectEstimateModal } from "./SelectEstimateModal";
 function Jobs() {
   const [opened, { open, close }] = useDisclosure(false);
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [apiData, setApiData] = useState([]);
   const [deleteJobId, setDeleteJobId] = useState();
@@ -70,6 +71,30 @@ function Jobs() {
     },
     data: null,
   });
+
+  const { tableFilters, tableOperators } = React.useMemo(() => {
+    const tableFilters: any = {};
+    const tableOperators: any = {};
+    const now = dayjs().format("YYYY-MM-DD");
+
+    if (status === "not started") {
+      tableFilters.start_date = now;
+      tableOperators.start_date = "$gt";
+    } else if (status === "completed") {
+      tableFilters.end_date = now;
+      tableOperators.end_date = "$lt";
+    } else if (status === "inprogress") {
+      tableFilters.start_date = now;
+      tableOperators.start_date = "$lte";
+      tableFilters.end_date = now;
+      tableOperators.end_date = "$gte";
+    } else if (status === "unscheduled") {
+      tableFilters.start_date = "null";
+      tableOperators.start_date = "$is";
+    }
+
+    return { tableFilters, tableOperators };
+  }, [status]);
 
   const deleteJobMutation = useMutation({
     mutationFn: (id: any) => {
@@ -238,6 +263,20 @@ function Jobs() {
     setPage(newPage);
   };
 
+  const filters = [
+    {
+      label: "Status",
+      fieldName: "status",
+      options: [
+        { value: "unscheduled", label: "Unscheduled" },
+        { value: "not started", label: "Not Started" },
+        { value: "inprogress", label: "In Progress" },
+        { value: "completed", label: "Completed" },
+      ],
+      onChange: (value: any) => setStatus(value),
+    },
+  ];
+
   console.log("apiData", state);
   return (
     <>
@@ -257,7 +296,7 @@ function Jobs() {
       <StatisticsCards jobs={state.data} />
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
-          // filters={filters}
+          filters={filters}
           onSearch={handleSearch}
           searchable={false}
         />
@@ -266,6 +305,8 @@ function Jobs() {
           queryKey={["get-jobs"]}
           search={search}
           columns={columns}
+          filters={tableFilters}
+          operators={tableOperators}
           pagination={true}
           sortable
           defaultSortedColumn={"name"}
