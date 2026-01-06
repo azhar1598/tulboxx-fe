@@ -49,6 +49,8 @@ function Estimates() {
   const [search, setSearch] = useDebouncedState("", 500);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("all");
+  const [filterEstimate, setFilterEstimate] = useState<string | null>(null);
+  const [filterClient, setFilterClient] = useState<string | null>(null);
   const pageSize = 10;
 
   const [state, setState] = useState({
@@ -168,23 +170,6 @@ function Estimates() {
     },
   ];
 
-  const records = [{ id: 1, name: "azhar", city: "kmm", state: "telangana" }];
-
-  const filters = [
-    {
-      id: "invoice_status",
-      label: "Invoice Status",
-      options: [
-        { value: "all", label: "All" },
-        { value: "paid", label: "Paid" },
-        { value: "unpaid", label: "Unpaid" },
-        { value: "pending", label: "Pending" },
-        { value: "draft", label: "Draft" },
-      ],
-      onChange: (value) => handleTypeChange(value),
-    },
-  ];
-
   const handleTypeChange = (value) => {
     setStatus(value);
   };
@@ -202,6 +187,49 @@ function Estimates() {
   };
 
   const getEstimatesQuery = useDropdownOptions(queryFilters);
+
+  const { data: clientOptions } = useQuery({
+    queryKey: ["get-clients-dropdown"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients?limit=1000`);
+      return response.data;
+    },
+    select: (data) =>
+      data?.data?.map((client: any) => ({
+        label: client.name,
+        value: client.id.toString(),
+      })),
+  });
+
+  const filters = [
+    {
+      id: "invoice_status",
+      label: "Invoice Status",
+      fieldName: "status",
+      options: [
+        { value: "all", label: "All" },
+        { value: "paid", label: "Paid" },
+        { value: "unpaid", label: "Unpaid" },
+        { value: "pending", label: "Pending" },
+        { value: "draft", label: "Draft" },
+      ],
+      onChange: (value) => handleTypeChange(value),
+    },
+    {
+      id: "estimate",
+      label: "Estimate",
+      fieldName: "project.id",
+      options: getEstimatesQuery || [],
+      onChange: (value) => setFilterEstimate(value),
+    },
+    {
+      id: "client",
+      label: "Client",
+      fieldName: "client.id",
+      options: clientOptions || [],
+      onChange: (value) => setFilterClient(value),
+    },
+  ];
 
   return (
     <>
@@ -277,14 +305,18 @@ function Estimates() {
 
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
-          // filters={filters}
+          filters={filters}
           searchable={false}
           onSearch={handleSearch}
         />
         <CustomTable
           url={"/invoices"}
           search={search}
-          filters={status === "all" ? {} : { status: [status] }}
+          filters={{
+            ...(status === "all" ? {} : { status: [status] }),
+            ...(filterEstimate ? { "project.id": [filterEstimate] } : {}),
+            ...(filterClient ? { "client.id": [filterClient] } : {}),
+          }}
           columns={columns}
           pagination={true}
           sortable
