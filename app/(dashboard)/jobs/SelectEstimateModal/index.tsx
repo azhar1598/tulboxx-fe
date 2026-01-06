@@ -35,7 +35,7 @@ export const SelectEstimateModal = ({
   const columns = [
     {
       accessor: "projectName",
-      title: "Project Name",
+      title: "Estimate",
       sortable: true,
       render: ({ projectName }: any) => (
         <Text size="14px">{projectName || "N/A"}</Text>

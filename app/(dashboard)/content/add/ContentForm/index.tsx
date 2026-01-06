@@ -105,7 +105,7 @@ const ContentForm = () => {
       <Stack gap="xl">
         <Group grow>
           <Select
-            label="Project Name (optional)"
+            label="Estimate (optional)"
             placeholder="Select Project"
             {...form.getInputProps("projectId")}
             searchable

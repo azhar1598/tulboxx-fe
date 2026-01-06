@@ -116,7 +116,7 @@ function Estimates() {
   let columns = [
     {
       accessor: "projectName",
-      title: "Project Name",
+      title: "Estimate",
       sortable: true,
       render: ({ projectName, id, type }: any) => {
         if (type === "detailed") {

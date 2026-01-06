@@ -72,7 +72,7 @@ function BasicForm({ form, active, nextStep, prevStep, setClientModalOpened }) {
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <TextInput
-              label="Project Name"
+              label="Estimate Name"
               placeholder="Type here..."
               className=""
               {...form.getInputProps("projectName")}
@@ -80,7 +80,7 @@ function BasicForm({ form, active, nextStep, prevStep, setClientModalOpened }) {
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Text size="14px" fw={500} mt={7}>
-              Project Type
+              Estimate Type
             </Text>
             <Radio.Group
               {...form.getInputProps("projectType")}
