@@ -1,12 +1,4 @@
-import {
-  Button,
-  Group,
-  Modal,
-  Select,
-  Stack,
-  TextInput,
-  Textarea,
-} from "@mantine/core";
+import { Button, Group, Select, Stack, Textarea } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -14,7 +6,6 @@ import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import callApi from "@/services/apiService";
 import { IconSearch } from "@tabler/icons-react";
 import { DateInput } from "@mantine/dates";
-import { useState } from "react";
 import CustomModal from "@/components/common/CustomMoodal";
 
 const formSchema = z.object({
@@ -25,6 +16,14 @@ const formSchema = z.object({
   option: z.any(), // to store the selected job option
 });
 
+interface ScheduleJobFormValues {
+  jobId: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  notes: string;
+  option: any;
+}
+
 export const ScheduleJobModal: React.FC<{
   opened: boolean;
   onClose: () => void;
@@ -32,7 +31,7 @@ export const ScheduleJobModal: React.FC<{
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
 
-  const form = useForm({
+  const form = useForm<ScheduleJobFormValues>({
     initialValues: {
       jobId: "",
       startDate: null,
