@@ -313,7 +313,7 @@ function Estimates() {
           url={"/invoices"}
           search={search}
           filters={{
-            ...(status === "all" ? {} : { status: [status] }),
+            ...(status && status !== "all" ? { status: [status] } : {}),
             ...(filterEstimate ? { "project.id": [filterEstimate] } : {}),
             ...(filterClient ? { "client.id": [filterClient] } : {}),
           }}

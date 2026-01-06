@@ -41,7 +41,7 @@ export const FilterLayout = ({
               {...filter.form?.getInputProps(`${filter.fieldName}`)}
               className={classes.filter_input}
               searchable={searchable}
-              allowDeselect={false}
+              allowDeselect
               clearable
             />
           ))}
