@@ -1,61 +1,33 @@
 "use client";
 import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
-import MainLayout from "@/components/common/MainLayout";
 import { PageHeader } from "@/components/common/PageHeader";
 import callApi from "@/services/apiService";
-import QRCode from "react-qr-code";
 
-import {
-  ActionIcon,
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Group,
-  Modal,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Badge, Box, Button, Flex, Group, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  IconBrandFacebook,
-  IconBrandLinkedin,
-  IconBrandInstagram,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconPlus,
-  IconQrcode,
-  IconTrash,
-  IconHome,
-  IconBuilding,
-  IconMapPin,
-  IconPhone,
-  IconMail,
-  IconHourglass,
-  IconTypeface,
-  IconCategory,
-  IconCalendar,
-  IconUser,
   IconBriefcase,
+  IconCalendar,
+  IconCurrencyDollar,
+  IconPlus,
+  IconUser,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import StatisticsCards from "./StatisticsCards";
 // import PreviewQR from "./add/PreviewQR";
 // import { PrintLayout } from "./PrintLayout";
-import { checkStatus, extractAndParseJson } from "@/lib/constants";
-import { useTableQuery } from "@/lib/hooks/useTableQuery";
-import { Hourglass } from "lucide-react";
 import dayjs from "dayjs";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
+import { SelectEstimateModal } from "./SelectEstimateModal";
 
 function Jobs() {
+  const [opened, { open, close }] = useDisclosure(false);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [apiData, setApiData] = useState([]);
+  const [status, setStatus] = useState<string | null>(null);
+  const [filterClientId, setFilterClientId] = useState<string | null>(null);
   const [deleteJobId, setDeleteJobId] = useState();
 
   const notifications = usePageNotifications();
@@ -71,6 +43,34 @@ function Jobs() {
     data: null,
   });
 
+  const { tableFilters, tableOperators } = React.useMemo(() => {
+    const tableFilters: any = {};
+    const tableOperators: any = {};
+    const now = dayjs().format("YYYY-MM-DD");
+
+    if (filterClientId) {
+      tableFilters.clientId = filterClientId;
+    }
+
+    if (status === "not started") {
+      tableFilters.start_date = now;
+      tableOperators.start_date = "$gt";
+    } else if (status === "completed") {
+      tableFilters.end_date = now;
+      tableOperators.end_date = "$lt";
+    } else if (status === "inprogress") {
+      tableFilters.start_date = now;
+      tableOperators.start_date = "$lte";
+      tableFilters.end_date = now;
+      tableOperators.end_date = "$gte";
+    } else if (status === "unscheduled") {
+      tableFilters.start_date = "null";
+      tableOperators.start_date = "$is";
+    }
+
+    return { tableFilters, tableOperators };
+  }, [status, filterClientId]);
+
   const deleteJobMutation = useMutation({
     mutationFn: (id: any) => {
       setDeleteJobId(id);
@@ -84,10 +84,6 @@ function Jobs() {
       notifications.error("Failed to delete job");
     },
   });
-
-  const pageSize = 10;
-
-  console.log("state", state);
 
   let columns = [
     {
@@ -120,84 +116,84 @@ function Jobs() {
           <Text size="14px">N/A</Text>
         ),
     },
-    // {
-    //   accessor: "client",
-    //   title: "Client",
-    //   textAlign: "left",
-    //   sortable: true,
-    // },
     {
-      accessor: "hours",
-      title: "Hours",
+      accessor: "amount",
+      title: "Amount",
       textAlign: "left",
       sortable: true,
-      render: ({ hours }: any) =>
-        hours ? (
-          <Text size="14px" className="flex items-center gap-3">
-            <Hourglass size={16} />
-            {hours}
+      render: ({ amount }: any) =>
+        amount ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconCurrencyDollar size={16} />
+            {amount}
           </Text>
         ) : (
           <Text size="14px">N/A</Text>
         ),
     },
-
     {
-      accessor: "type",
-      title: "Type",
+      accessor: "start_date",
+      title: "Start Date",
       textAlign: "left",
       sortable: true,
-      render: ({ type }: any) =>
-        type ? (
-          <Text size="14px" className="flex items-center gap-3">
-            <IconCategory size={16} />
-            {type}
-          </Text>
-        ) : (
-          <Text size="14px">N/A</Text>
-        ),
-    },
-
-    {
-      accessor: "date",
-      title: "Date",
-      textAlign: "left",
-      sortable: true,
-      render: ({ date }: any) =>
-        date ? (
+      render: ({ start_date }: any) =>
+        start_date ? (
           <Text size="14px" className="flex items-center gap-2">
             <IconCalendar size={16} />
-            {dayjs(date).format("MM-DD-YYYY")}
+            {dayjs(start_date).format("MM-DD-YYYY")}
           </Text>
         ) : (
           <Text size="14px">Unscheduled</Text>
         ),
     },
+    {
+      accessor: "end_date",
+      title: "End Date",
+      textAlign: "left",
+      sortable: true,
+      render: ({ end_date }: any) =>
+        end_date ? (
+          <Text size="14px" className="flex items-center gap-2">
+            <IconCalendar size={16} />
+            {dayjs(end_date).format("MM-DD-YYYY")}
+          </Text>
+        ) : (
+          <Text size="14px">Unscheduled</Text>
+        ),
+    },
+    {
+      accessor: "status",
+      title: "Status",
+      textAlign: "left",
+      sortable: true,
+      render: ({ start_date, end_date }: any) => {
+        const getStatus = () => {
+          if (!start_date || !end_date)
+            return { label: "Unscheduled", color: "gray" };
+          const now = dayjs();
+          const start = dayjs(start_date);
+          const end = dayjs(end_date);
 
-    // {
-    //   accessor: "location",
-    //   title: "Location",
-    //   textAlign: "left",
-    //   sortable: true,
-    //   render: ({ location }: any) => (
-    //     <Text size="14px" className="flex items-center gap-2">
-    //       <IconMapPin size={16} />
-    //       {location}
-    //     </Text>
-    //   ),
-    // },
+          if (now.isBefore(start, "day"))
+            return { label: "Not Started", color: "blue" };
+          if (now.isAfter(end, "day"))
+            return { label: "Completed", color: "green" };
+          return { label: "In Progress", color: "yellow" };
+        };
 
-    // {
-    //   accessor: "name",
-    //   title: "Project Name",
-    //   textAlign: "left",
-    //   render: ({ estimates, project_id }: any) => (
-    //     <Link href={`#`} style={{ color: "blue", textDecoration: "underline" }}>
-    //       {estimates?.projectName || "N/A"}
-    //     </Link>
-    //   ),
-    // },
-
+        const status = getStatus();
+        return (
+          <Badge
+            color={status.color}
+            variant="light"
+            size="xs"
+            style={{ fontSize: "10px" }}
+          >
+            {status.label}
+          </Badge>
+        );
+      },
+    },
     {
       accessor: "actions",
       title: <Box mr={6}>Actions</Box>,
@@ -232,13 +228,47 @@ function Jobs() {
     setSearch(value);
   };
 
-  const handleRecordsPerPage = () => {};
+  const { data: clientOptions } = useQuery({
+    queryKey: ["get-clients-dropdown"],
+    queryFn: async () => {
+      const response = await callApi.get(`/clients`, {
+        params: {
+          limit: -1,
+        },
+      });
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
+      return response.data;
+    },
+    select(data) {
+      const options = data?.data?.map((option) => ({
+        label: `${option.name} - ${option.email}`,
+        value: option.id.toString(),
+      }));
 
-  console.log("apiData", state);
+      return options;
+    },
+  });
+
+  const filters = [
+    {
+      label: "Status",
+      fieldName: "status",
+      options: [
+        { value: "unscheduled", label: "Unscheduled" },
+        { value: "not started", label: "Not Started" },
+        { value: "inprogress", label: "In Progress" },
+        { value: "completed", label: "Completed" },
+      ],
+      onChange: (value: any) => setStatus(value),
+    },
+    {
+      label: "Client",
+      fieldName: "clientId",
+      options: clientOptions || [],
+      onChange: (value: any) => setFilterClientId(value),
+    },
+  ];
+
   return (
     <>
       <div className="mb-4">
@@ -246,17 +276,18 @@ function Jobs() {
           title={`Jobs (${state?.allRecords || 0})`}
           rightSection={
             <Group>
-              <Link href={"/jobs/add"}>
-                <Button leftSection={<IconPlus size={16} />}>New Job</Button>
-              </Link>
+              <Button leftSection={<IconPlus size={16} />} onClick={open}>
+                New Job
+              </Button>
             </Group>
           }
         />
+        <SelectEstimateModal opened={opened} onClose={close} />
       </div>
       <StatisticsCards jobs={state.data} />
       <Stack gap={20} mb={20} className=" bg-white shadow-xl">
         <FilterLayout
-          // filters={filters}
+          filters={filters}
           onSearch={handleSearch}
           searchable={false}
         />
@@ -265,6 +296,8 @@ function Jobs() {
           queryKey={["get-jobs"]}
           search={search}
           columns={columns}
+          filters={tableFilters}
+          operators={tableOperators}
           pagination={true}
           sortable
           defaultSortedColumn={"name"}

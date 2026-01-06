@@ -26,7 +26,8 @@ interface Job {
   name: string;
   type: string;
   amount: number;
-  date: string;
+  startDate: string;
+  endDate: string;
   hours: number;
   notes: string;
   client: {
@@ -65,13 +66,21 @@ function Calendar() {
       return response.data;
     },
     select(data) {
-      return data?.data;
+      return data?.data?.map((job: any) => ({
+        ...job,
+        startDate: job.start_date,
+        endDate: job.end_date,
+      }));
     },
   });
 
   const updateJobMutation = useMutation({
     mutationFn: (job: Partial<Job> & { id: string }) =>
-      callApi.put(`/jobs/${job.id}`, job),
+      callApi.put(`/jobs/${job.id}`, {
+        ...job,
+        start_date: job.startDate,
+        end_date: job.endDate,
+      }),
     onSuccess: () => {
       notification.success("Job scheduled successfully.");
       queryClient.invalidateQueries({ queryKey: ["get-jobs"] });
@@ -82,7 +91,7 @@ function Calendar() {
   });
 
   const handleJobSelect = (job: Job) => {
-    const jobDate = new Date(job.date);
+    const jobDate = new Date(job.startDate);
     setSelectedDate(jobDate);
     setSelectedJobId(job.id);
   };
@@ -96,20 +105,31 @@ function Calendar() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { over, active } = event;
     if (over && over.data.current) {
-      const newDate = over.data.current.date as Date;
+      const newStart = over.data.current.date as Date;
       const job = active.data.current?.job as Job;
 
-      const jobDate = job.date ? new Date(job.date) : null;
-      const isUnscheduled = !jobDate || isNaN(jobDate.getTime());
+      const oldStart = job.startDate ? new Date(job.startDate) : null;
+      const oldEnd = job.endDate ? new Date(job.endDate) : null;
+
+      // Calculate duration in milliseconds if previously scheduled
+      let duration = 0;
+      if (oldStart && oldEnd) {
+        duration = oldEnd.getTime() - oldStart.getTime();
+      }
+
+      const newEnd = new Date(newStart.getTime() + duration);
+
+      const isUnscheduled = !oldStart || isNaN(oldStart.getTime());
 
       if (
         isUnscheduled ||
-        (jobDate && jobDate.toDateString() !== newDate.toDateString())
+        (oldStart && oldStart.toDateString() !== newStart.toDateString())
       ) {
         updateJobMutation.mutate({
           ...job,
           id: job.id,
-          date: newDate.toISOString(),
+          startDate: newStart.toISOString(),
+          endDate: newEnd.toISOString(),
         });
       }
     }

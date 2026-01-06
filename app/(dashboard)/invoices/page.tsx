@@ -97,7 +97,7 @@ function Estimates() {
     },
     {
       accessor: "project",
-      title: "Project Name",
+      title: "Estimate",
       align: "left",
       sortable: true,
       render: ({ project, id }: any) => (

@@ -27,7 +27,7 @@ import {
   IconSend,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { usePageNotifications } from "@/lib/hooks/useNotifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
@@ -39,46 +39,89 @@ import { DateInput } from "@mantine/dates";
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(1, "Job title is required"),
-  type: z.string().optional(),
   customer: z.string().optional(),
   description: z.string().optional(),
-  date: z.date().nullable().optional(),
+  start_date: z.date().nullable().optional(),
+  end_date: z.date().nullable().optional(),
   amount: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
-  hours: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
   notes: z.string().optional(),
+  project_id: z.string().optional(),
 });
 
 interface JobFormValues {
   name: string;
-  type: string;
   customer: string;
   description: string;
-  date: Date | null;
+  start_date: Date | null;
+  end_date: Date | null;
   amount: number | "";
-  hours: number | "";
   notes: string;
+  project_id: string;
 }
+
+import { extractEstimateJson1 } from "@/lib/constants";
 
 const JobForm = ({ md = 6 }: { md?: number }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const estimateId = searchParams.get("estimateId");
   const notification = usePageNotifications();
   const form = useForm<JobFormValues>({
     validate: zodResolver(formSchema),
     initialValues: {
       name: "",
-      type: "",
       customer: "",
       description: "",
-      date: null,
+      start_date: null,
+      end_date: null,
       amount: "",
-      hours: "",
       notes: "",
+      project_id: "",
     },
     validateInputOnChange: true,
   });
 
   const user = useContext(UserContext);
   const queryClient = useQueryClient();
+
+  const { data: estimateData } = useQuery({
+    queryKey: ["get-estimate", estimateId],
+    queryFn: () => callApi.get(`/estimates/${estimateId}`),
+    enabled: !!estimateId,
+  });
+
+  useEffect(() => {
+    if (estimateData?.data) {
+      const {
+        projectName,
+        client_id,
+        total_amount,
+        ai_generated_estimate,
+        projectStartDate,
+        projectEndDate,
+        projectEstimate,
+        id,
+      } = estimateData.data;
+
+      const parsedAiContent: any = extractEstimateJson1(ai_generated_estimate);
+
+      form.setValues({
+        name: "", // User will enter job name
+        customer: client_id || "",
+        amount: total_amount || projectEstimate || "",
+        description: parsedAiContent?.projectOverview || "",
+        start_date: projectStartDate ? new Date(projectStartDate) : null,
+        end_date: projectEndDate ? new Date(projectEndDate) : null,
+        notes: parsedAiContent?.scopeOfWork
+          ? Array.isArray(parsedAiContent.scopeOfWork)
+            ? parsedAiContent.scopeOfWork.join("\n")
+            : parsedAiContent.scopeOfWork
+          : "",
+        project_id: id || estimateId || "",
+      });
+    }
+  }, [estimateData]);
+
   // const { data: clientOptions, isPending: isClientsLoading } =
   //   useDropdownOptions({
   //     queryKey: "get-clients-dropdown",
@@ -148,10 +191,24 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: md }}>
-          <TextInput
-            label="Job Type"
-            placeholder="Plumbing, Electrical, HVAC, Other"
-            {...form.getInputProps("type")}
+          <DateInput
+            {...form.getInputProps("start_date")}
+            label="Start Date"
+            placeholder="Select a start date"
+            valueFormat="DD-MM-YYYY"
+            leftSection={<IconCalendar size={16} />}
+            maxDate={form.values.end_date || undefined}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: md }}>
+          <DateInput
+            {...form.getInputProps("end_date")}
+            label="End Date"
+            placeholder="Select an end date"
+            valueFormat="DD-MM-YYYY"
+            leftSection={<IconCalendar size={16} />}
+            minDate={form.values.start_date || undefined}
           />
         </Grid.Col>
 
@@ -160,22 +217,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             label="Description"
             placeholder="Start typing..."
             {...form.getInputProps("description")}
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: md }}>
-          {/* <TextInput
-            label="Date"
-            placeholder="YYYY-MM-DD"
-           
-            withAsterisk
-          /> */}
-
-          <DateInput
-            {...form.getInputProps("date")}
-            label="Scheduled Date"
-            placeholder="Select a date"
-            valueFormat="DD-MM-YYYY"
-            leftSection={<IconCalendar size={16} />}
           />
         </Grid.Col>
 
@@ -188,18 +229,6 @@ const JobForm = ({ md = 6 }: { md?: number }) => {
             leftSection={<IconCurrencyDollar size={16} />}
             allowDecimal={false}
             allowNegative={false}
-          />
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, md: md }}>
-          <NumberInput
-            label="Estimated Hours"
-            placeholder="Enter estimated hours"
-            {...form.getInputProps("hours")}
-            hideControls
-            allowDecimal={false}
-            allowNegative={false}
-            leftSection={<IconClock size={16} />}
           />
         </Grid.Col>
 

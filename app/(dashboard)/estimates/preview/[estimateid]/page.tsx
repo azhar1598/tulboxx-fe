@@ -20,8 +20,9 @@ import {
   LayoutIcon,
   CodeIcon,
   ShareIcon,
+  BriefcaseIcon,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
+import Link from "next/link";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
@@ -214,7 +215,11 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
       <div ref={pdfRef} style={{ display: "none" }}></div>
 
       <PageHeader
-        title="Estimate Preview"
+        title={
+          getEstimateQuery?.data?.projectName
+            ? `Estimate Preview: ${getEstimateQuery.data.projectName}`
+            : "Estimate Preview"
+        }
         rightSection={
           <Group mb={15} className="no-print">
             {!isEditing ? (
@@ -226,6 +231,14 @@ const EstimatePreview: React.FC<{ estimateData?: EstimateData }> = ({
                 >
                   Edit Estimate
                 </Button>
+                <Link href={`/jobs/add?estimateId=${estimateid}`}>
+                  <Button
+                    leftSection={<BriefcaseIcon size={16} />}
+                    color="grape"
+                  >
+                    Create Job
+                  </Button>
+                </Link>
                 <Button
                   leftSection={<PrinterIcon size={16} />}
                   onClick={handlePrintPDF}

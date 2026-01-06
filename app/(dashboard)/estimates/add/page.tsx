@@ -62,10 +62,13 @@ import CustomModal from "@/components/common/CustomMoodal";
 
 const quickEstimationSchema = z
   .object({
-    projectName: z.string().min(1, "Project name is required"),
-    projectEstimate: z.coerce.number().min(1, "Project estimate is required"),
     clientId: z.string().min(1, "Client is required"),
+    projectType: z.string().min(1, "Client type is required"),
+    problemDescription: z.string().min(1, "Problem description is required"),
+    solutionDescription: z.string().min(1, "Solution description is required"),
     additionalNotes: z.string().optional(),
+    projectName: z.string().min(1, "Job name is required"),
+    projectEstimate: z.coerce.number().min(1, "Project estimate is required"),
   })
   .passthrough();
 
@@ -187,11 +190,7 @@ const StoreRegistrationContent = () => {
       callApi.post(`/estimates?type=${activeTab}`, formData),
     onSuccess: async (res: any) => {
       const { data } = res;
-      if (activeTab === "quick") {
-        router.push(`/estimates`);
-      } else {
-        router.push(`/estimates/preview/${data.estimate.id}`);
-      }
+      router.push(`/estimates/preview/${data.estimate.id}`);
       notification.success(`Estimate created successfully`);
     },
     onError: (err: Error) => {

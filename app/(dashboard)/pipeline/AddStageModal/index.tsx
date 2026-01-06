@@ -1,10 +1,12 @@
 import {
   Button,
-  ColorInput,
   Group,
   Stack,
   TextInput,
   Textarea,
+  Select,
+  ColorSwatch,
+  CheckIcon,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,14 +21,24 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
+const STAGE_COLORS = [
+  { value: "#60a5fa", label: "Blue" },
+  { value: "#4ade80", label: "Green" },
+  { value: "#f87171", label: "Red" },
+  { value: "#fb923c", label: "Orange" },
+  { value: "#facc15", label: "Yellow" },
+  { value: "#c084fc", label: "Purple" },
+  { value: "#f472b6", label: "Pink" },
+];
+
 const AddStageModal = ({ opened, onClose }) => {
   const notification = usePageNotifications();
   const queryClient = useQueryClient();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     initialValues: {
       name: "",
-      color: "#3b82f6",
+      color: "#60a5fa",
       description: "",
     },
     validate: zodResolver(formSchema),
@@ -78,10 +90,25 @@ const AddStageModal = ({ opened, onClose }) => {
             {...form.getInputProps("name")}
             withAsterisk
           />
-          <ColorInput
+          <Select
             label="Color"
             placeholder="Select color"
+            data={STAGE_COLORS}
             {...form.getInputProps("color")}
+            renderOption={({ option, checked }) => (
+              <Group flex="1" gap="xs">
+                <ColorSwatch color={option.value} size={16} />
+                <span>{option.label}</span>
+                {checked && (
+                  <CheckIcon style={{ marginInlineStart: "auto" }} size={12} />
+                )}
+              </Group>
+            )}
+            leftSection={
+              form.values.color ? (
+                <ColorSwatch color={form.values.color} size={16} />
+              ) : null
+            }
             withAsterisk
           />
           {/* <NumberInput

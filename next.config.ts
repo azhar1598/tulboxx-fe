@@ -1,22 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "images.pexels.com",
-      "another-domain.com",
-      "third-domain.net",
-      "png.pngtree.com",
-      "d1csarkz8obe9u.cloudfront.net",
-      "storage.googleapis.com",
-      "lh3.googleusercontent.com",
+    remotePatterns: [
+      { protocol: "https", hostname: "images.pexels.com" },
+      { protocol: "https", hostname: "another-domain.com" },
+      { protocol: "https", hostname: "third-domain.net" },
+      { protocol: "https", hostname: "png.pngtree.com" },
+      { protocol: "https", hostname: "d1csarkz8obe9u.cloudfront.net" },
+      { protocol: "https", hostname: "storage.googleapis.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
-  // env: {
-  //   BASE_URL: process.env.BASE_URL,
-  //   PEXELS_API_KEY: process.env.PEXELS_API_KEY,
-  //   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  //   SITE_URL: process.env.SITE_URL,
-  // },
 };
 
 export default nextConfig;

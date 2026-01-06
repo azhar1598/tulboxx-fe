@@ -40,23 +40,21 @@ import { DollarSignIcon } from "lucide-react";
 // Define the validation schema using zod
 const formSchema = z.object({
   name: z.string().min(1, "Job title is required"),
-  type: z.string().optional(),
   customer: z.string().optional(),
   description: z.string().optional(),
-  date: z.date().nullable().optional(),
+  start_date: z.date().nullable().optional(),
+  end_date: z.date().nullable().optional(),
   amount: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
-  hours: z.union([z.number().min(0), z.literal(""), z.null()]).optional(),
   notes: z.string().optional(),
 });
 
 interface JobFormValues {
   name: string;
-  type: string;
   customer: string | null;
   description: string;
-  date: Date | null;
+  start_date: Date | null;
+  end_date: Date | null;
   amount: number | "";
-  hours: number | "";
   notes: string;
   user_id?: string;
 }
@@ -68,12 +66,11 @@ const JobForm = () => {
     validate: zodResolver(formSchema),
     initialValues: {
       name: "",
-      type: "",
       customer: "",
       description: "",
-      date: null,
+      start_date: null,
+      end_date: null,
       amount: "",
-      hours: "",
       notes: "",
     },
     validateInputOnChange: true,
@@ -116,16 +113,15 @@ const JobForm = () => {
 
   useEffect(() => {
     if (getJobQuery.data) {
-      const { name, type, client_id, description, date, amount, hours, notes } =
+      const { name, client_id, description, start_date, end_date, amount, notes } =
         getJobQuery.data?.data;
       form.setValues({
         name,
-        type,
         customer: client_id || "",
         description,
-        date: date ? new Date(date) : null,
+        start_date: start_date ? new Date(start_date) : null,
+        end_date: end_date ? new Date(end_date) : null,
         amount: Number(amount) || "",
-        hours: Number(hours) || "",
         notes: notes || "",
       });
       form.resetDirty();
@@ -176,27 +172,29 @@ const JobForm = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <TextInput
-            label="Job Type"
-            placeholder="Plumbing, Electrical, HVAC, Other"
-            {...form.getInputProps("type")}
+          <DateInput
+            {...form.getInputProps("start_date")}
+            label="Start Date"
+            placeholder="Select a start date"
+            valueFormat="DD-MM-YYYY"
+            leftSection={<IconCalendar size={16} />}
           />
         </Grid.Col>
 
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <DateInput
+            {...form.getInputProps("end_date")}
+            label="End Date"
+            placeholder="Select an end date"
+            valueFormat="DD-MM-YYYY"
+            leftSection={<IconCalendar size={16} />}
+          />
+        </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Textarea
             label="Description"
             placeholder="Start typing..."
             {...form.getInputProps("description")}
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <DateInput
-            {...form.getInputProps("date")}
-            label="Scheduled Date"
-            placeholder="Select a date"
-            valueFormat="DD-MM-YYYY"
-            leftSection={<IconCalendar size={16} />}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
@@ -208,17 +206,6 @@ const JobForm = () => {
             hideControls
             allowDecimal={false}
             allowNegative={false}
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
-          <NumberInput
-            label="Estimated Hours"
-            placeholder="Enter estimated hours"
-            {...form.getInputProps("hours")}
-            hideControls
-            allowDecimal={false}
-            allowNegative={false}
-            leftSection={<IconClock size={16} />}
           />
         </Grid.Col>
 
