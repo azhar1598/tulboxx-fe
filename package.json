@@ -43,7 +43,7 @@
     "html2pdf.js": "^0.10.3",
     "lucide-react": "^0.485.0",
     "mantine-datatable": "^7.12.4",
-    "next": "15.0.2",
+    "next": "15.0.7",
     "puppeteer-core": "^24.15.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
