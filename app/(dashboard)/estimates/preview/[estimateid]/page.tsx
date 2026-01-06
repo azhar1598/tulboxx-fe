@@ -23,7 +23,6 @@ import {
   BriefcaseIcon,
 } from "lucide-react";
 import Link from "next/link";
-import html2pdf from "html2pdf.js";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
