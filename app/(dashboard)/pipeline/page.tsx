@@ -1,47 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Stack,
   Group,
   Paper,
-  Text,
   Button,
-  TextInput,
-  Title,
-  Badge,
-  Avatar,
-  Box,
-  Menu,
-  ActionIcon,
-  Grid,
-  Card,
-  ThemeIcon,
-  Flex,
   ScrollArea,
-  Modal,
-  Select,
-  NumberInput,
-  Textarea,
-  rem,
-  SimpleGrid,
+  Tooltip,
 } from "@mantine/core";
-import {
-  IconSearch,
-  IconFilter,
-  IconPlus,
-  IconDotsVertical,
-  IconUsers,
-  IconCurrencyDollar,
-  IconTarget,
-  IconTrendingUp,
-  IconCalendar,
-  IconGripVertical,
-  IconEdit,
-  IconTrash,
-  IconChevronRight,
-  IconProgressCheck,
-} from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { PageHeader } from "@/components/common/PageHeader";
 import {
@@ -56,20 +24,14 @@ import {
   DragEndEvent,
   DragOverEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import SearchAndFilter from "./SearchAndFilter";
 import StatisticsCards from "./StatisticsCards";
 import Kanban from "./Kanban";
+import EmptyPipeline from "./EmptyPipeline";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
-import { useEffect } from "react";
 import AddStageModal from "./AddStageModal";
 import AddLeadModal from "./AddLeadModal";
 import LeadCard from "./Kanban/KanbanColumn/LeadCard";
@@ -442,13 +404,21 @@ export default function PipelinePage() {
             title="Pipeline"
             rightSection={
               <Group>
-                <Button
-                  leftSection={<IconPlus size={16} />}
-                  onClick={openAddLead}
-                  size="sm"
+                <Tooltip
+                  label="Add a stage first to create a lead"
+                  disabled={Object.keys(columns).length > 0}
                 >
-                  Add Lead
-                </Button>
+                  <div>
+                    <Button
+                      leftSection={<IconPlus size={16} />}
+                      onClick={openAddLead}
+                      size="sm"
+                      disabled={Object.keys(columns).length === 0}
+                    >
+                      Add Lead
+                    </Button>
+                  </div>
+                </Tooltip>
                 <Button
                   leftSection={<IconPlus size={16} />}
                   size="sm"
@@ -461,45 +431,66 @@ export default function PipelinePage() {
           />
 
           {/* Search and Filter Bar */}
-          <SearchAndFilter
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            stages={getStagesQuery.data}
-            selectedStages={selectedStages}
-            setSelectedStages={setSelectedStages}
-          />
-          {/* Statistics Cards */}
-          <StatisticsCards
-            columns={columns}
-            getLeads={getLeadsQuery?.data}
-            stages={getStagesQuery?.data}
-          />
+          {Object.keys(columns).length > 0 && (
+            <>
+              <SearchAndFilter
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                stages={getStagesQuery.data}
+                selectedStages={selectedStages}
+                setSelectedStages={setSelectedStages}
+              />
+              {/* Statistics Cards */}
+              <StatisticsCards
+                columns={columns}
+                getLeads={getLeadsQuery?.data}
+                stages={getStagesQuery?.data}
+              />
+            </>
+          )}
 
           {/* Kanban Board */}
-          <ScrollArea
-            className="custom-scrollbar"
-            style={{ transform: "rotateX(180deg)" }}
-          >
+          {Object.keys(columns).length === 0 ? (
             <Paper
               withBorder
               p="md"
               radius="md"
               shadow="md"
               style={{
-                transform: "rotateX(180deg)",
                 backgroundColor: "white",
                 padding: "30px",
                 borderRadius: "10px",
-                height: "100%",
+                minHeight: 400,
               }}
             >
-              <Kanban
-                columns={filteredColumns}
-                getClients={getClients}
-                getStages={getStagesQuery}
-              />
+              <EmptyPipeline onAddStage={openAddStage} />
             </Paper>
-          </ScrollArea>
+          ) : (
+            <ScrollArea
+              className="custom-scrollbar"
+              style={{ transform: "rotateX(180deg)" }}
+            >
+              <Paper
+                withBorder
+                p="md"
+                radius="md"
+                shadow="md"
+                style={{
+                  transform: "rotateX(180deg)",
+                  backgroundColor: "white",
+                  padding: "30px",
+                  borderRadius: "10px",
+                  height: "100%",
+                }}
+              >
+                <Kanban
+                  columns={filteredColumns}
+                  getClients={getClients}
+                  getStages={getStagesQuery}
+                />
+              </Paper>
+            </ScrollArea>
+          )}
         </Stack>
 
         <AddLeadModal

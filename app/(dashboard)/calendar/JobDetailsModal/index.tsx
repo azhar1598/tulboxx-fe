@@ -37,6 +37,7 @@ interface Job {
   hours: number;
   notes: string;
   client: {
+    id: string;
     name: string;
     email: string;
     phone: string;
@@ -64,7 +65,7 @@ export function JobDetailsModal({
     queryFn: async () => {
       const response = await callApi.get("/clients", { params: { limit: -1 } });
       return response.data?.data.map((client: any) => ({
-        value: client.id,
+        value: String(client.id),
         label: client.name,
       }));
     },
@@ -93,7 +94,7 @@ export function JobDetailsModal({
         notes: job.notes || "",
         startDate: job.startDate ? new Date(job.startDate) : new Date(),
         endDate: job.endDate ? new Date(job.endDate) : new Date(),
-        client_id: job.client_id || "",
+        client_id: String(job.client_id || job.client?.id || ""),
       });
     }
   }, [job]);
