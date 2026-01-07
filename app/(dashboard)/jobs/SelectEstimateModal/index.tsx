@@ -1,6 +1,6 @@
 import CustomTable from "@/components/common/CustomTable";
 import { FilterLayout } from "@/components/common/FilterLayout";
-import { Badge, Button, Modal, Text, Stack } from "@mantine/core";
+import { Button, Modal, Text, Stack } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -47,6 +47,14 @@ export const SelectEstimateModal = ({
       sortable: true,
       render: ({ clients }: any) => (
         <Text size="14px">{clients?.name || "N/A"}</Text>
+      ),
+    },
+    {
+      accessor: "type",
+      title: "Type",
+      sortable: true,
+      render: ({ type }: any) => (
+        <Text size="14px">{type === "detailed" ? "Detailed" : "Quick"}</Text>
       ),
     },
     {
