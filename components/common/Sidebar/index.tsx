@@ -70,7 +70,7 @@ function NavbarLink({
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const supabase = createClient();
   const user = useContext(UserContext);
 

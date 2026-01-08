@@ -6,7 +6,7 @@
 :root {
   --background: #e5e7eb;
   --foreground: #171717;
-  --sidebar-width: 260px;
+  --sidebar-width: 80px;
 }
 
 @media (prefers-color-scheme: dark) {
