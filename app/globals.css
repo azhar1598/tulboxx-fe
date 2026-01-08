@@ -4,8 +4,9 @@
 @layer mantine, mantine-datatable;
 
 :root {
-  --background: ##e5e7eb;
+  --background: #e5e7eb;
   --foreground: #171717;
+  --sidebar-width: 260px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,30 +19,31 @@
 body {
   color: var(--foreground);
   background: #f4f7fe !important;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .main-content {
-  margin-left: calc(250px + 0rem);
+  margin-left: var(--sidebar-width);
   margin-top: 100px;
   /* position: fixed; */
   padding-left: 30px;
   padding-right: 30px;
-  width: calc(100vw - 250px);
+  width: calc(100vw - var(--sidebar-width));
+  transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .header {
-  margin-left: calc(250px + 0rem);
+  margin-left: var(--sidebar-width);
   position: fixed;
   width: 100%;
   z-index: 100;
+  transition: margin-left 0.3s ease;
   /* background-color: white; */
   /* background-color: #1e476b; */
   /* background-color: #14141fd9; */
 }
 .page-main-wrapper,
 .data-table {
-  width: calc(100vw - 320px) !important;
+  width: calc(100vw - var(--sidebar-width) - 70px) !important;
 }
 
 @media only screen and (max-width: 992px) {

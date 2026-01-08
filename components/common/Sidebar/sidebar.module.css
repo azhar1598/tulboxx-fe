@@ -1,48 +1,227 @@
 .navbar {
-  width: 250px;
-  min-height: 100vh;
-  height: auto;
-  /* padding-top: 10px; */
-  /* padding: var(--mantine-spacing-md); */
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  width: var(--sidebar-width);
+  height: 100vh;
   display: flex;
-  background-color: #0c1a2c !important; /* A deeper, modern blue */
   flex-direction: column;
+  background: #09090b; /* Zinc 950 - Ultra Dark */
+  border-right: 1px solid #27272a; /* Zinc 800 */
   position: fixed;
-  border-right: 1px solid #1a2f45; /* Subtle border */
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 20px 12px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .navbarMain {
   flex: 1;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 12px;
+}
+
+.navbarMain::-webkit-scrollbar {
+  width: 0px;
 }
 
 .link {
-  height: 50px;
-  padding-left: 20px;
-  border-radius: var(--mantine-radius-sm);
+  height: 42px; /* Slightly more compact */
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin: 5px 15px;
-  color: #c1d4e8;
-  transition: 0.2s ease-in-out;
+  padding: 0 12px;
+  border-radius: 8px; /* Slightly tighter radius */
+  color: #a1a1aa; /* Zinc 400 */
+  font-size: 14px;
   font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  position: relative;
 
   &:hover {
-    background-color: #1a2f45;
-    color: #ffffff;
+    background-color: #27272a; /* Zinc 800 */
+    color: #f4f4f5; /* Zinc 100 */
   }
 
   &[data-active] {
-    &,
-    &:hover {
-      background-color: #1a2f45;
-      color: #ffffff;
-      border-left: 3px solid #3886df;
-      padding-left: 17px;
-    }
+    background-color: #27272a;
+    color: #ffffff;
+    font-weight: 600;
   }
+}
+
+.linkIcon {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin-right: 12px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.link[data-active] .linkIcon {
+  opacity: 1;
+  color: #fff;
+}
+
+.linkLabel {
+  opacity: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Collapsed State applied to navbar parent */
+.navbar[data-collapsed="true"] .logoContainer {
+  padding: 0;
+  width: 100%;
+}
+
+.navbar[data-collapsed="true"] .linkLabel {
+  opacity: 0;
+  width: 0;
+  display: none;
+}
+
+.navbar[data-collapsed="true"] .link {
+  justify-content: center;
+  padding: 0;
+}
+
+.navbar[data-collapsed="true"] .linkIcon {
+  margin-right: 0;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #27272a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.toggleBtn {
+  position: absolute;
+  top: 32px;
+  right: 16px; /* Inside the sidebar */
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 201;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #27272a;
+    color: #fff;
+  }
+}
+
+/* Center button when collapsed */
+.navbar[data-collapsed="true"] .toggleBtn {
+  position: relative;
+  right: auto;
+  top: auto;
+  transform: none;
+  margin: 0 auto 24px auto;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+}
+
+/* User Profile Styles */
+.userProfile {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  width: 100%;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: #27272a;
+    border-color: #3f3f46;
+  }
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+  text-align: left;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f4f4f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 11px;
+  color: #a1a1aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar[data-collapsed="true"] .userProfile {
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.navbar[data-collapsed="true"] .userAvatar {
+  margin-right: 0;
+}
+
+.navbar[data-collapsed="true"] .userInfo {
+  display: none;
+  opacity: 0;
+  width: 0;
 }
 
 @media only screen and (max-width: 992px) {

@@ -1,6 +1,6 @@
 "use client";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Flex, MantineProvider, Stack } from "@mantine/core";
@@ -21,10 +21,9 @@ import "@mantine/dates/styles.css";
 import { createClient } from "@/utils/supabase/client";
 import { createContext, useEffect, useState } from "react";
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
 });
 
 // export const metadata: Metadata = {
@@ -70,7 +69,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased `}>
+      <body className={`${inter.variable} antialiased font-sans`}>
         {/* {isMobileView && <MobileViewMessage />} */}
         {/* {!isMobileView && ( */}
         <QueryClientProvider client={queryClient}>

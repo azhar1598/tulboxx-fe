@@ -20,6 +20,7 @@ import {
 } from "@tabler/icons-react";
 
 export const theme = createTheme({
+  fontFamily: "var(--font-inter)",
   colors: {
     paleIndigo: [
       "#f1f1ff",
