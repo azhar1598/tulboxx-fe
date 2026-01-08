@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Inbox,
 } from "lucide-react";
+import LottieConstructionLoader from "../LottieConstructionLoader";
 
 export interface DataTableSortStatus<T> {
   columnAccessor: keyof T | string;
@@ -287,24 +288,14 @@ const CustomDataTable = <T extends BaseRecord>({
       {/* Mobile View - Card Layout */}
       <div className="block md:hidden">
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: Math.min(limit, 5) }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-lg p-4 shadow-sm animate-pulse"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="h-5 w-32 bg-gray-200 rounded"></div>
-                  <div className="h-8 w-16 bg-gray-200 rounded"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-4 w-full bg-gray-200 rounded"></div>
-                  <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
-                  <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <LottieConstructionLoader
+            size="medium"
+            message={
+              url?.includes("estimates")
+                ? "Building estimates..."
+                : "Constructing data..."
+            }
+          />
         ) : data.length === 0 ? (
           <div className="text-center py-12">
             <div className="flex flex-col items-center gap-4">
@@ -493,27 +484,18 @@ const CustomDataTable = <T extends BaseRecord>({
           </thead>
           <tbody>
             {isLoading ? (
-              Array.from({ length: limit }).map((_, i) => (
-                <tr key={i} className="bg-white rounded-xl shadow-sm">
-                  {selectable && (
-                    <td className="px-4 py-4 rounded-l-xl">
-                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                    </td>
-                  )}
-                  {columns.map((column: any, colIndex: number) => (
-                    <td
-                      key={String(column.accessor)}
-                      className={`px-6 py-4 ${
-                        colIndex === 0 && !selectable ? "rounded-l-xl" : ""
-                      } ${
-                        colIndex === columns.length - 1 ? "rounded-r-xl" : ""
-                      }`}
-                    >
-                      <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0)}>
+                  <LottieConstructionLoader
+                    size="large"
+                    message={
+                      url?.includes("estimates")
+                        ? "Building estimates..."
+                        : "Constructing data..."
+                    }
+                  />
+                </td>
+              </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td

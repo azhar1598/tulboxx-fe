@@ -1,20 +1,23 @@
 // sidebar.tsx
 "use client";
 
-import { useState } from "react";
-import { Center, UnstyledButton, Stack, rem, Text, Title } from "@mantine/core";
+import { useState, useEffect, useContext } from "react";
+import { UnstyledButton, Stack, rem, Tooltip, Menu } from "@mantine/core";
 import {
-  IconSwitchHorizontal,
   IconLogout,
-  IconTool,
+  IconChevronLeft,
+  IconChevronRight,
+  IconSettings,
+  IconUser,
 } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import classes from "./sidebar.module.css";
 import { sidebarItems } from "./sidebar";
 import LogoImage1 from "../../../public/logo/logo-negative.png";
-import LogoImage2 from "../../../public/logo/logo-positive.png";
+import OnlyLogo from "../../../public/logo/only-logo.png";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { UserContext } from "@/app/layout";
 
 interface NavbarLinkProps {
   icon: any;
@@ -22,6 +25,7 @@ interface NavbarLinkProps {
   active?: boolean;
   link: string;
   onClick?(): void;
+  collapsed?: boolean;
 }
 
 function NavbarLink({
@@ -30,6 +34,7 @@ function NavbarLink({
   active,
   onClick,
   link,
+  collapsed,
 }: NavbarLinkProps) {
   const router = useRouter();
 
@@ -41,24 +46,46 @@ function NavbarLink({
   };
 
   return (
-    <UnstyledButton
-      onClick={handleClick}
-      className={classes.link}
-      data-active={active || undefined}
+    <Tooltip
+      label={label}
+      position="right"
+      disabled={!collapsed}
+      withArrow
+      transitionProps={{ duration: 200 }}
+      color="dark"
+      offset={10}
     >
-      <Icon style={{ width: rem(22), height: rem(22) }} stroke={1.5} />
-      <Text size="sm" ml="md">
-        {label}
-      </Text>
-    </UnstyledButton>
+      <UnstyledButton
+        onClick={handleClick}
+        className={classes.link}
+        data-active={active || undefined}
+      >
+        <Icon className={classes.linkIcon} stroke={1.5} />
+        {!collapsed && <span className={classes.linkLabel}>{label}</span>}
+      </UnstyledButton>
+    </Tooltip>
   );
 }
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-
+  const [collapsed, setCollapsed] = useState(true);
   const supabase = createClient();
+  const user = useContext(UserContext);
+
+  const toggleCollapse = () => {
+    const newCollapsed = !collapsed;
+    setCollapsed(newCollapsed);
+    const newWidth = newCollapsed ? "80px" : "260px";
+    document.documentElement.style.setProperty("--sidebar-width", newWidth);
+  };
+
+  // Reset width on mount to ensure sync
+  useEffect(() => {
+    const width = collapsed ? "80px" : "260px";
+    document.documentElement.style.setProperty("--sidebar-width", width);
+  }, [collapsed]);
 
   const activeIndex = sidebarItems.findIndex((item) => {
     if (item.link === "/") {
@@ -72,13 +99,10 @@ export function Sidebar() {
       {...link}
       key={link.label}
       active={index === activeIndex}
+      collapsed={collapsed}
       onClick={() => {}}
     />
   ));
-
-  const handleAccountSwitch = () => {
-    // Handle account switching logic
-  };
 
   const handleLogout = async () => {
     try {
@@ -90,45 +114,76 @@ export function Sidebar() {
     }
   };
 
-  return (
-    <nav className={classes.navbar}>
-      <Center
-        style={{
-          borderBottom: "1px solid #1a2f45",
-        }}
-      >
-        {/* <IconTool color="white" size="1.8rem" />
-        <Title
-          order={1}
-          c={"white"}
-          fw={600}
-          size="26px"
-          style={{ fontWeight: 700, marginLeft: "12px" }}
-        >
-          Tulboxx
-        </Title> */}
-        <Image src={LogoImage1} alt="logo" width={150} height={150} />
-      </Center>
+  const userInitials = user?.email
+    ? user.email.substring(0, 2).toUpperCase()
+    : "U";
+  const displayName = user?.user_metadata?.full_name || "My Account";
 
-      <div className={classes.navbarMain}>
-        <Stack justify="flex-start" gap={0}>
-          {links}
-          <UnstyledButton
-            onClick={() => {
-              handleLogout();
-            }}
-            className={classes.link}
-            // data-active={}
-          >
-            <IconLogout
-              style={{ width: rem(22), height: rem(22) }}
-              stroke={1.5}
-            />
-            <Text size="sm" ml="md">
+  return (
+    <nav className={classes.navbar} data-collapsed={collapsed}>
+      <div className={classes.logoContainer}>
+        <Image
+          src={collapsed ? OnlyLogo : LogoImage1}
+          alt="logo"
+          width={collapsed ? 32 : 150}
+          height={50}
+          style={{
+            objectFit: "contain",
+            height: "auto",
+            transition: "all 0.3s ease",
+          }}
+        />
+      </div>
+
+      <button className={classes.toggleBtn} onClick={toggleCollapse}>
+        {collapsed ? (
+          <IconChevronRight size={14} />
+        ) : (
+          <IconChevronLeft size={14} />
+        )}
+      </button>
+
+      <div className={classes.navbarMain}>{links}</div>
+
+      <div className={classes.footer}>
+        <Menu
+          shadow="md"
+          width={220}
+          position="right-end"
+          offset={14}
+          withArrow
+          arrowPosition="center"
+        >
+          <Menu.Target>
+            <div className={classes.userProfile}>
+              <div className={classes.userAvatar}>{userInitials}</div>
+              {!collapsed && (
+                <div className={classes.userInfo}>
+                  <span className={classes.userName}>{displayName}</span>
+                  <span className={classes.userEmail}>{user?.email}</span>
+                </div>
+              )}
+            </div>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Label>Application</Menu.Label>
+            <Menu.Item
+              leftSection={<IconSettings size={14} />}
+              onClick={() => router.push("/account")}
+            >
+              Account Settings
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item
+              color="red"
+              leftSection={<IconLogout size={14} />}
+              onClick={handleLogout}
+            >
               Logout
-            </Text>
-          </UnstyledButton>
-        </Stack>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </div>
     </nav>
   );
