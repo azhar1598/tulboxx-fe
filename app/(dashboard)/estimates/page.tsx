@@ -184,6 +184,26 @@ function Estimates() {
     },
 
     {
+      accessor: "invoices",
+      title: "# of Invoices",
+      sortable: true,
+      render: ({ invoices }: any) => {
+        if (invoices?.length > 0) {
+          return (
+            <Link
+              href={`/invoices/edit/${invoices[0]?.id}`}
+              target="_blank"
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              <Text size="14px">{invoices.length}</Text>
+            </Link>
+          );
+        }
+        return <Text size="14px">{invoices?.length || 0}</Text>;
+      },
+    },
+
+    {
       accessor: "total_amount",
       title: "Total Amount",
       sortable: true,
